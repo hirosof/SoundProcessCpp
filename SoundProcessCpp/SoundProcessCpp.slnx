@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/0_Tests/">
+    <Project Path="HSSoundBasisLib.Tests/HSSoundBasisLib.Tests.vcxproj" Id="fd9945e8-9690-42cb-8d9c-859a6e9fd076" />
+  </Folder>
+  <Folder Name="/1_Libraries/">
+    <Project Path="HSSoundBasisLib/HSSoundBasisLib.vcxproj" Id="6b802df8-8307-4e3b-8e19-3f0695149885" />
+  </Folder>
+  <Folder Name="/2_DevTools/">
+    <Project Path="ClassWithUUIDDefinitionGenerator/ClassWithUUIDDefinitionGenerator.vcxproj" Id="17c21487-8248-4394-95d5-f4a283cefac8" />
+  </Folder>
+  <Folder Name="/2_Memory/">
+    <Project Path="MemoryProvidersSample/MemoryProvidersSample.vcxproj" Id="982ba9e7-2822-4cf5-9c20-a2fabf636f46" />
+  </Folder>
+  <Folder Name="/3_IOApps/" />
+</Solution>
