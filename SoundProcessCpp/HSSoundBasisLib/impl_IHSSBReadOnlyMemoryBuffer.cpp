@@ -96,14 +96,14 @@ HRESULT impl_IHSSBReadOnlyMemoryBuffer::CreateInstance(IHSSBReadOnlyMemoryBuffer
 	return impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( ppInstance, pBuffer, size, EHSSBMemoryOwnershipType::NoOwnership );	
 }
 
-HRESULT impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( IHSSBReadOnlyMemoryBuffer** ppInstance, void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner , EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
+HRESULT impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( IHSSBReadOnlyMemoryBuffer** ppInstance, void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner, EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
 
 	// パラメータチェック
 	if ( !ppInstance ) return E_POINTER;
 	if ( !pBuffer ) return E_POINTER;
 
 	// owner の有効性をチェック
-	switch (owner) {
+	switch ( owner ) {
 		case EHSSBMemoryOwnershipType::NoOwnership:
 		case EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated:
 		case EHSSBMemoryOwnershipType::WithFreeOwnership_Malloced:
@@ -118,9 +118,10 @@ HRESULT impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( IHSSBReadOnlyMemoryBuffe
 	// 成功時における期待されるHRESULTを設定
 	HRESULT Expect_hr_for_Success = S_OK;
 
-	// サイズが 0 の場合の特別なチェック
+	// 所有権タイプに応じたサイズチェックと調整
 	if ( owner == EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced ) {
-		// HeapAlloc で確保されたメモリの場合、サイズが 0 の場合、実際のサイズの確認を試行する
+
+		// HeapAlloc で確保されたメモリの場合、実際のサイズの取得を試行する
 		SIZE_T heap_size = HeapSize( GetProcessHeap( ), 0, pBuffer );
 
 		if ( ( size == 0 ) && ( heap_size == (SIZE_T) ( -1 ) ) ) {
