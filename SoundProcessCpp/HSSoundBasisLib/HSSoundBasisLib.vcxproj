@@ -156,6 +156,7 @@
     <ClInclude Include="HSSBMemoryOperations.hpp" />
     <ClInclude Include="HSSoundBasisLib.hpp" />
     <ClInclude Include="impl_IHSSBMemoryBuffer.hpp" />
+    <ClInclude Include="impl_IHSSBMemoryOwner.hpp" />
     <ClInclude Include="impl_IHSSBNormalizedPCMBuffer.hpp" />
     <ClInclude Include="impl_IHSSBReadOnlyMemoryBuffer.hpp" />
     <ClInclude Include="impl_IHSSBWritableMemoryBuffer.hpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="HSSBMathFunctions.cpp" />
     <ClCompile Include="HSSoundBasisLib.cpp" />
     <ClCompile Include="impl_IHSSBMemoryBuffer.cpp" />
+    <ClCompile Include="impl_IHSSBMemoryOwner.cpp" />
     <ClCompile Include="impl_IHSSBNormalizedPCMBuffer.cpp" />
     <ClCompile Include="impl_IHSSBReadOnlyMemoryBuffer.cpp" />
     <ClCompile Include="impl_IHSSBWritableMemoryBuffer.cpp" />

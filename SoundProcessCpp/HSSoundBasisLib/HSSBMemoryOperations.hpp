@@ -11,11 +11,59 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryProvider ) IHSSBMemoryProvider : public IHSSBB
 
 #define IIDSTR_IHSSBMemoryOwner "D3DCCE84-A5DD-46FA-812F-8E183080C269"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryOwner;
-MIDL_INTERFACE( IIDSTR_IHSSBMemoryOwner ) IHSSBMemoryOwner : public IHSSBBase {
+MIDL_INTERFACE( IIDSTR_IHSSBMemoryOwner ) IHSSBMemoryOwner : public IHSSBMemoryProvider {
+
+	// メモリバッファーをアタッチ
+	virtual HRESULT Attach( void* pBuffer, size_t size,
+		EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
+		EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
+	) = 0;
+
+	// メモリバッファーをデタッチ
+	virtual HRESULT Detach( void** ppOutBuffer,
+		size_t* pOutSize = nullptr,
+		EHSSBMemoryOwnershipType* pOutOwner = nullptr,
+		EHSSBMemoryNewAllocatedTypeInfo* pOutOwnerTypeInfo = nullptr
+	) = 0;
+
+	// 所有しているメモリを解放
+	virtual HRESULT Free( void ) = 0;
+
+	// バッファーポインタとサイズを取得
+	virtual void* GetBufferPointer( void ) const = 0;
+
+	// バッファーサイズを取得
+	virtual size_t GetSize( void ) const = 0;
+
+	// 所有権タイプを取得
+	virtual EHSSBMemoryOwnershipType GetOwnershipType( void ) const = 0;
+
+	// 所有権タイプ情報を取得
+	virtual EHSSBMemoryNewAllocatedTypeInfo GetOwnershipTypeInfo( void ) const = 0;
 
 };
 
+// メモリオーナーインスタンスを作成
+HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance );
 
+HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance,
+	void* pBuffer,
+	size_t size,
+	EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
+	EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
+);
+
+
+template <typename T, size_t S> HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance,
+	T( &buffer )[S]
+) {
+	return HSSBCreateMemoryOwner( ppInstance,
+		static_cast<void*>( buffer ),
+		sizeof( T ) * S,
+		EHSSBMemoryOwnershipType::NoOwnership,
+		EHSSBMemoryNewAllocatedTypeInfo::None
+	);
+}
 
 #define IIDSTR_IHSSBMemoryBufferBase "D24733D0-E5D4-4752-95F6-5A7952AD363D"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryBufferBase;
@@ -90,15 +138,13 @@ template <typename T> HRESULT HSSBCreateReadOnlyMemoryBufferType( IHSSBReadOnlyM
 }
 
 template <typename T, size_t S> HRESULT HSSBCreateReadOnlyMemoryBufferType( IHSSBReadOnlyMemoryBuffer** ppInstance,
-	T( &buffer )[S],
-	EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
-	EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
+	T( &buffer )[S]
 ) {
 	return HSSBCreateReadOnlyMemoryBufferType<T>( ppInstance,
 		buffer,
 		S,
-		owner,
-		owner_type_info
+		EHSSBMemoryOwnershipType::NoOwnership,
+		EHSSBMemoryNewAllocatedTypeInfo::None
 	);
 }
 

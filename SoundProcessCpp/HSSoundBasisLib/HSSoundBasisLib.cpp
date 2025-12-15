@@ -4,6 +4,7 @@
 #include "impl_IHSSBWritableMemoryBuffer.hpp"
 #include "impl_IHSSBMemoryBuffer.hpp"
 #include "impl_IHSSBNormalizedPCMBuffer.hpp"
+#include "impl_IHSSBMemoryOwner.hpp"
 
 
 BOOL WINAPI DllMain( HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved ) {
@@ -39,6 +40,8 @@ const IID IID_IHSSBMemoryWriter = __uuidof( IHSSBMemoryWriter );
 
 const IID IID_IHSSBNormalizedPCMBuffer = __uuidof( IHSSBNormalizedPCMBuffer );
 
+const IID IID_IHSSBMemoryOwner = __uuidof( IHSSBMemoryOwner );
+
 
 // カスタム HRESULT 作成マクロ
 #define HSSB_MAKE_CUSTOM_HRESULT(sev , code) MAKE_HRESULT( sev, FACILITY_ITF, 0x2000 +(code))
@@ -63,6 +66,20 @@ const HRESULT HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR = HSSB_MAKE_CUSTOM_HRESULT( SEV
 // 処理には成功したが、管理サイズが調整されたことを表すカスタムHRESULTコード
 const HRESULT HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_SUCCESS, 5 );
 
+
+HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance ) {
+	if ( !ppInstance ) return E_INVALIDARG;
+	*ppInstance = nullptr;
+	return impl_IHSSBMemoryOwner::CreateInstance( ppInstance );
+}
+
+HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance, void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner, EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
+	if ( !ppInstance ) return E_INVALIDARG;
+	*ppInstance = nullptr;
+	// pBuffer が NULL の場合、サイズが 0 であることを期待する（要件に応じて調整）
+	if ( size != 0 && !pBuffer ) return E_INVALIDARG;
+	return impl_IHSSBMemoryOwner::CreateInstance( ppInstance, pBuffer, size, owner, owner_type_info );
+}
 
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateReadOnlyMemoryBuffer( IHSSBReadOnlyMemoryBuffer** ppInstance, void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner, EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
 
@@ -95,9 +112,7 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryBuffer( IHSSBMemoryBuffer** p
 
 
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryStream( IHSSBMemoryStream** ppBuffer ) {
-
 	if ( !ppBuffer ) return E_INVALIDARG;
-
 	*ppBuffer = nullptr;
 	// 未実装: 実装されていないことを明示する
 	return E_NOTIMPL;
