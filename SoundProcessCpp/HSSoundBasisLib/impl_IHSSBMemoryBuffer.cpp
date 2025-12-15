@@ -184,3 +184,11 @@ HRESULT impl_IHSSBMemoryBuffer::Prepare( size_t size, bool enable_reduce_allocat
 
 	return this->ReAllocate( size );
 }
+
+HRESULT impl_IHSSBMemoryBuffer::CheckValidElementNumberRange( size_t offset, size_t length ) const {
+	return E_NOTIMPL;
+}
+
+HRESULT impl_IHSSBMemoryBuffer::CheckValidElementNumberRangeOffset( size_t start_offset, size_t end_offset ) const {
+	return E_NOTIMPL;
+}

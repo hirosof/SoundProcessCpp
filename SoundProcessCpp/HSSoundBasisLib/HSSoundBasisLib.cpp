@@ -60,14 +60,17 @@ const HRESULT HSSB_S_PARTIAL_OUTPUT_SIDE_FACTOR = HSSB_MAKE_CUSTOM_HRESULT( SEVE
 // バグ起因とみられる処理エラー表すカスタムHRESULTエラーコード
 const HRESULT HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_ERROR, 4 );
 
+// 処理には成功したが、管理サイズが調整されたことを表すカスタムHRESULTコード
+const HRESULT HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_SUCCESS, 5 );
 
-HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateReadOnlyMemoryBuffer( IHSSBReadOnlyMemoryBuffer** ppBuffer,const void* pTargetBuffer, size_t TargetBufferSize ) {
-	if ( !ppBuffer ) return E_INVALIDARG;
-	*ppBuffer = nullptr;
-	// pTargetBuffer が NULL の場合、サイズが 0 であることを期待する（要件に応じて調整）
-	if ( TargetBufferSize != 0 && !pTargetBuffer ) return E_INVALIDARG;
 
-	return impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( ppBuffer, pTargetBuffer, TargetBufferSize );
+HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateReadOnlyMemoryBuffer( IHSSBReadOnlyMemoryBuffer** ppInstance, void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner, EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
+
+	if ( !ppInstance ) return E_INVALIDARG;
+	*ppInstance = nullptr;
+	// pBuffer が NULL の場合、サイズが 0 であることを期待する（要件に応じて調整）
+	if ( size != 0 && !pBuffer ) return E_INVALIDARG;
+	return impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( ppInstance, pBuffer, size, owner, owner_type_info );
 }
 
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateWritableMemoryBuffer( IHSSBWritableMemoryBuffer** ppBuffer, void* pTargetBuffer, size_t TargetBufferSize ) {

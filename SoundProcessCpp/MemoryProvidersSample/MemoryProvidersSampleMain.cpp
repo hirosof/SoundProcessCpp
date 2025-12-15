@@ -1,226 +1,177 @@
+/*
+	自作ライブラリ『HSSoundBasisLib』によって提供している、メモリ管理系のサンプルプログラム
+	(※単体テストのプログラムではありません)
+*/
+
+// Windows.h の min/max マクロ定義を無効化
+#define NOMINMAX
+
 #include <cstdio>
 #include <cstdint>
 #include <locale>
-#include <random>
 #include <atlbase.h>
+#include <algorithm> // std::min を使用するために追加
 
+// ※ HSSoundBasisLib.hppをインクルードすることによって、Windows.hもインクルードされます
+// ※ ただし、HSSoundBasisLib.hppが直接Windows.hをインクルードしているわけではなく別のヘッダーによって読み込まれます
 #include "../HSSoundBasisLib/HSSoundBasisLib.hpp"
 
-struct W24 {
-	uint8_t s[3];
-};
-
-
-void Sample_MemoryBuffer( void );
 void Sample_ReadOnlyMemoryBuffer( void );
-void Sample_WritableMemoryBuffer( void );
-void Sample_MemoryStream_InternalBuffer( void );
-void Sample_MemoryStream_ExternalBuffer( void );
+void Sample_ReadOnlyMemoryBuffer_DumpData( IHSSBReadOnlyMemoryBuffer *pBuffer );
 
 int main( void ) {
 
 	setlocale( LC_ALL, "Japanese" );
 
-	CComPtr<IHSSBNormalizedPCMBuffer> pPCMBuf = nullptr;
-	
-	HRESULT hr = HSSBCreateNormalizedPCMBuffer( &pPCMBuf );
-	if ( FAILED( hr ) ) {
-		printf( "HSSBCreateNormalizedPCMBuffer failed : 0x%08X\n", hr );
-		return -1;
-	}
-
-	// サンプリング周波数: 32Hz , 秒数: 1秒 , チャンネル数: 2ch , 切り上げ
-	hr = pPCMBuf->Initialize( 32, 1, 2, EHSSB_RoundMode::Up );
-
-	if ( FAILED( hr ) ) {
-		printf( "IHSSBNormalizedPCMBuffer::Initialize failed : 0x%08X\n", hr );
-		return -1;
-	}
-
-	printf( "Buffer Size : %zu\n", pPCMBuf->GetBytesSize( ) )	;
-
-	CComPtr< IHSSBWritableMemoryBuffer> pLeftChannelBuffer;
-	hr = pPCMBuf->CreateEmptyChannelBuffer( &pLeftChannelBuffer );
-
-	if ( FAILED( hr ) ) {
-		printf( "IHSSBNormalizedPCMBuffer::CreateEmptyChannelBuffer failed : 0x%08X\n", hr );
-		return -1;
-	}
-
-	printf( "Empty Buffer Size : %zu\n", pLeftChannelBuffer->GetSize( ) );
-
-
+	// 読み取り専用メモリバッファのサンプル実行
+	Sample_ReadOnlyMemoryBuffer( );
 
 	return 0;
 }
 
 void Sample_ReadOnlyMemoryBuffer( void ) {
-	int8_t  val[256];
-	for ( int i = 0; i < 256; i++ ) {
-		val[i] = 127 - i;
+
+
+	// IHSSBReadOnlyMemoryBufferはIUnknownを実装しているため、CComPtrを使用できる
+	CComPtr<IHSSBReadOnlyMemoryBuffer> readOnlyBuffer;
+
+	printf( "=== 読み取り専用メモリバッファのサンプル ===\n" );
+
+	// メモリ確保サイズ
+	size_t BufferAllocateSize = 512;
+
+	// メモリを確保
+	// ※ HeapAllocのメモリを移譲する場合、HeapハンドルはGetProcessHeapで取得する必要があります。
+	void* pBuffer = HeapAlloc( GetProcessHeap( ), 0, BufferAllocateSize );
+
+	// 確保に失敗した場合は終了
+	if ( !pBuffer ) {
+		printf( "HeapAlloc 失敗\n" );
+		return;
 	}
-	CComPtr<IHSSBReadOnlyMemoryBuffer> pBuffer;
-	if ( SUCCEEDED( HSSBCreateReadOnlyMemoryBufferType( &pBuffer, val ) ) ) {
-		size_t i = 0;
-		const int8_t* pVal;
-		while ( ( pVal = pBuffer->GetConstBufferPointerType<int8_t>( i ) ) != nullptr ) {
-			printf( "%d\n", *pVal );
-			i++;
-		}
+
+	// pBufferにデータを書き込む
+	// 値は0～255を順番に書き込む
+	uint8_t* pByteBuffer = static_cast<uint8_t*>( pBuffer );
+	for ( size_t i = 0; i < BufferAllocateSize; ++i ) {
+		pByteBuffer[i] = static_cast<uint8_t>( i & 0xFF );
 	}
-}
 
-void Sample_WritableMemoryBuffer( void ) {
-	CComPtr<IHSSBWritableMemoryBuffer> pWritableBuffer;
-	int8_t  val[256];
-	if ( SUCCEEDED( HSSBCreateWritableMemoryBuffer( &pWritableBuffer, val ) ) ) {
-		size_t i = 0;
-		int8_t* pVal;
-		while ( ( pVal = pWritableBuffer->GetBufferPointerType<int8_t>( i ) ) != nullptr ) {
-			*pVal = static_cast<int8_t>( -128 + i );
-			i++;
-		}
-		for ( i = 0; i < 256; i++ ) {
-			printf( "val[%3zu] = %d\n", i, val[i] );
-		}
-	}
-}
-
-
-void Sample_MemoryBuffer( void ) {
-
-#if 0
-	CComPtr< IHSSBMemoryBuffer> pMemoryBuffer;
-
-	HRESULT hr = HSSBCreateMemoryBuffer( &pMemoryBuffer );
-
-	if ( FAILED( hr ) ) return;
-
-	size_t s = 128;
-
-	if ( SUCCEEDED( pMemoryBuffer->PrepareElements<double>( s ) ) ) {
-		printf( "allocated size : %zu\n", pMemoryBuffer->GetAllocatedSize( ) );
-		printf( "allocated size type : %zu\n\n", pMemoryBuffer->GetAllocatedElements<double>( ) );
-		for ( size_t i = 0; i <= s; i++ ) {
-			printf( "%4zu (%04zu): %s\n", i, i * sizeof( double ),
-				( pMemoryBuffer->IsValidOffsetType<double>( i ) ) ? "有効" : "無効" );
-		}
-	}
-#endif
-
-}
-
-void Sample_MemoryStream_InternalBuffer( void ) {
-
-#if 0
-
-	CComPtr<IHSSBMemoryStream> pStream;
-
-	HRESULT hr = HSSBCreateMemoryStream( &pStream );
-
-	if ( FAILED( hr ) ) return;
-
-	hr = pStream->Initialize(8);
-
-	if ( FAILED( hr ) ) return;
-
-	uint8_t v[] = { 0x2f , 0x3a , 0xab , 0x0c };
-
-	printf( "Write Before StreamSize = %zu\n", pStream->GetSize( ) );
-	pStream->SeekTo( 0, EHSSB_AddressOrigin::End );
-	pStream->Write( v, sizeof( v )  , EHSSB_WriteProcessModeForInsufficient::AutoResize);
-	printf( "Write After StreamSize = %zu\n", pStream->GetSize( ) );
-
-	CComPtr<IHSSBReadOnlyMemoryBuffer> pBuffer;
-	if ( SUCCEEDED( pStream.QueryInterface( &pBuffer ) ) ) {
-		const uint8_t* pBufferPointer = pBuffer->GetConstBufferPointerType<uint8_t>( );
-		size_t size = pBuffer->GetAllocatedSize( );
-		for ( size_t i = 0; i < size; i++ ) {
-			printf( "%zu : %3u (0x%02X) \n", i, *( pBufferPointer + i ), *( pBufferPointer + i ) );
-		}
-	}
-#endif 
-}
-
-
-void Sample_MemoryStream_ExternalBuffer( void ) {
-
-#if 0
-	CComPtr<IHSSBMemoryBuffer> pBuffer;
 
 	HRESULT hr;
 
+	// HSSBCreateReadOnlyMemoryBufferに渡す誤ったサイズを用意
+	// ここでは、BufferAllocateSizeの倍を通知することとします。
+	size_t OverSizedNotifySize = BufferAllocateSize * 2;
 
-	hr = HSSBCreateMemoryBuffer( &pBuffer );
-	if ( FAILED( hr ) ) return;
+	// ヒープメモリの所有権を持つ読み取り専用メモリバッファを作成
+	hr = HSSBCreateReadOnlyMemoryBuffer( &readOnlyBuffer,
 
+		// 移譲するバッファ
+		pBuffer,
 
-	hr = pBuffer->AllocateElements<uint32_t>( 4 );
-	if ( FAILED( hr ) ) return;
+		// 意図的に誤ったサイズを通知
+		OverSizedNotifySize,
 
+		// 管理を移譲し、また、該当のメモリはHeapAllocで確保したものであることを通知します
+		EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced
+	);
 
-	std::random_device rd;
-	std::default_random_engine dre( rd( ) );
-
-	size_t idx = 0;
-	printf( "[prepare]\n" );
-	while ( pBuffer->IsValidOffsetType<uint32_t>( idx ) ) {
-		uint32_t* pCurrent= pBuffer->GetBufferOffsetType<uint32_t>( idx );
-		if ( pCurrent ) {
-			*pCurrent = dre( ); 
-
-			printf( "%zu : %u\n",idx,  *pCurrent );
-		}
-		idx++;
+	// 作成に失敗した場合
+	if ( FAILED( hr ) ) {
+		printf( "HSSBCreateReadOnlyMemoryBuffer 失敗. hr=0x%08X\n", hr );
+		// 所有権を持たない場合は自分で解放する必要がある
+		// これは、IHSSBReadOnlyMemoryBufferへの管理移譲が完了していないためです
+		HeapFree( GetProcessHeap( ), 0, pBuffer );
+		return;
 	}
 
+	// 先ほど、サイズ指定を多く通知したためS_OKは返らないはずである。これは、HeapAllocで確保したものを移譲しようとした際、
+	// HSSBCreateReadOnlyMemoryBuffer内部でHeapSizeで実際のサイズを確認し、
+	// 実際のサイズが指定されたサイズよりも小さい場合、 それをもとに実装クラス内で管理するサイズを調整し、
+	// HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTEDを返すためである。
+	if ( hr != S_OK ) {
+		printf( "HSSBCreateReadOnlyMemoryBuffer Result hr = 0x%08X\n", hr );
+		printf( "HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = 0x%08X\n\n", HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED );
 
-	CComPtr<IHSSBMemoryStream> pStream;
-	hr = HSSBCreateMemoryStream( &pStream );
-	if ( FAILED( hr ) ) return;
-
-	hr = pStream->Initialize( pBuffer );
-	if ( FAILED( hr ) ) return;
-
-
-	uint32_t b;
-	size_t count = 0 , pos , rest;
-	printf( "\n[read]\n" );
-
-	CComPtr<IHSSBMemoryBuffer> buf;
-
-	HSSBCreateMemoryBuffer( &buf );
-
-	if ( SUCCEEDED( buf->Allocate( 1 ) ) ) {
-
-
-		while ( pStream->IsReachEndOffset( ) ) {
-
-			pos = pStream->GetCurrentOffsets( );
-			rest = pStream->GetCurrentOffsetsFromReachEnd( );
-
-			if ( pStream->Read( buf ) == 1 ) {
-				printf( "%zu (%zu %zu %zu) : %u\n", count,  pos ,rest , pStream->GetCurrentOffsetsFromReachEnd(), *buf->GetConstBufferPointerType<uint8_t>( ) );
-			}
-
-			count++;
+		if ( hr == HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED ) {
+			printf( "\tこのように、実際のサイズより大きいサイズを指定した場合、\n" );
+			printf( "\tHSSB_S_BUT_MANAGED_SIZE_ADJUSTEDが返ります。 \n" );
+			printf( "\t(HeapAllocで確保したものを移譲した場合のみ)\n\n" );
+		} else {
+			printf( "※ ライブラリ側のバグの可能性があります ※\n" );
 		}
+
+		printf( "具体的に、以下のようにサイズ調整がされます。\n" );
+
+		printf( "\tHSSBCreateReadOnlyMemoryBufferに渡したバッファの実際の確保サイズ：%zu\n", BufferAllocateSize );
+		printf( "\tHSSBCreateReadOnlyMemoryBufferに渡したサイズ：%zu\n", OverSizedNotifySize );
+		printf( "\tHSSBCreateReadOnlyMemoryBufferが認識しているサイズ：%zu\n\n", readOnlyBuffer->GetSize( ) );
+
+	} else {
+		printf( "※ ライブラリ側のバグの可能性があります ※\n" );
 	}
 
-	/*
-	while ( pStream->CanAccessElements<uint32_t>( 1 ) ) {
-		b = 0;
+	printf( "\n" );
 
-		pos = pStream->GetCurrentOffsets( );
+	// IHSSBReadOnlyMemoryBufferは、内部でサイズ情報を保有しており、
+	// 呼び出し先で確認できるため、安全に渡せます。
+	// ここでは、例として、読み取り専用メモリバッファの内容をダンプする関数を呼びます
+	Sample_ReadOnlyMemoryBuffer_DumpData( readOnlyBuffer );
 
-		if ( pStream->ReadElements<uint32_t>( &b, 1 ) == 1 ) {
-			printf( "%zu (%zu) : %u\n",count , pos, b );
-		}
-		count++;
-	}
-	*/
-
-#endif
+	printf( "\n" );
 
 
+	// CComPtrによって、Releaseが自動で呼ばれるため、解放不要
+	// 今回移譲したバッファは、HeapAllocで確保したものであることを通知していたため、
+	// 参照カウンタが0になり、IHSSBReadOnlyMemoryBufferが解放される際に
+	// HeapFreeが呼ばれ、移譲したバッファが自動で解放されます。
 }
+
+void Sample_ReadOnlyMemoryBuffer_DumpData( IHSSBReadOnlyMemoryBuffer* pBuffer ) {
+
+	if ( !pBuffer ) {
+		printf( "pBufferはnullptrです\n" );
+		return;
+	}
+
+	// バッファサイズを取得
+	const size_t BufferSize = pBuffer->GetSize( );
+	printf( "読み取り専用メモリバッファのサイズ: %zu バイト\n", BufferSize );
+	if ( BufferSize == 0 ) {
+		// サイズが0の場合はダンプしない。
+		return;
+	}
+
+	// IsValidElementNumberを利用して、インデックスが有効かを確認できます。
+	if ( pBuffer->IsValidElementNumber( 0 ) ) {
+
+		// 先頭のバッファポインタをconst uint8_t* で取得
+		// GetConstBufferPointerTypeが実装されており、別途型キャストが不要
+		// なお、インデックスが有効であることを先に、チェック済みのためnullptrチェックは無くてよい
+		// 内部実装上、IsValidElementNumberが内部で呼び出されており、有効であれば、
+		// 有効なバッファが返ります。
+		// ただし、IsValidElementNumberがfalseを返すケースの場合、nullptrが返るので、
+		// IsValidElementNumberで事前確認をしない場合はnullptrチェックを推奨します。
+		const uint8_t* pData = pBuffer->GetConstBufferPointerType<uint8_t>( 0 );
+
+
+		// 事前にインデックスの有効性を確認してからバッファポインタを取得したため、nullptrチェックは省略
+
+		// データ内容のダンプを実施
+		const size_t MaxDumpSize = 2048;
+		const size_t DumpBytesSizeByLine = 16;
+
+		const size_t RealDumpSize = std::min( BufferSize, MaxDumpSize );
+		printf( "データ内容 (最大ダンプサイズ：%zuバイト)\n", MaxDumpSize );
+		printf( "\t" );
+		for ( size_t i = 0; i < RealDumpSize; ++i ) {
+			printf( "%02X ", pData[i] );
+			if ( ( ( i + 1 ) % DumpBytesSizeByLine ) == 0 ) {
+				printf( "\n\t" );
+			}
+		}
+	}
+	printf( "\n" );
+}
+

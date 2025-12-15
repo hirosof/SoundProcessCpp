@@ -2,27 +2,16 @@
 
 #include "HSSBCommon.hpp"
 
-
-#define IIDSTR_IHSSBBase  "DE8D1C85-0807-455A-BA0E-2641F02E2DE2"
-HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBBase;
-MIDL_INTERFACE( IIDSTR_IHSSBBase ) IHSSBBase : public IUnknown {
-
-
-	virtual bool InquiryProvided( REFIID TargetIID ) const = 0;
-	virtual bool InquiryProvidedExtraService( REFIID TargetIID ) const = 0;
-
-	virtual HRESULT QueryExtraService( REFIID riid, void** ppvObject ) = 0;
-	template <typename T> HRESULT QueryExtraService( T** ppvObject ) {
-		return this->QueryExtraService( __uuidof( T ), reinterpret_cast<void**>( ppvObject ) );
-	}
+#define IIDSTR_IHSSBMemoryProvider "F9BC45C9-C7CC-456A-BDF7-A918BC5AA076"
+HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryProvider;
+MIDL_INTERFACE( IIDSTR_IHSSBMemoryProvider ) IHSSBMemoryProvider : public IHSSBBase {
 
 };
 
 
-
-#define IIDSTR_IHSSBMemoryProvider "F9BC45C9-C7CC-456A-BDF7-A918BC5AA076"
-HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryProvider;
-MIDL_INTERFACE( IIDSTR_IHSSBMemoryProvider ) IHSSBMemoryProvider : public IHSSBBase {
+#define IIDSTR_IHSSBMemoryOwner "D3DCCE84-A5DD-46FA-812F-8E183080C269"
+HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryOwner;
+MIDL_INTERFACE( IIDSTR_IHSSBMemoryOwner ) IHSSBMemoryOwner : public IHSSBBase {
 
 };
 
@@ -64,21 +53,54 @@ MIDL_INTERFACE( IIDSTR_IHSSBReadOnlyMemoryBuffer ) IHSSBReadOnlyMemoryBuffer : p
 		return reinterpret_cast<const T*>( this->GetConstBufferPointer( sizeof( T ) * offset ) );
 	}
 
+
+	virtual HRESULT CheckValidElementNumberRange( size_t offset, size_t length ) const = 0;
+	
+	template <typename T> HRESULT CheckValidElementNumberRangeType( size_t offsetElements, size_t lengthElements ) const {
+		return this->CheckValidElementNumberRange( sizeof( T ) * offsetElements , sizeof( T ) * lengthElements );
+	}
+	
+	virtual HRESULT CheckValidElementNumberRangeOffset( size_t start_offset, size_t end_offset ) const = 0;
+
+	template <typename T> HRESULT CheckValidElementNumberRangeOffsetType( size_t start_offsetElements, size_t end_offsetElements ) const {
+		return this->CheckValidElementNumberRangeOffset( sizeof( T ) * start_offsetElements, sizeof( T ) * end_offsetElements );
+	}
 };
 
 
+HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateReadOnlyMemoryBuffer( IHSSBReadOnlyMemoryBuffer** ppInstance,
+	void* pBuffer,
+	size_t size,
+	EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
+	EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
+);
 
-HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateReadOnlyMemoryBuffer( IHSSBReadOnlyMemoryBuffer** ppBuffer, const void* pTargetBuffer, size_t TargetBufferSize );
-
-template <typename T> HRESULT HSSBCreateReadOnlyMemoryBufferType( IHSSBReadOnlyMemoryBuffer** ppBuffer, const T* pTargetBuffer, size_t TargetBufferElements ) {
-	return HSSBCreateReadOnlyMemoryBuffer( ppBuffer, static_cast<const void*>( pTargetBuffer ), sizeof( T ) * TargetBufferElements );
+template <typename T> HRESULT HSSBCreateReadOnlyMemoryBufferType( IHSSBReadOnlyMemoryBuffer** ppInstance,
+	T* pBuffer,
+	size_t size,
+	EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
+	EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
+) {
+	return HSSBCreateReadOnlyMemoryBuffer( ppInstance,
+		static_cast<void*>( pBuffer ),
+		sizeof( T ) * size,
+		owner,
+		owner_type_info
+	);
 }
-template <typename T, size_t S> HRESULT  HSSBCreateReadOnlyMemoryBufferType( IHSSBReadOnlyMemoryBuffer** ppBuffer, const T( &targetBuffer )[S] ) {
-	return HSSBCreateReadOnlyMemoryBufferType<T>( ppBuffer, targetBuffer, S );
+
+template <typename T, size_t S> HRESULT HSSBCreateReadOnlyMemoryBufferType( IHSSBReadOnlyMemoryBuffer** ppInstance,
+	T( &buffer )[S],
+	EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
+	EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
+) {
+	return HSSBCreateReadOnlyMemoryBufferType<T>( ppInstance,
+		buffer,
+		S,
+		owner,
+		owner_type_info
+	);
 }
-
-
-
 
 #define IIDSTR_IHSSBWritableMemoryBuffer "621F6CB1-102A-41D2-93AD-8290EFDC3F37"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBWritableMemoryBuffer;
@@ -143,11 +165,14 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryStreamBase ) IHSSBMemoryStreamBase : public IH
 
 #define IIDSTR_IHSSBMemoryReader "021E6D9E-335C-4172-8E5C-746D2B959156"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryReader;
-
-
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryReader ) IHSSBMemoryReader : public IHSSBMemoryStreamBase {
+	/*
+		現在は実装予約用 (将来的な実装のための定義)
+	*/
 
 	/*
+	// 以下は検討している読み取りメソッド群の例
+	
 	virtual char ReadChar( void ) = 0;
 	virtual unsigned char ReadUnsignedChar( void ) = 0;
 	virtual wchar_t ReadWChar( void ) = 0;
@@ -182,18 +207,18 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryReader ) IHSSBMemoryReader : public IHSSBMemor
 #define IIDSTR_IHSSBMemoryWriter "28284326-79D4-483D-9FFF-CA76A39C8949"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryWriter;
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryWriter ) IHSSBMemoryWriter : public IHSSBMemoryStreamBase {
-
+	/*
+		現在は実装予約用 (将来的な実装のための定義)
+	*/
 };
-
-
 
 
 #define IIDSTR_IHSSBMemoryStream "866EC631-8F4C-40A8-9FB2-BF2381DF557B"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryStream;
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryStream ) IHSSBMemoryStream : public IHSSBMemoryStreamBase {
-
-
-
+	/*
+		現在は実装予約用 (将来的な実装のための定義)
+	*/
 };
 
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryStream( IHSSBMemoryStream** ppBuffer );

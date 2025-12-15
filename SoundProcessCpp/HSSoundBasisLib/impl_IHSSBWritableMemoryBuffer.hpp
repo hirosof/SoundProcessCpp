@@ -37,4 +37,8 @@ public:
 	virtual const void* GetConstBufferPointer( size_t offset = 0 )const;
 	virtual void* GetBufferPointer( size_t offset = 0 )const;
 
+
+	virtual HRESULT CheckValidElementNumberRange( size_t offset, size_t length ) const override;
+	virtual HRESULT CheckValidElementNumberRangeOffset( size_t start_offset, size_t end_offset ) const override;
+
 };

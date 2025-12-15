@@ -109,3 +109,11 @@ void* impl_IHSSBWritableMemoryBuffer::GetBufferPointer( size_t offset ) const {
 	}
 	return nullptr;
 }
+
+HRESULT impl_IHSSBWritableMemoryBuffer::CheckValidElementNumberRange( size_t offset, size_t length ) const {
+	return E_NOTIMPL;
+}
+
+HRESULT impl_IHSSBWritableMemoryBuffer::CheckValidElementNumberRangeOffset( size_t start_offset, size_t end_offset ) const {
+	return E_NOTIMPL;
+}

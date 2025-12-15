@@ -35,4 +35,7 @@ public:
 	virtual HRESULT Free( void );
 	virtual HRESULT ReAllocate( size_t new_size );
 	virtual HRESULT Prepare( size_t size, bool enable_reduce_allocate = false );
+
+	virtual HRESULT CheckValidElementNumberRange( size_t offset, size_t length ) const override;
+	virtual HRESULT CheckValidElementNumberRangeOffset( size_t start_offset, size_t end_offset ) const override;
 };
