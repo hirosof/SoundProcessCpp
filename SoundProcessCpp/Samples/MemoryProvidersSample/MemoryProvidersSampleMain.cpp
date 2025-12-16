@@ -15,7 +15,7 @@
 
 // ※ HSSoundBasisLib.hppをインクルードすることによって、Windows.hもインクルードされます
 // ※ ただし、HSSoundBasisLib.hppが直接Windows.hをインクルードしているわけではなく別のヘッダーによって読み込まれます
-#include "../HSSoundBasisLib/HSSoundBasisLib.hpp"
+#include "../../Libraries/HSSoundBasisLib/HSSoundBasisLib.hpp"
 
 void Sample_MemoryOwner( void );
 void Sample_ReadOnlyMemoryBuffer( void );

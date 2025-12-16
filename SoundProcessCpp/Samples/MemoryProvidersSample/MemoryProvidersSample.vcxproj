@@ -154,7 +154,7 @@
     <ClCompile Include="MemoryProvidersSampleMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HSSoundBasisLib\HSSoundBasisLib.vcxproj">
+    <ProjectReference Include="..\..\Libraries\HSSoundBasisLib\HSSoundBasisLib.vcxproj">
       <Project>{6b802df8-8307-4e3b-8e19-3f0695149885}</Project>
     </ProjectReference>
   </ItemGroup>
