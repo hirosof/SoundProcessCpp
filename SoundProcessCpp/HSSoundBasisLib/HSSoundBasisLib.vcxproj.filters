@@ -15,59 +15,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <None Include="for_Copilot.md" />
+    <None Include="Copilot_History_Memo.md" />
+    <None Include="Readme.md" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="HSSoundBasisLib.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="impl_IHSSBReadOnlyMemoryBuffer.hpp">
+    <ClInclude Include="headers\HSSBMemoryOperations.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="impl_IHSSBWritableMemoryBuffer.hpp">
+    <ClInclude Include="headers\HSSBCommon.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="impl_IHSSBMemoryBuffer.hpp">
+    <ClInclude Include="headers\HSSBMathFunctions.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="HSSBCommon.hpp">
+    <ClInclude Include="implementations\impl_IHSSBMemoryBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="HSSBMemoryOperations.hpp">
+    <ClInclude Include="implementations\impl_IHSSBMemoryOwner.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="impl_IHSSBNormalizedPCMBuffer.hpp">
+    <ClInclude Include="implementations\impl_IHSSBNormalizedPCMBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="HSSBMathFunctions.hpp">
+    <ClInclude Include="implementations\impl_IHSSBReadOnlyMemoryBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="impl_IHSSBMemoryOwner.hpp">
+    <ClInclude Include="implementations\impl_IHSSBWritableMemoryBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HSSoundBasisLib.cpp">
+    <ClCompile Include="functions\HSSBMathFunctions.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="impl_IHSSBReadOnlyMemoryBuffer.cpp">
+    <ClCompile Include="HSSBDllMain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="impl_IHSSBWritableMemoryBuffer.cpp">
+    <ClCompile Include="implementations\impl_IHSSBMemoryBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="impl_IHSSBMemoryBuffer.cpp">
+    <ClCompile Include="implementations\impl_IHSSBMemoryOwner.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="impl_IHSSBNormalizedPCMBuffer.cpp">
+    <ClCompile Include="implementations\impl_IHSSBNormalizedPCMBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="HSSBMathFunctions.cpp">
+    <ClCompile Include="implementations\impl_IHSSBReadOnlyMemoryBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="impl_IHSSBMemoryOwner.cpp">
+    <ClCompile Include="implementations\impl_IHSSBWritableMemoryBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="for_Copilot.md" />
-    <None Include="Copilot_History_Memo.md" />
   </ItemGroup>
 </Project>

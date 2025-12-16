@@ -1,11 +1,10 @@
 #include <Windows.h>
 #include "HSSoundBasisLib.hpp"
-#include "impl_IHSSBReadOnlyMemoryBuffer.hpp"
-#include "impl_IHSSBWritableMemoryBuffer.hpp"
-#include "impl_IHSSBMemoryBuffer.hpp"
-#include "impl_IHSSBNormalizedPCMBuffer.hpp"
-#include "impl_IHSSBMemoryOwner.hpp"
-
+#include "implementations/impl_IHSSBReadOnlyMemoryBuffer.hpp"
+#include "implementations/impl_IHSSBWritableMemoryBuffer.hpp"
+#include "implementations/impl_IHSSBMemoryBuffer.hpp"
+#include "implementations/impl_IHSSBNormalizedPCMBuffer.hpp"
+#include "implementations/impl_IHSSBMemoryOwner.hpp"
 
 BOOL WINAPI DllMain( HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved ) {
 	switch ( dwReason ) {

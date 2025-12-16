@@ -3,7 +3,7 @@
 //		Windows.h
 // 以下はこのファイル内部でインクルードしている
 //		HSSBCommon.hpp
-#include "HSSBMathFunctions.hpp" 
+#include "../headers/HSSBMathFunctions.hpp" 
 
 // 当初は、 std::numeric_limitsの使用を検討したが、
 // Windows.h 内でminとmaxがマクロ定義されているため、

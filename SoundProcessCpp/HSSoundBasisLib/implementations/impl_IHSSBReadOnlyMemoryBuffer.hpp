@@ -1,7 +1,7 @@
 #pragma once
 
 #define HSSOUNDBASISLIB_EXPORT_DLL_INTERNAL
-#include "HSSoundBasisLib.hpp"
+#include "../HSSoundBasisLib.hpp"
 
 class impl_IHSSBReadOnlyMemoryBuffer : public IHSSBReadOnlyMemoryBuffer {
 

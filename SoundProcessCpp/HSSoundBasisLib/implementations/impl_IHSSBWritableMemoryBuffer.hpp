@@ -1,7 +1,7 @@
 #pragma once
 
 #define HSSOUNDBASISLIB_EXPORT_DLL_INTERNAL
-#include "HSSoundBasisLib.hpp"
+#include "../HSSoundBasisLib.hpp"
 
 /// impl_IHSSBWritableMemoryBuffer
 /// 所有権ポリシー:

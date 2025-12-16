@@ -155,26 +155,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="HSSBCommon.hpp" />
-    <ClInclude Include="HSSBMathFunctions.hpp" />
-    <ClInclude Include="HSSBMemoryOperations.hpp" />
-    <ClInclude Include="HSSoundBasisLib.hpp" />
-    <ClInclude Include="impl_IHSSBMemoryBuffer.hpp" />
-    <ClInclude Include="impl_IHSSBMemoryOwner.hpp" />
-    <ClInclude Include="impl_IHSSBNormalizedPCMBuffer.hpp" />
-    <ClInclude Include="impl_IHSSBReadOnlyMemoryBuffer.hpp" />
-    <ClInclude Include="impl_IHSSBWritableMemoryBuffer.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="HSSBMathFunctions.cpp" />
-    <ClCompile Include="HSSoundBasisLib.cpp" />
-    <ClCompile Include="impl_IHSSBMemoryBuffer.cpp" />
-    <ClCompile Include="impl_IHSSBMemoryOwner.cpp" />
-    <ClCompile Include="impl_IHSSBNormalizedPCMBuffer.cpp" />
-    <ClCompile Include="impl_IHSSBReadOnlyMemoryBuffer.cpp" />
-    <ClCompile Include="impl_IHSSBWritableMemoryBuffer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Copilot_History_Memo.md">
       <SubType>
       </SubType>
@@ -183,6 +163,30 @@
       <SubType>
       </SubType>
     </None>
+    <None Include="Readme.md">
+      <SubType>
+      </SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="headers\HSSBCommon.hpp" />
+    <ClInclude Include="headers\HSSBMathFunctions.hpp" />
+    <ClInclude Include="headers\HSSBMemoryOperations.hpp" />
+    <ClInclude Include="HSSoundBasisLib.hpp" />
+    <ClInclude Include="implementations\impl_IHSSBMemoryBuffer.hpp" />
+    <ClInclude Include="implementations\impl_IHSSBMemoryOwner.hpp" />
+    <ClInclude Include="implementations\impl_IHSSBNormalizedPCMBuffer.hpp" />
+    <ClInclude Include="implementations\impl_IHSSBReadOnlyMemoryBuffer.hpp" />
+    <ClInclude Include="implementations\impl_IHSSBWritableMemoryBuffer.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="functions\HSSBMathFunctions.cpp" />
+    <ClCompile Include="HSSBDllMain.cpp" />
+    <ClCompile Include="implementations\impl_IHSSBMemoryBuffer.cpp" />
+    <ClCompile Include="implementations\impl_IHSSBMemoryOwner.cpp" />
+    <ClCompile Include="implementations\impl_IHSSBNormalizedPCMBuffer.cpp" />
+    <ClCompile Include="implementations\impl_IHSSBReadOnlyMemoryBuffer.cpp" />
+    <ClCompile Include="implementations\impl_IHSSBWritableMemoryBuffer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
