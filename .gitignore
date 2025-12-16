@@ -419,5 +419,6 @@ FodyWeavers.xsd
 
 
 # Natural Docs output
-NDConfig/Documentation/*
-NDConfig/Working Data/*
+*/NDConfig/Documentation/*
+!/NDConfig/Documentation/for_folder_keep
+*/NDConfig/Working Data/*
