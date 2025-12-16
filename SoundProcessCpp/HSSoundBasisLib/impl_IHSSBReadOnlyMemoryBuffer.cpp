@@ -11,25 +11,25 @@ impl_IHSSBReadOnlyMemoryBuffer::impl_IHSSBReadOnlyMemoryBuffer(void* pBuffer, si
 
 impl_IHSSBReadOnlyMemoryBuffer::~impl_IHSSBReadOnlyMemoryBuffer( ) {
 
-	// ���L��������ꍇ�̓����������
+	// 所有権がある場合はメモリを解放
 	switch ( m_OwnershipType ) {
 	case EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated:
-		// new[] �Ŋm�ۂ��ꂽ�������̏ꍇ�A��p�̉���֐����Ăяo��
+		// new[] で確保されたメモリの場合、専用の解放関数を呼び出す
 		this->FreeForNewAllocatedBuffer( );
 		break;
 	case EHSSBMemoryOwnershipType::WithFreeOwnership_Malloced:
-		// malloc �Ŋm�ۂ��ꂽ�������̏ꍇ�A free ���Ăяo��
+		// malloc で確保されたメモリの場合、 free を呼び出す
 		free( m_pBuffer );
 		break;
 	case EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced:
-		// HeapAlloc �Ŋm�ۂ��ꂽ�������̏ꍇ�A HeapFree ���Ăяo��
+		// HeapAlloc で確保されたメモリの場合、 HeapFree を呼び出す
 		HeapFree( GetProcessHeap( ), 0, m_pBuffer );
 		break;
 	case EHSSBMemoryOwnershipType::NoOwnership:
-		// ���L���Ȃ��̏ꍇ�͉������Ȃ�
+		// 所有権なしの場合は何もしない
 		break;
 	default:
-		// �s���ȏ��L���^�C�v�̏ꍇ���������Ȃ� (���L���Ȃ��Ɠ��l�Ɉ���)
+		// 不明な所有権タイプの場合も何もしない (所有権なしと同様に扱う)
 		break;
 	}
 
@@ -37,14 +37,14 @@ impl_IHSSBReadOnlyMemoryBuffer::~impl_IHSSBReadOnlyMemoryBuffer( ) {
 
 void impl_IHSSBReadOnlyMemoryBuffer::FreeForNewAllocatedBuffer( void ) {
 	
-	// �f�X�g���N�^����Ăяo����邱�Ƃ�z�肵�Ă��邽�߁A�`�F�b�N�͍ŏ����ɗ��߂�
+	// デストラクタから呼び出されることを想定しているため、チェックは最小限に留める
 
 	if ( m_OwnershipType != EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated ) {
-		// ���L���^�C�v�� new[] �Ŋm�ۂ��ꂽ�������ł͂Ȃ��ꍇ�͉������Ȃ�
+		// 所有権タイプが new[] で確保されたメモリではない場合は何もしない
 		return;
 	}
 
-	// �^���Ɋ�Â��ēK�؂Ȍ^�ŉ�����s��
+	// 型情報に基づいて適切な型で解放を行う
 	switch ( m_OwnershipTypeInfo ) {
 		case EHSSBMemoryNewAllocatedTypeInfo::char_array:
 			this->FreeForNewAllocatedBufferInternal<char>( );
@@ -83,109 +83,109 @@ void impl_IHSSBReadOnlyMemoryBuffer::FreeForNewAllocatedBuffer( void ) {
 			this->FreeForNewAllocatedBufferInternal<uint64_t>( );
 			break;
 		default:
-			// �s���Ȍ^���̏ꍇ�͉������Ȃ�
+			// 不明な型情報の場合は何もしない
 			break;
 	}
 
 }
 
 HRESULT impl_IHSSBReadOnlyMemoryBuffer::CreateInstance(IHSSBReadOnlyMemoryBuffer** ppInstance, void* pBuffer, size_t size ) {
-	//�������CreateInstance���Ăяo������
-	// ���L���Ȃ��ō쐬 ( ���L������ō쐬����ꍇ�́A�������CreateInstance�𒼐ڌĂяo������)
-	// �p�����[�^�`�F�b�N�͂�����ōs����
+	//もう一つのCreateInstanceを呼び出すだけ
+	// 所有権なしで作成 ( 所有権ありで作成する場合は、そちらのCreateInstanceを直接呼び出すこと)
+	// パラメータチェックはそちらで行われる
 	return impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( ppInstance, pBuffer, size, EHSSBMemoryOwnershipType::NoOwnership );	
 }
 
 HRESULT impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( IHSSBReadOnlyMemoryBuffer** ppInstance, void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner, EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
 
-	// �p�����[�^�`�F�b�N
+	// パラメータチェック
 	if ( !ppInstance ) return E_POINTER;
 	if ( !pBuffer ) return E_POINTER;
 
-	// owner �̗L�������`�F�b�N
+	// owner の有効性をチェック
 	switch ( owner ) {
 		case EHSSBMemoryOwnershipType::NoOwnership:
 		case EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated:
 		case EHSSBMemoryOwnershipType::WithFreeOwnership_Malloced:
 		case EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced:
-			// �L���Ȓl
+			// 有効な値
 			break;
 		default:
-			// �����Ȓl
+			// 無効な値
 			return E_INVALIDARG;
 	}
 
-	// �������ɂ�������҂����HRESULT��ݒ�
+	// 成功時における期待されるHRESULTを設定
 	HRESULT Expect_hr_for_Success = S_OK;
 
-	// ���L���^�C�v�ɉ������T�C�Y�`�F�b�N�ƒ���
+	// 所有権タイプに応じたサイズチェックと調整
 	if ( owner == EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced ) {
 
-		// HeapAlloc �Ŋm�ۂ��ꂽ�������̏ꍇ�A���ۂ̃T�C�Y�̎擾�����s����
+		// HeapAlloc で確保されたメモリの場合、実際のサイズの取得を試行する
 		SIZE_T heap_size = HeapSize( GetProcessHeap( ), 0, pBuffer );
 
 		if ( ( size == 0 ) && ( heap_size == (SIZE_T) ( -1 ) ) ) {
-			// �T�C�Y�̎擾�Ɏ��s�����ꍇ�̓G���[ (�w��T�C�Y�� 0 �̏ꍇ)
+			// サイズの取得に失敗した場合はエラー (指定サイズが 0 の場合)
 			return E_INVALIDARG;
 		}
 
 		if ( heap_size == 0 ) {
-			// ���ۂ̃T�C�Y�� 0 �̏ꍇ�̓G���[
+			// 実際のサイズが 0 の場合はエラー
 			return E_INVALIDARG;
 		}
 
-		// ���ۂ̃T�C�Y�̎擾�ɐ��������ꍇ�A�T�C�Y�̃`�F�b�N���\�Ȃ̂ŁA
-		// �擾�����T�C�Y���g���ăT�C�Y�����̕K�v�����邩�m�F����
+		// 実際のサイズの取得に成功した場合、サイズのチェックが可能なので、
+		// 取得したサイズを使ってサイズ調整の必要があるか確認する
 		if ( heap_size != (SIZE_T) ( -1 ) ) {
 
-			// �T�C�Y�����̕K�v�����邩�m�F
-			// size �� 0 �܂��� ���ۂ̃T�C�Y���傫���ꍇ�A�������s��
-			// size �� ���ۂ̃T�C�Y�ȉ��̏ꍇ�͒����s�v (�Ӑ}�����T�C�Y�Ƃ��Ĉ���)
+			// サイズ調整の必要があるか確認
+			// size が 0 または 実際のサイズより大きい場合、調整を行う
+			// size が 実際のサイズ以下の場合は調整不要 (意図したサイズとして扱う)
 			if ( ( size == 0 ) || ( size > heap_size ) ) {
 
-				// ���ۂ̃T�C�Y�̎擾�ɐ����������߁A�T�C�Y��ݒ肵�đ��s����
+				// 実際のサイズの取得に成功したため、サイズを設定して続行する
 				size = static_cast<size_t>( heap_size );
 
-				// �T�C�Y�����������������߁A���҂���鐬���R�[�h��ύX����
+				// サイズ調整が発生したため、期待される成功コードを変更する
 				Expect_hr_for_Success = HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED;
 			}
 		}
 
 	} else {
-		// HeapAlloc �ȊO�̏ꍇ�A�T�C�Y�� 0 �͖���
+		// HeapAlloc 以外の場合、サイズが 0 は無効
 		if ( size == 0 ) {
 			return E_INVALIDARG;
 		}
 	}
 
-	// �o�̓|�C���^�� nullptr �ɏ�����
+	// 出力ポインタを nullptr に初期化
 	*ppInstance = nullptr;
 
 	if ( owner == EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated ) {
-		// ���L���^�C�v�� new[] �Ŋm�ۂ��ꂽ�������̏ꍇ�A�^��񂪎w�肳��Ă��邱�Ƃ��m�F
+		// 所有権タイプが new[] で確保されたメモリの場合、型情報が指定されていることを確認
 		if ( owner_type_info == EHSSBMemoryNewAllocatedTypeInfo::None ) {
-			// �^��񂪎w�肳��Ă��Ȃ��ꍇ�̓G���[
+			// 型情報が指定されていない場合はエラー
 			return E_INVALIDARG;
 		}
 	} else {
-		// ���L���^�C�v�� new[] �ȊO�̏ꍇ�A�^���� None �ɐݒ肷��
+		// 所有権タイプが new[] 以外の場合、型情報は None に設定する
 		owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None;
 	}
 
-	// ���O�� new�inothrow�j���g�p���ăG���[�n���h�����O
+	// 非例外版 new（nothrow）を使用してエラーハンドリング
 	impl_IHSSBReadOnlyMemoryBuffer* inst = new ( std::nothrow ) impl_IHSSBReadOnlyMemoryBuffer( pBuffer, size );
 	if ( !inst ) {
-		// �C���X�^���X�쐬���s (�������m�ێ��s)
+		// インスタンス作成失敗 (メモリ確保失敗)
 		return E_OUTOFMEMORY;
 	}
 
-	// ����������o�̓|�C���^�ɐݒ�
+	// 成功したら出力ポインタに設定
 	*ppInstance = inst;
 
-	// ���L���^�C�v��ݒ�
+	// 所有権タイプを設定
 	inst->m_OwnershipType = owner;
 
-	// ���L���^�C�v����ݒ�
+	// 所有権タイプ情報を設定
 	inst->m_OwnershipTypeInfo = owner_type_info;
 
 	return Expect_hr_for_Success;
@@ -193,7 +193,7 @@ HRESULT impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( IHSSBReadOnlyMemoryBuffe
 
 bool impl_IHSSBReadOnlyMemoryBuffer::InquiryProvided( REFIID TargetIID ) const {
 
-	// �񋟂��Ă���C���^�[�t�F�C�X�� IID �ꗗ
+	// 提供しているインターフェイスの IID 一覧
 	IID provided_iids[] = { 
 		IID_IHSSBReadOnlyMemoryBuffer,
 		IID_IHSSBMemoryBufferBase,
@@ -202,7 +202,7 @@ bool impl_IHSSBReadOnlyMemoryBuffer::InquiryProvided( REFIID TargetIID ) const {
 		IID_IUnknown	
 	};
 
-	// TargetIID ���񋟂��Ă��� IID �ꗗ�Ɋ܂܂�Ă��邩�m�F
+	// TargetIID が提供している IID 一覧に含まれているか確認
 	for ( const IID& current : provided_iids ) {
 		if ( IsEqualIID(current, TargetIID) ) {
 			return true;
@@ -216,10 +216,10 @@ HRESULT __stdcall impl_IHSSBReadOnlyMemoryBuffer::QueryInterface( REFIID riid, _
 
 	*ppvObject = nullptr;
 
-	// InquiryProvided ���g���ăC���^�[�t�F�C�X���񋟂���Ă��邩�m�F
+	// InquiryProvided を使ってインターフェイスが提供されているか確認
 	if ( this->InquiryProvided( riid ) ) {
-		// �񋟂���Ă���ꍇ�́AIUnknown �o�R�Ń|�C���^���擾���AAddRef ����
-		// ���̃L���X�g�́A���d�p���K�w�̊�_�ƂȂ� IUnknown ���������߂Ɉ��S�ł�
+		// 提供されている場合は、IUnknown 経由でポインタを取得し、AddRef する
+		// このキャストは、多重継承階層の基点となる IUnknown を示すために安全です
 		*ppvObject = static_cast<IUnknown*>(static_cast<IHSSBReadOnlyMemoryBuffer*>(this));
 		this->AddRef();
 		return S_OK;
@@ -242,28 +242,28 @@ ULONG __stdcall impl_IHSSBReadOnlyMemoryBuffer::Release( void ) {
 }
 
 bool impl_IHSSBReadOnlyMemoryBuffer::InquiryProvidedExtraService( REFIID TargetIID ) const {
-	// �ǉ��T�[�r�X�͒񋟂��Ă��Ȃ�
+	// 追加サービスは提供していない
 	return false;
 }
 
 HRESULT impl_IHSSBReadOnlyMemoryBuffer::QueryExtraService( REFIID riid, void** ppvObject ) {
-	// �ǉ��T�[�r�X�͒񋟂��Ă��Ȃ�
+	// 追加サービスは提供していない
 	if ( ppvObject ) *ppvObject = nullptr;
 	return E_NOTIMPL;
 }
 
 size_t impl_IHSSBReadOnlyMemoryBuffer::GetSize( void ) const {
-	// �o�b�t�@�[�T�C�Y��Ԃ�
+	// バッファーサイズを返す
 	return this->m_BufferSize;
 }
 
 bool impl_IHSSBReadOnlyMemoryBuffer::IsValidElementNumber( size_t offset ) const {
-	// �I�t�Z�b�g���o�b�t�@�[�T�C�Y�����ł���ΗL��
+	// オフセットがバッファーサイズ未満であれば有効
 	return ( offset < this->m_BufferSize);
 }
 
 const void* impl_IHSSBReadOnlyMemoryBuffer::GetConstBufferPointer( size_t offset ) const {
-	// �I�t�Z�b�g���L���Ȃ�|�C���^��Ԃ�
+	// オフセットが有効ならポインタを返す
 	if ( this->IsValidElementNumber( offset ) ) {
 		return this->m_pBuffer + offset;
 	}
@@ -272,16 +272,16 @@ const void* impl_IHSSBReadOnlyMemoryBuffer::GetConstBufferPointer( size_t offset
 
 HRESULT impl_IHSSBReadOnlyMemoryBuffer::CheckValidElementNumberRange( size_t offset, size_t length ) const {
 	if ( length == 0 ) {
-		// ������0�̏ꍇ�͖���
+		// 長さが0の場合は無効
 		return E_INVALIDARG;
 	}
 
 	if ( length > SIZE_MAX - offset ) {
-		// �I�t�Z�b�g�ƒ����̘a���T�C�Y����𒴂���ꍇ�͖���
+		// オフセットと長さの和がサイズ上限を超える場合は無効
 		return E_INVALIDARG;
 	}
 
-	// �͈͂̏I�[�I�t�Z�b�g���v�Z���āA�͈̓`�F�b�N�p�֐����Ăяo��
+	// 範囲の終端オフセットを計算して、範囲チェック用関数を呼び出す
 	return this->CheckValidElementNumberRangeOffset(offset , offset + length -1);
 }
 
@@ -289,15 +289,15 @@ HRESULT impl_IHSSBReadOnlyMemoryBuffer::CheckValidElementNumberRangeOffset( size
 
 
 	if ( start_offset > end_offset ) {
-		// �J�n�I�t�Z�b�g���I�[�I�t�Z�b�g���傫���ꍇ�͖���
+		// 開始オフセットが終端オフセットより大きい場合は無効
 		return E_INVALIDARG;
 	}
 
 	if(this->IsValidElementNumber( start_offset ) && this->IsValidElementNumber( end_offset ) ) {
-		// ���[�̃I�t�Z�b�g���L���Ȃ琬��
+		// 両端のオフセットが有効なら成功
 		return S_OK;
 	}
 
-	// �����ꂩ�̃I�t�Z�b�g�������Ȃ�G���[
+	// いずれかのオフセットが無効ならエラー
 	return E_INVALIDARG;
 }

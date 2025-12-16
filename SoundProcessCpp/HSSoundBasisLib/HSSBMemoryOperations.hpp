@@ -13,37 +13,37 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryProvider ) IHSSBMemoryProvider : public IHSSBB
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryOwner;
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryOwner ) IHSSBMemoryOwner : public IHSSBMemoryProvider {
 
-	// ƒƒ‚ƒŠƒoƒbƒtƒ@[‚ğƒAƒ^ƒbƒ`
+	// ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’ã‚¢ã‚¿ãƒƒãƒ
 	virtual HRESULT Attach( void* pBuffer, size_t size,
 		EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
 		EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
 	) = 0;
 
-	// ƒƒ‚ƒŠƒoƒbƒtƒ@[‚ğƒfƒ^ƒbƒ`
+	// ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’ãƒ‡ã‚¿ãƒƒãƒ
 	virtual HRESULT Detach( void** ppOutBuffer,
 		size_t* pOutSize = nullptr,
 		EHSSBMemoryOwnershipType* pOutOwner = nullptr,
 		EHSSBMemoryNewAllocatedTypeInfo* pOutOwnerTypeInfo = nullptr
 	) = 0;
 
-	// Š—L‚µ‚Ä‚¢‚éƒƒ‚ƒŠ‚ğ‰ğ•ú
+	// æ‰€æœ‰ã—ã¦ã„ã‚‹ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾
 	virtual HRESULT Free( void ) = 0;
 
-	// ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^‚ÆƒTƒCƒY‚ğæ“¾
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿ã¨ã‚µã‚¤ã‚ºã‚’å–å¾—
 	virtual void* GetBufferPointer( void ) const = 0;
 
-	// ƒoƒbƒtƒ@[ƒTƒCƒY‚ğæ“¾
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚µã‚¤ã‚ºã‚’å–å¾—
 	virtual size_t GetSize( void ) const = 0;
 
-	// Š—LŒ ƒ^ƒCƒv‚ğæ“¾
+	// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ã‚’å–å¾—
 	virtual EHSSBMemoryOwnershipType GetOwnershipType( void ) const = 0;
 
-	// Š—LŒ ƒ^ƒCƒvî•ñ‚ğæ“¾
+	// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—æƒ…å ±ã‚’å–å¾—
 	virtual EHSSBMemoryNewAllocatedTypeInfo GetOwnershipTypeInfo( void ) const = 0;
 
 };
 
-// ƒƒ‚ƒŠƒI[ƒi[ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
+// ãƒ¡ãƒ¢ãƒªã‚ªãƒ¼ãƒŠãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance );
 
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance,
@@ -213,11 +213,11 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryStreamBase ) IHSSBMemoryStreamBase : public IH
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryReader;
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryReader ) IHSSBMemoryReader : public IHSSBMemoryStreamBase {
 	/*
-		Œ»İ‚ÍÀ‘•—\–ñ—p («—ˆ“I‚ÈÀ‘•‚Ì‚½‚ß‚Ì’è‹`)
+		ç¾åœ¨ã¯å®Ÿè£…äºˆç´„ç”¨ (å°†æ¥çš„ãªå®Ÿè£…ã®ãŸã‚ã®å®šç¾©)
 	*/
 
 	/*
-	// ˆÈ‰º‚ÍŒŸ“¢‚µ‚Ä‚¢‚é“Ç‚İæ‚èƒƒ\ƒbƒhŒQ‚Ì—á
+	// ä»¥ä¸‹ã¯æ¤œè¨ã—ã¦ã„ã‚‹èª­ã¿å–ã‚Šãƒ¡ã‚½ãƒƒãƒ‰ç¾¤ã®ä¾‹
 	
 	virtual char ReadChar( void ) = 0;
 	virtual unsigned char ReadUnsignedChar( void ) = 0;
@@ -254,7 +254,7 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryReader ) IHSSBMemoryReader : public IHSSBMemor
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryWriter;
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryWriter ) IHSSBMemoryWriter : public IHSSBMemoryStreamBase {
 	/*
-		Œ»İ‚ÍÀ‘•—\–ñ—p («—ˆ“I‚ÈÀ‘•‚Ì‚½‚ß‚Ì’è‹`)
+		ç¾åœ¨ã¯å®Ÿè£…äºˆç´„ç”¨ (å°†æ¥çš„ãªå®Ÿè£…ã®ãŸã‚ã®å®šç¾©)
 	*/
 };
 
@@ -263,7 +263,7 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryWriter ) IHSSBMemoryWriter : public IHSSBMemor
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryStream;
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryStream ) IHSSBMemoryStream : public IHSSBMemoryStreamBase {
 	/*
-		Œ»İ‚ÍÀ‘•—\–ñ—p («—ˆ“I‚ÈÀ‘•‚Ì‚½‚ß‚Ì’è‹`)
+		ç¾åœ¨ã¯å®Ÿè£…äºˆç´„ç”¨ (å°†æ¥çš„ãªå®Ÿè£…ã®ãŸã‚ã®å®šç¾©)
 	*/
 };
 
@@ -296,7 +296,7 @@ MIDL_INTERFACE( IIDSTR_IHSSBNormalizedPCMBuffer ) IHSSBNormalizedPCMBuffer : pub
 	virtual HRESULT CreateChannelBuffer( IHSSBWritableMemoryBuffer** ppBuffer , uint8_t channel_index ) const = 0;
 
 	
-	// ƒGƒNƒXƒ|[ƒg/ƒCƒ“ƒ|[ƒg‚Ìİ’è\‘¢‘Ì
+	// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆ/ã‚¤ãƒ³ãƒãƒ¼ãƒˆæ™‚ã®è¨­å®šæ§‹é€ ä½“
 	struct ExportImportSettings {
 		size_t sample_length;
 		size_t from_side_sample_start_index;

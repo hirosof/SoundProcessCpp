@@ -48,7 +48,7 @@ HRESULT __stdcall impl_IHSSBWritableMemoryBuffer::QueryInterface( REFIID riid, _
 	if ( !ppvObject ) return E_POINTER;
 	*ppvObject = nullptr;
 
-	// •W€ COM ƒpƒ^[ƒ“: —v‹‚³‚ê‚½ IID ‚²‚Æ‚É“KØ‚ÈƒCƒ“ƒ^[ƒtƒF[ƒXƒ|ƒCƒ“ƒ^‚ğ•Ô‚·
+	// æ¨™æº– COM ãƒ‘ã‚¿ãƒ¼ãƒ³: è¦æ±‚ã•ã‚ŒãŸ IID ã”ã¨ã«é©åˆ‡ãªã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
 	if ( IsEqualIID( riid, IID_IHSSBWritableMemoryBuffer ) ) {
 		*ppvObject = static_cast<IHSSBWritableMemoryBuffer*>( this );
 	} else if ( IsEqualIID( riid, IID_IHSSBReadOnlyMemoryBuffer ) ) {

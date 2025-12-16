@@ -7,32 +7,32 @@ class impl_IHSSBReadOnlyMemoryBuffer : public IHSSBReadOnlyMemoryBuffer {
 
 private:
 
-	// QÆƒJƒEƒ“ƒg
+	// å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆ
 	volatile LONG m_ref;
 
-	// ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^ (ƒoƒCƒg’PˆÊ‚Åˆµ‚¤‚½‚ß uint8_t* ‚Æ‚·‚é)
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿ (ãƒã‚¤ãƒˆå˜ä½ã§æ‰±ã†ãŸã‚ uint8_t* ã¨ã™ã‚‹)
 	uint8_t* m_pBuffer;
 
-	// ƒƒ‚ƒŠŠ—LŒ ƒ^ƒCƒv
+	// ãƒ¡ãƒ¢ãƒªæ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—
 	EHSSBMemoryOwnershipType m_OwnershipType;
 
-	// ƒƒ‚ƒŠV‹KŠm•Ûƒ^ƒCƒvî•ñ (new[]‚ÅŠm•Û‚³‚ê‚½”z—ñ—p)
+	// ãƒ¡ãƒ¢ãƒªæ–°è¦ç¢ºä¿ã‚¿ã‚¤ãƒ—æƒ…å ± (new[]ã§ç¢ºä¿ã•ã‚ŒãŸé…åˆ—ç”¨)
 	EHSSBMemoryNewAllocatedTypeInfo m_OwnershipTypeInfo;
 
-	// ƒoƒbƒtƒ@[ƒTƒCƒYiƒoƒCƒg’PˆÊj
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚µã‚¤ã‚ºï¼ˆãƒã‚¤ãƒˆå˜ä½ï¼‰
 	size_t m_BufferSize;
 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Í private ‚É‚µ‚ÄACreateInstance Œo—R‚Å‚µ‚©ƒCƒ“ƒXƒ^ƒ“ƒX¶¬‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ private ã«ã—ã¦ã€CreateInstance çµŒç”±ã§ã—ã‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆã§ããªã„ã‚ˆã†ã«ã™ã‚‹
 	impl_IHSSBReadOnlyMemoryBuffer( void* pBuffer, size_t size );
 
-	// ƒfƒXƒgƒ‰ƒNƒ^‚à private ‚É‚µ‚ÄARelease Œo—R‚Å‚µ‚©íœ‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
+	// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚‚ private ã«ã—ã¦ã€Release çµŒç”±ã§ã—ã‹å‰Šé™¤ã§ããªã„ã‚ˆã†ã«ã™ã‚‹
 	~impl_IHSSBReadOnlyMemoryBuffer( );
 
-	// new[] ‚ÅŠm•Û‚³‚ê‚½ƒoƒbƒtƒ@[‚ğ‰ğ•ú‚·‚é‚½‚ß‚Ìê—pŠÖ”
+	// new[] ã§ç¢ºä¿ã•ã‚ŒãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’è§£æ”¾ã™ã‚‹ãŸã‚ã®å°‚ç”¨é–¢æ•°
 	void FreeForNewAllocatedBuffer(void );
 
-	// new[] ‚ÅŠm•Û‚³‚ê‚½ƒoƒbƒtƒ@[‚ğ‰ğ•ú‚·‚é‚½‚ß‚ÌŒ^•Êƒeƒ“ƒvƒŒ[ƒgŠÖ”
-	// (FreeForNewAllocatedBuffer‚©‚çŒÄ‚Ño‚³‚ê‚é)
+	// new[] ã§ç¢ºä¿ã•ã‚ŒãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’è§£æ”¾ã™ã‚‹ãŸã‚ã®å‹åˆ¥ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé–¢æ•°
+	// (FreeForNewAllocatedBufferã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹)
 	template <typename T> void  FreeForNewAllocatedBufferInternal( void ) {
 		T* pArray = reinterpret_cast<T*>( m_pBuffer );
 		delete[] pArray;
@@ -40,7 +40,7 @@ private:
 
 public:
 
-	// ƒCƒ“ƒXƒ^ƒ“ƒX¶¬
+	// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆ
 	static HRESULT CreateInstance( IHSSBReadOnlyMemoryBuffer** ppInstance, void* pBuffer, size_t size );
 	static HRESULT CreateInstance( IHSSBReadOnlyMemoryBuffer** ppInstance, 
 		void* pBuffer, 
@@ -49,13 +49,13 @@ public:
 		EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
 	);
 
-	// ƒRƒs[/ƒ€[ƒu‚ğ‹Ö~‚µ‚ÄŒë‚Á‚½•¡»‚ğ–h~
+	// ã‚³ãƒ”ãƒ¼/ãƒ ãƒ¼ãƒ–ã‚’ç¦æ­¢ã—ã¦èª¤ã£ãŸè¤‡è£½ã‚’é˜²æ­¢
 	impl_IHSSBReadOnlyMemoryBuffer( const impl_IHSSBReadOnlyMemoryBuffer& ) = delete;
 	impl_IHSSBReadOnlyMemoryBuffer& operator=( const impl_IHSSBReadOnlyMemoryBuffer& ) = delete;
 	impl_IHSSBReadOnlyMemoryBuffer( impl_IHSSBReadOnlyMemoryBuffer&& ) = delete;
 	impl_IHSSBReadOnlyMemoryBuffer& operator=( impl_IHSSBReadOnlyMemoryBuffer&& ) = delete;
 
-	// IHSSBReadOnlyMemoryBuffer / Šî’êƒCƒ“ƒ^[ƒtƒFƒCƒX‚ÌÀ‘•ioverride ‚ğ•t—^j
+	// IHSSBReadOnlyMemoryBuffer / åŸºåº•ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®Ÿè£…ï¼ˆoverride ã‚’ä»˜ä¸ï¼‰
 	virtual bool InquiryProvided( REFIID TargetIID ) const override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject ) override;
 	virtual ULONG STDMETHODCALLTYPE AddRef( void ) override;
@@ -64,13 +64,13 @@ public:
 	virtual bool InquiryProvidedExtraService( REFIID TargetIID ) const override;
 	virtual HRESULT STDMETHODCALLTYPE QueryExtraService( REFIID riid, void** ppvObject ) override;
 
-	//ƒoƒbƒtƒ@ƒTƒCƒYæ“¾
+	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºå–å¾—
 	virtual size_t GetSize( void ) const override;
 
-	// —v‘f”Ô†‚Ì‘Ã“–«Šm”F
+	// è¦ç´ ç•ªå·ã®å¦¥å½“æ€§ç¢ºèª
 	virtual bool IsValidElementNumber( size_t offset ) const override;
 
-	// ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^æ“¾(“Ç‚İæ‚èê—p)
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿å–å¾—(èª­ã¿å–ã‚Šå°‚ç”¨)
 	virtual const void* GetConstBufferPointer( size_t offset = 0 ) const override;
 
 	virtual HRESULT CheckValidElementNumberRange( size_t offset, size_t length ) const override;

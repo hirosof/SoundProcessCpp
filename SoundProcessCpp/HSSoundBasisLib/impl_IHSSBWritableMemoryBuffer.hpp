@@ -4,11 +4,11 @@
 #include "HSSoundBasisLib.hpp"
 
 /// impl_IHSSBWritableMemoryBuffer
-/// ���L���|���V�[:
-/// - �f�t�H���g: �{�N���X�͓n���ꂽ `pBuffer` �̏��L���������܂���i�񏊗L�j�B
-///   �Ăяo�������o�b�t�@�̊����E����̐ӔC�𕉂��܂��B
-/// - ���L�����ڏ����� API�i��: ownsBuffer �t���O���p�t�@�N�g���j�𓱓�����ꍇ�́A
-///   ���̏ꍇ�̊���/������@�i`new[]` / `free` ���j���w�b�_�ɖ��L���Ă��������B
+/// 所有権ポリシー:
+/// - デフォルト: 本クラスは渡された `pBuffer` の所有権を持ちません（非所有）。
+///   呼び出し側がバッファの割当・解放の責任を負います。
+/// - 所有権を移譲する API（例: ownsBuffer フラグや専用ファクトリ）を導入する場合は、
+///   その場合の割当/解放方法（`new[]` / `free` 等）をヘッダに明記してください。
 class impl_IHSSBWritableMemoryBuffer : public IHSSBWritableMemoryBuffer {
 
 private:

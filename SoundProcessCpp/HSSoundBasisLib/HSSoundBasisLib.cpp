@@ -10,11 +10,11 @@
 BOOL WINAPI DllMain( HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved ) {
 	switch ( dwReason ) {
 	case DLL_PROCESS_ATTACH:
-		// ƒXƒŒƒbƒh‚²‚Æ‚Ì DLL_THREAD_ATTACH/DLL_THREAD_DETACH ‚ðŽó‚¯Žæ‚ç‚È‚¢‚æ‚¤‚É‚·‚éiƒpƒtƒH[ƒ}ƒ“ƒXŒüãj
+		// ã‚¹ãƒ¬ãƒƒãƒ‰ã”ã¨ã® DLL_THREAD_ATTACH/DLL_THREAD_DETACH ã‚’å—ã‘å–ã‚‰ãªã„ã‚ˆã†ã«ã™ã‚‹ï¼ˆãƒ‘ãƒ•ã‚©ãƒ¼ãƒžãƒ³ã‚¹å‘ä¸Šï¼‰
 		DisableThreadLibraryCalls( hDLL );
 		break;
 	case DLL_PROCESS_DETACH:
-		// •K—v‚È‚çƒNƒŠ[ƒ“ƒAƒbƒv
+		// å¿…è¦ãªã‚‰ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—
 		break;
 	default:
 		break;
@@ -22,7 +22,7 @@ BOOL WINAPI DllMain( HINSTANCE hDLL, DWORD dwReason, LPVOID lpReserved ) {
 	return TRUE;
 }
 
-// ŠeŽíIID ’è‹`
+// å„ç¨®IID å®šç¾©
 const IID IID_IHSSBBase = __uuidof( IHSSBBase );
 const IID IID_IHSSBMemoryProvider = __uuidof( IHSSBMemoryProvider );
 
@@ -43,27 +43,27 @@ const IID IID_IHSSBNormalizedPCMBuffer = __uuidof( IHSSBNormalizedPCMBuffer );
 const IID IID_IHSSBMemoryOwner = __uuidof( IHSSBMemoryOwner );
 
 
-// ƒJƒXƒ^ƒ€ HRESULT ì¬ƒ}ƒNƒ
+// ã‚«ã‚¹ã‚¿ãƒ  HRESULT ä½œæˆãƒžã‚¯ãƒ­
 #define HSSB_MAKE_CUSTOM_HRESULT(sev , code) MAKE_HRESULT( sev, FACILITY_ITF, 0x2000 +(code))
 
-// ƒJƒXƒ^ƒ€ HRESULT ’è‹`
+// ã‚«ã‚¹ã‚¿ãƒ  HRESULT å®šç¾©
 
-// ‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢‚±‚Æ‚ð•\‚·ƒJƒXƒ^ƒ€HRESULTƒGƒ‰[ƒR[ƒh
+// åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„ã“ã¨ã‚’è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 const HRESULT HSSB_E_NOT_INITIALIZED = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_ERROR, 0 );
 
-//•”•ª“I¬Œ÷‚ð•\‚·ƒJƒXƒ^ƒ€HRESULTƒR[ƒh
+//éƒ¨åˆ†çš„æˆåŠŸã‚’è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚³ãƒ¼ãƒ‰
 const HRESULT HSSB_S_PARTIAL = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_SUCCESS, 1 );
 
-// •”•ª“I¬Œ÷F“ü—Í‘¤‚É—vˆö‚ª‚ ‚Á‚½ê‡
+// éƒ¨åˆ†çš„æˆåŠŸï¼šå…¥åŠ›å´ã«è¦å› ãŒã‚ã£ãŸå ´åˆ
 const HRESULT HSSB_S_PARTIAL_INPUT_SIDE_FACTOR = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_SUCCESS, 2 );
 
-// •”•ª“I¬Œ÷Fo—Í‘¤‚É—vˆö‚ª‚ ‚Á‚½ê‡
+// éƒ¨åˆ†çš„æˆåŠŸï¼šå‡ºåŠ›å´ã«è¦å› ãŒã‚ã£ãŸå ´åˆ
 const HRESULT HSSB_S_PARTIAL_OUTPUT_SIDE_FACTOR = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_SUCCESS, 3 );
 
-// ƒoƒO‹Nˆö‚Æ‚Ý‚ç‚ê‚éˆ—ƒGƒ‰[•\‚·ƒJƒXƒ^ƒ€HRESULTƒGƒ‰[ƒR[ƒh
+// ãƒã‚°èµ·å› ã¨ã¿ã‚‰ã‚Œã‚‹å‡¦ç†ã‚¨ãƒ©ãƒ¼è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 const HRESULT HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_ERROR, 4 );
 
-// ˆ—‚É‚Í¬Œ÷‚µ‚½‚ªAŠÇ—ƒTƒCƒY‚ª’²®‚³‚ê‚½‚±‚Æ‚ð•\‚·ƒJƒXƒ^ƒ€HRESULTƒR[ƒh
+// å‡¦ç†ã«ã¯æˆåŠŸã—ãŸãŒã€ç®¡ç†ã‚µã‚¤ã‚ºãŒèª¿æ•´ã•ã‚ŒãŸã“ã¨ã‚’è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚³ãƒ¼ãƒ‰
 const HRESULT HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = HSSB_MAKE_CUSTOM_HRESULT( SEVERITY_SUCCESS, 5 );
 
 
@@ -76,7 +76,7 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppI
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryOwner( IHSSBMemoryOwner** ppInstance, void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner, EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
 	if ( !ppInstance ) return E_INVALIDARG;
 	*ppInstance = nullptr;
-	// pBuffer ‚ª NULL ‚Ìê‡AƒTƒCƒY‚ª 0 ‚Å‚ ‚é‚±‚Æ‚ðŠú‘Ò‚·‚éi—vŒ‚É‰ž‚¶‚Ä’²®j
+	// pBuffer ãŒ NULL ã®å ´åˆã€ã‚µã‚¤ã‚ºãŒ 0 ã§ã‚ã‚‹ã“ã¨ã‚’æœŸå¾…ã™ã‚‹ï¼ˆè¦ä»¶ã«å¿œã˜ã¦èª¿æ•´ï¼‰
 	if ( size != 0 && !pBuffer ) return E_INVALIDARG;
 	return impl_IHSSBMemoryOwner::CreateInstance( ppInstance, pBuffer, size, owner, owner_type_info );
 }
@@ -85,7 +85,7 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateReadOnlyMemoryBuffer( IHSSBReadOnly
 
 	if ( !ppInstance ) return E_INVALIDARG;
 	*ppInstance = nullptr;
-	// pBuffer ‚ª NULL ‚Ìê‡AƒTƒCƒY‚ª 0 ‚Å‚ ‚é‚±‚Æ‚ðŠú‘Ò‚·‚éi—vŒ‚É‰ž‚¶‚Ä’²®j
+	// pBuffer ãŒ NULL ã®å ´åˆã€ã‚µã‚¤ã‚ºãŒ 0 ã§ã‚ã‚‹ã“ã¨ã‚’æœŸå¾…ã™ã‚‹ï¼ˆè¦ä»¶ã«å¿œã˜ã¦èª¿æ•´ï¼‰
 	if ( size != 0 && !pBuffer ) return E_INVALIDARG;
 	return impl_IHSSBReadOnlyMemoryBuffer::CreateInstance( ppInstance, pBuffer, size, owner, owner_type_info );
 }
@@ -94,7 +94,7 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateWritableMemoryBuffer( IHSSBWritable
 	if ( !ppBuffer ) return E_INVALIDARG;
 	*ppBuffer = nullptr;
 
-	// pTargetBuffer ‚ª NULL ‚Ìê‡AƒTƒCƒY‚ª 0 ‚Å‚ ‚é‚±‚Æ‚ðŠú‘Ò‚·‚éi—vŒ‚É‰ž‚¶‚Ä’²®j
+	// pTargetBuffer ãŒ NULL ã®å ´åˆã€ã‚µã‚¤ã‚ºãŒ 0 ã§ã‚ã‚‹ã“ã¨ã‚’æœŸå¾…ã™ã‚‹ï¼ˆè¦ä»¶ã«å¿œã˜ã¦èª¿æ•´ï¼‰
 	if ( TargetBufferSize != 0 && !pTargetBuffer ) return E_INVALIDARG;
 
 	return impl_IHSSBWritableMemoryBuffer::CreateInstance( ppBuffer, pTargetBuffer, TargetBufferSize );
@@ -114,7 +114,7 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryBuffer( IHSSBMemoryBuffer** p
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCreateMemoryStream( IHSSBMemoryStream** ppBuffer ) {
 	if ( !ppBuffer ) return E_INVALIDARG;
 	*ppBuffer = nullptr;
-	// –¢ŽÀ‘•: ŽÀ‘•‚³‚ê‚Ä‚¢‚È‚¢‚±‚Æ‚ð–¾Ž¦‚·‚é
+	// æœªå®Ÿè£…: å®Ÿè£…ã•ã‚Œã¦ã„ãªã„ã“ã¨ã‚’æ˜Žç¤ºã™ã‚‹
 	return E_NOTIMPL;
 }
 

@@ -7,49 +7,49 @@ class impl_IHSSBMemoryOwner : public IHSSBMemoryOwner {
 
 private:
 
-	// QÆƒJƒEƒ“ƒg
+	// å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆ
 	volatile LONG m_ref;
 
 
-	// ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^ (ƒoƒCƒg’PˆÊ‚Åˆµ‚¤‚½‚ß uint8_t* ‚Æ‚·‚é)
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿ (ãƒã‚¤ãƒˆå˜ä½ã§æ‰±ã†ãŸã‚ uint8_t* ã¨ã™ã‚‹)
 	uint8_t* m_pBuffer;
 
-	// ƒƒ‚ƒŠŠ—LŒ ƒ^ƒCƒv
+	// ãƒ¡ãƒ¢ãƒªæ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—
 	EHSSBMemoryOwnershipType m_OwnershipType;
 
-	// ƒƒ‚ƒŠV‹KŠm•Ûƒ^ƒCƒvî•ñ (new[]‚ÅŠm•Û‚³‚ê‚½”z—ñ—p)
+	// ãƒ¡ãƒ¢ãƒªæ–°è¦ç¢ºä¿ã‚¿ã‚¤ãƒ—æƒ…å ± (new[]ã§ç¢ºä¿ã•ã‚ŒãŸé…åˆ—ç”¨)
 	EHSSBMemoryNewAllocatedTypeInfo m_OwnershipTypeInfo;
 
-	// ƒoƒbƒtƒ@[ƒTƒCƒYiƒoƒCƒg’PˆÊj
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚µã‚¤ã‚ºï¼ˆãƒã‚¤ãƒˆå˜ä½ï¼‰
 	size_t m_BufferSize;
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“iƒXƒŒƒbƒhƒZ[ƒt‘Î‰—pj
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ï¼ˆã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒ¼ãƒ•å¯¾å¿œç”¨ï¼‰
 	CRITICAL_SECTION m_CriticalSection;
 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Í private ‚É‚µ‚ÄACreateInstance Œo—R‚Å‚µ‚©ƒCƒ“ƒXƒ^ƒ“ƒX¶¬‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯ private ã«ã—ã¦ã€CreateInstance çµŒç”±ã§ã—ã‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆã§ããªã„ã‚ˆã†ã«ã™ã‚‹
 	impl_IHSSBMemoryOwner( );
 
-	// ƒfƒXƒgƒ‰ƒNƒ^‚à private ‚É‚µ‚ÄARelease Œo—R‚Å‚µ‚©íœ‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
+	// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚‚ private ã«ã—ã¦ã€Release çµŒç”±ã§ã—ã‹å‰Šé™¤ã§ããªã„ã‚ˆã†ã«ã™ã‚‹
 	~impl_IHSSBMemoryOwner( );
 
 
-	// new[] ‚ÅŠm•Û‚³‚ê‚½ƒoƒbƒtƒ@[‚ğ‰ğ•ú‚·‚é‚½‚ß‚Ìê—pŠÖ”
+	// new[] ã§ç¢ºä¿ã•ã‚ŒãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’è§£æ”¾ã™ã‚‹ãŸã‚ã®å°‚ç”¨é–¢æ•°
 	void FreeForNewAllocatedBuffer( void );
 
-	// new[] ‚ÅŠm•Û‚³‚ê‚½ƒoƒbƒtƒ@[‚ğ‰ğ•ú‚·‚é‚½‚ß‚ÌŒ^•Êƒeƒ“ƒvƒŒ[ƒgŠÖ”
-	// (FreeForNewAllocatedBuffer‚©‚çŒÄ‚Ño‚³‚ê‚é)
+	// new[] ã§ç¢ºä¿ã•ã‚ŒãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’è§£æ”¾ã™ã‚‹ãŸã‚ã®å‹åˆ¥ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆé–¢æ•°
+	// (FreeForNewAllocatedBufferã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹)
 	template <typename T> void  FreeForNewAllocatedBufferInternal( void ) {
 		T* pArray = reinterpret_cast<T*>( m_pBuffer );
 		delete[] pArray;
 	}
 
 public:
-	// ƒCƒ“ƒXƒ^ƒ“ƒX¶¬
+	// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆ
 
-	// ƒfƒtƒHƒ‹ƒgi‹ó‚Ìƒƒ‚ƒŠƒI[ƒi[jƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼ˆç©ºã®ãƒ¡ãƒ¢ãƒªã‚ªãƒ¼ãƒŠãƒ¼ï¼‰ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
 	static HRESULT CreateInstance( IHSSBMemoryOwner** ppInstance );
 
-	// w’è‚³‚ê‚½ƒoƒbƒtƒ@[‚ğŠ—L‚·‚éƒƒ‚ƒŠƒI[ƒi[ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
+	// æŒ‡å®šã•ã‚ŒãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’æ‰€æœ‰ã™ã‚‹ãƒ¡ãƒ¢ãƒªã‚ªãƒ¼ãƒŠãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
 	static HRESULT CreateInstance( IHSSBMemoryOwner** ppInstance,
 		void* pBuffer,
 		size_t size,
@@ -57,14 +57,14 @@ public:
 		EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
 	);
 	
-	// ƒRƒs[/ƒ€[ƒu‚ğ‹Ö~‚µ‚ÄŒë‚Á‚½•¡»‚ğ–h~
+	// ã‚³ãƒ”ãƒ¼/ãƒ ãƒ¼ãƒ–ã‚’ç¦æ­¢ã—ã¦èª¤ã£ãŸè¤‡è£½ã‚’é˜²æ­¢
 	impl_IHSSBMemoryOwner( const impl_IHSSBMemoryOwner& ) = delete;
 	impl_IHSSBMemoryOwner& operator=( const impl_IHSSBMemoryOwner& ) = delete;
 	impl_IHSSBMemoryOwner( impl_IHSSBMemoryOwner&& ) = delete;
 	impl_IHSSBMemoryOwner& operator=( impl_IHSSBMemoryOwner&& ) = delete;
 
 
-	// IHSSBMemoryOwner / Šî’êƒCƒ“ƒ^[ƒtƒFƒCƒX‚ÌÀ‘•ioverride ‚ğ•t—^j
+	// IHSSBMemoryOwner / åŸºåº•ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®Ÿè£…ï¼ˆoverride ã‚’ä»˜ä¸ï¼‰
 	virtual bool InquiryProvided( REFIID TargetIID ) const override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface( REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject ) override;
 	virtual ULONG STDMETHODCALLTYPE AddRef( void ) override;
@@ -75,34 +75,34 @@ public:
 	virtual HRESULT STDMETHODCALLTYPE QueryExtraService( REFIID riid, void** ppvObject ) override;
 
 
-	// IHSSBMemoryOwner ‚ÌÀ‘•ioverride ‚ğ•t—^j
+	// IHSSBMemoryOwner ã®å®Ÿè£…ï¼ˆoverride ã‚’ä»˜ä¸ï¼‰
 	
-	// ƒƒ‚ƒŠƒoƒbƒtƒ@[‚ğƒAƒ^ƒbƒ`
+	// ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’ã‚¢ã‚¿ãƒƒãƒ
 	virtual HRESULT Attach( void* pBuffer, size_t size,
 		EHSSBMemoryOwnershipType owner = EHSSBMemoryOwnershipType::NoOwnership,
 		EHSSBMemoryNewAllocatedTypeInfo owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None
 	) override;
 
-	// ƒƒ‚ƒŠƒoƒbƒtƒ@[‚ğƒfƒ^ƒbƒ`
+	// ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’ãƒ‡ã‚¿ãƒƒãƒ
 	virtual HRESULT Detach( void** ppOutBuffer,
 		size_t* pOutSize = nullptr,
 		EHSSBMemoryOwnershipType* pOutOwner = nullptr,
 		EHSSBMemoryNewAllocatedTypeInfo* pOutOwnerTypeInfo = nullptr
 	) override;
 
-	// Š—L‚µ‚Ä‚¢‚éƒƒ‚ƒŠ‚ğ‰ğ•ú
+	// æ‰€æœ‰ã—ã¦ã„ã‚‹ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾
 	virtual HRESULT Free( void ) override;
 
-	// ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^‚ÆƒTƒCƒY‚ğæ“¾
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿ã¨ã‚µã‚¤ã‚ºã‚’å–å¾—
 	virtual void* GetBufferPointer( void ) const override;
 
-	// ƒoƒbƒtƒ@[ƒTƒCƒY‚ğæ“¾
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚µã‚¤ã‚ºã‚’å–å¾—
 	virtual size_t GetSize( void ) const override;
 
-	// Š—LŒ ƒ^ƒCƒv‚ğæ“¾
+	// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ã‚’å–å¾—
 	virtual EHSSBMemoryOwnershipType GetOwnershipType( void ) const override;
 
-	// Š—LŒ ƒ^ƒCƒvî•ñ‚ğæ“¾
+	// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—æƒ…å ±ã‚’å–å¾—
 	virtual EHSSBMemoryNewAllocatedTypeInfo GetOwnershipTypeInfo( void ) const override;
 
 };

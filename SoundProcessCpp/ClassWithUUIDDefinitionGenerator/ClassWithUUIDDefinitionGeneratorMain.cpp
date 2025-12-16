@@ -38,20 +38,18 @@ struct GenItem {
 	}
 };
 
-
 std::string UuidToStdStringA( const UUID uuid );
 
 int main( int argc, char* argv[] ){
 
 	setlocale( LC_ALL, "Japanese" );
+    SetConsoleOutputCP( 65001 ); // UTF-8コードページに変更
 
 	std::vector<GenItem> itemVector;
 
 	if ( argc == 1 ) {
 
-
-		printf( "�R�}���h���C�������ŃN���X�����w�肳��܂���ł����B���͂��Ă��������B\n" );
-
+        wprintf( L"コマンドライン引数でクラス名が指定されませんでした。入力してください。\n" );
 
 		std::string namestr;
 
@@ -67,12 +65,12 @@ int main( int argc, char* argv[] ){
 			item.class_name = namestr;
 			itemVector.push_back( item );
 
-			printf( "\n�ǉ��̃N���X������ꍇ�̓N���X������͂��Ă��������B\n�I������ꍇ�͕��������͂����ɂ��̂܂�Enter�L�[�������Ă��������B\n" );
+			wprintf( L"\n追加のクラスがある場合はクラス名を入力してください。\n終了する場合は文字列を入力せずにそのままEnterキーを押してください。\n" );
 
 		}
 
 		if ( itemVector.empty( ) ) {
-			printf( "�N���X����������͂���܂���ł����B�I�����܂��B\n" );
+			wprintf( L"クラス名が一つも入力されませんでした。終了します。\n" );
 			return 0;
 		}
 
@@ -84,14 +82,14 @@ int main( int argc, char* argv[] ){
 		}
 	}
 
-	printf( "\n" );
+	wprintf( L"\n" );
 
 	CAtlStringA strgen;
 
 	for ( GenItem& item : itemVector ) {
 		(void)UuidCreate( &item.iid );
 		if ( item.iid == IID_NULL ) {
-			printf( "UUID�̍쐬�Ɏ��s���܂����B�I�����܂��B\n" );
+			wprintf( L"UUIDの作成に失敗しました。終了します。\n" );
 			return 0;
 		}
 
@@ -123,27 +121,23 @@ int main( int argc, char* argv[] ){
 
 	}
 
-
-
-	printf( "/*\n\t.hpp File Code\n*/\n\n" );
+	wprintf( L"/*\n\t.hpp File Code\n*/\n\n" );
 
 	for (const GenItem& item : itemVector ) {
 
-		printf( "%s\n", item.code_iid_str_macro_declare.c_str( ) );
-		printf( "HSSOUNDBASISLIB_VAREXPORT %s;\n", item.code_iidval_declare.c_str( ) );
-		printf( "%s\n\n", item.code_class_define.c_str( ) );
-
-
+    	wprintf( L"%S\n", item.code_iid_str_macro_declare.c_str( ) );
+		wprintf( L"HSSOUNDBASISLIB_VAREXPORT %S;\n", item.code_iidval_declare.c_str( ) );
+		wprintf( L"%S\n\n", item.code_class_define.c_str( ) );
 	}
 
 
-	printf( "\n/*\n\t.cpp File Code\n*/\n\n" );
+	wprintf( L"\n/*\n\t.cpp File Code\n*/\n\n" );
 
 	for (const GenItem& item : itemVector ) {
-		printf( "%s = __uuidof(%s);\n", item.code_iidval_declare.c_str( ) , item.class_name.c_str() );
+		wprintf( L"%S = __uuidof(%S);\n", item.code_iidval_declare.c_str( ) , item.class_name.c_str() );
 	}
 
-	printf( "\n" );
+	wprintf( L"\n" );
 	system( "pause" );
 
 	return 0;

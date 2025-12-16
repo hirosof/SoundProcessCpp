@@ -34,113 +34,113 @@
 
 
 enum struct EHSSB_AddressOrigin {
-	//æ“ª
+	//å…ˆé ­
 	Benign = 0,
 
-	// Œ»ÝˆÊ’u
+	// ç¾åœ¨ä½ç½®
 	Current,
 
-	// I’[
+	// çµ‚ç«¯
 	End
 };
 
 
 enum struct EHSSB_RoundMode {
 
-	// Ø‚èŽÌ‚Ä
+	// åˆ‡ã‚Šæ¨ã¦
 	Down = 0,
 
-	// Ø‚èã‚°
+	// åˆ‡ã‚Šä¸Šã’
 	Up,
 
-	// ŽlŽÌŒÜ“ü
+	// å››æ¨äº”å…¥
 	Nearest
 
 };
 
 
-// ƒƒ‚ƒŠŠ—LŒ ƒ^ƒCƒv
+// ãƒ¡ãƒ¢ãƒªæ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—
 enum struct EHSSBMemoryOwnershipType {
-	// Š—LŒ ‚È‚µ
+	// æ‰€æœ‰æ¨©ãªã—
 	NoOwnership = 0,
 
-	//Š—LŒ ‚ ‚èAŠY“–‚Ìƒƒ‚ƒŠ‚Ínew[]‚ÅŠm•Û‚³‚ê‚½‚à‚Ì‚Å‚ ‚é
-	//   ¨ delete[]‚Å‰ð•ú‚³‚ê‚é‚×‚«
+	//æ‰€æœ‰æ¨©ã‚ã‚Šã€è©²å½“ã®ãƒ¡ãƒ¢ãƒªã¯new[]ã§ç¢ºä¿ã•ã‚ŒãŸã‚‚ã®ã§ã‚ã‚‹
+	//   â†’ delete[]ã§è§£æ”¾ã•ã‚Œã‚‹ã¹ã
 	WithDeleteArrayOwnership_NewAllocated,
 
-	//Š—LŒ ‚ ‚èAŠY“–‚Ìƒƒ‚ƒŠ‚Ímalloc‚ÅŠm•Û‚³‚ê‚½‚à‚Ì‚Å‚ ‚é
-	//   ¨ free‚Å‰ð•ú‚³‚ê‚é‚×‚«
+	//æ‰€æœ‰æ¨©ã‚ã‚Šã€è©²å½“ã®ãƒ¡ãƒ¢ãƒªã¯mallocã§ç¢ºä¿ã•ã‚ŒãŸã‚‚ã®ã§ã‚ã‚‹
+	//   â†’ freeã§è§£æ”¾ã•ã‚Œã‚‹ã¹ã
 	WithFreeOwnership_Malloced,
 
-	//Š—LŒ ‚ ‚èAŠY“–‚Ìƒƒ‚ƒŠ‚ÍHeapAlloc(GetProcessHeap(), ...)‚ÅŠm•Û‚³‚ê‚½‚à‚Ì‚Å‚ ‚é
-	//   ¨ HeapFree(GetProcessHeap(), 0, ...)‚Å‰ð•ú‚³‚ê‚é‚×‚«
+	//æ‰€æœ‰æ¨©ã‚ã‚Šã€è©²å½“ã®ãƒ¡ãƒ¢ãƒªã¯HeapAlloc(GetProcessHeap(), ...)ã§ç¢ºä¿ã•ã‚ŒãŸã‚‚ã®ã§ã‚ã‚‹
+	//   â†’ HeapFree(GetProcessHeap(), 0, ...)ã§è§£æ”¾ã•ã‚Œã‚‹ã¹ã
 	WithHeapFreeOwnership_HeapAlloced
 };
 
 
-// new ‚ÅŠm•Û‚³‚ê‚½ƒƒ‚ƒŠ‚ÌŒ^î•ñ
+// new ã§ç¢ºä¿ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã®åž‹æƒ…å ±
 enum struct EHSSBMemoryNewAllocatedTypeInfo {
 
-	// –¢Žw’è
+	// æœªæŒ‡å®š
 	None = 0,
 
-	// char ”z—ñ
+	// char é…åˆ—
 	char_array,
 
-	// wchar_t ”z—ñ
+	// wchar_t é…åˆ—
 	wchar_t_array,
 
-	// float ”z—ñ
+	// float é…åˆ—
 	float_array,
 	
-	// double ”z—ñ
+	// double é…åˆ—
 	double_array,
 
-	// int8_t ”z—ñ
+	// int8_t é…åˆ—
 	int8_t_array,
 
-	// int16_t ”z—ñ
+	// int16_t é…åˆ—
 	int16_t_array,
 
-	// int32_t ”z—ñ
+	// int32_t é…åˆ—
 	int32_t_array,
 
-	// int64_t ”z—ñ
+	// int64_t é…åˆ—
 	int64_t_array,
 
-	// uint8_t ”z—ñ
+	// uint8_t é…åˆ—
 	uint8_t_array,
 
-	// uint16_t ”z—ñ
+	// uint16_t é…åˆ—
 	uint16_t_array,
 
-	// uint32_t ”z—ñ
+	// uint32_t é…åˆ—
 	uint32_t_array,
 
-	// uint64_t ”z—ñ
+	// uint64_t é…åˆ—
 	uint64_t_array
 };
 
 
-//–¢‰Šú‰»Žž‚ð•\‚·ƒJƒXƒ^ƒ€HRESULTƒGƒ‰[ƒR[ƒh
+//æœªåˆæœŸåŒ–æ™‚ã‚’è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_E_NOT_INITIALIZED;
 
-//•”•ª“I¬Œ÷‚ð•\‚·ƒJƒXƒ^ƒ€HRESULTƒR[ƒh
+//éƒ¨åˆ†çš„æˆåŠŸã‚’è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚³ãƒ¼ãƒ‰
 HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_S_PARTIAL;
 
-// •”•ª“I¬Œ÷F“ü—Í‘¤‚É—vˆö‚ª‚ ‚Á‚½ê‡
+// éƒ¨åˆ†çš„æˆåŠŸï¼šå…¥åŠ›å´ã«è¦å› ãŒã‚ã£ãŸå ´åˆ
 HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_S_PARTIAL_INPUT_SIDE_FACTOR;
 
-// •”•ª“I¬Œ÷Fo—Í‘¤‚É—vˆö‚ª‚ ‚Á‚½ê‡
+// éƒ¨åˆ†çš„æˆåŠŸï¼šå‡ºåŠ›å´ã«è¦å› ãŒã‚ã£ãŸå ´åˆ
 HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_S_PARTIAL_OUTPUT_SIDE_FACTOR;
 
-// ƒoƒO‹Nˆö‚Æ‚Ý‚ç‚ê‚éˆ—ƒGƒ‰[•\‚·ƒJƒXƒ^ƒ€HRESULTƒGƒ‰[ƒR[ƒh
+// ãƒã‚°èµ·å› ã¨ã¿ã‚‰ã‚Œã‚‹å‡¦ç†ã‚¨ãƒ©ãƒ¼è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR;
 
-// ˆ—‚É‚Í¬Œ÷‚µ‚½‚ªAŠÇ—ƒTƒCƒY‚ª’²®‚³‚ê‚½‚±‚Æ‚ð•\‚·ƒJƒXƒ^ƒ€HRESULTƒR[ƒh
+// å‡¦ç†ã«ã¯æˆåŠŸã—ãŸãŒã€ç®¡ç†ã‚µã‚¤ã‚ºãŒèª¿æ•´ã•ã‚ŒãŸã“ã¨ã‚’è¡¨ã™ã‚«ã‚¹ã‚¿ãƒ HRESULTã‚³ãƒ¼ãƒ‰
 HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED;
 
-// –{ƒ‰ƒCƒuƒ‰ƒŠã‚É‚¨‚¯‚éŠî–{ƒCƒ“ƒ^[ƒtƒF[ƒX
+// æœ¬ãƒ©ã‚¤ãƒ–ãƒ©ãƒªä¸Šã«ãŠã‘ã‚‹åŸºæœ¬ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹
 #define IIDSTR_IHSSBBase  "DE8D1C85-0807-455A-BA0E-2641F02E2DE2"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBBase;
 MIDL_INTERFACE( IIDSTR_IHSSBBase ) IHSSBBase : public IUnknown {

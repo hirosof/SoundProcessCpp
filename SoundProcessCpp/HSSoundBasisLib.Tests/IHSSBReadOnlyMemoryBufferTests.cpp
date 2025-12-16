@@ -65,7 +65,7 @@ TEST( HSSB_ReadOnlyBuffer, CreateReadOnlyMemoryBufferType_ArrayReference_Succeed
 
 TEST( HSSB_ReadOnlyBuffer, CreateReadOnlyMemoryBuffer_NullOutputParameter_Fails ) {
     uint8_t data[] = { 0xAA };
-    // o—Íˆø”‚ª nullptr ‚Ìê‡‚ÍÀ‘•ˆË‘¶‚¾‚ªAHRESULT ‚ª¸”sƒR[ƒh‚Å‚ ‚é‚±‚Æ‚ğŠú‘Ò‚·‚é
+    // å‡ºåŠ›å¼•æ•°ãŒ nullptr ã®å ´åˆã¯å®Ÿè£…ä¾å­˜ã ãŒã€HRESULT ãŒå¤±æ•—ã‚³ãƒ¼ãƒ‰ã§ã‚ã‚‹ã“ã¨ã‚’æœŸå¾…ã™ã‚‹
     HRESULT hr = HSSBCreateReadOnlyMemoryBuffer( nullptr, data, sizeof( data ) );
     EXPECT_TRUE( FAILED( hr ) );
 }
@@ -76,26 +76,26 @@ TEST( HSSB_ReadOnlyBuffer, InquiryProvided_And_QueryInterface_Behavior ) {
     ASSERT_EQ( HSSBCreateReadOnlyMemoryBuffer( &pBuf, data, sizeof( data ) ), S_OK );
     ASSERT_NE( pBuf, nullptr );
 
-    // ReadOnly ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Í’ñ‹Ÿ‚³‚ê‚Ä‚¢‚é‚Í‚¸
+    // ReadOnly ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã¯æä¾›ã•ã‚Œã¦ã„ã‚‹ã¯ãš
     EXPECT_TRUE( pBuf->InquiryProvided( IID_IHSSBReadOnlyMemoryBuffer ) );
-    // Œp³Œ³‚Ìƒoƒbƒtƒ@Šî’êƒCƒ“ƒ^[ƒtƒFƒCƒX‚à’ñ‹Ÿ‚³‚ê‚é‚Í‚¸
+    // ç¶™æ‰¿å…ƒã®ãƒãƒƒãƒ•ã‚¡åŸºåº•ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã‚‚æä¾›ã•ã‚Œã‚‹ã¯ãš
     EXPECT_TRUE( pBuf->InquiryProvided( IID_IHSSBMemoryBufferBase ) );
-    // ‘‚«‚İ—pƒCƒ“ƒ^[ƒtƒFƒCƒX‚Í’ñ‹Ÿ‚³‚ê‚È‚¢‚Í‚¸i“Ç‚İæ‚èê—pj
+    // æ›¸ãè¾¼ã¿ç”¨ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã¯æä¾›ã•ã‚Œãªã„ã¯ãšï¼ˆèª­ã¿å–ã‚Šå°‚ç”¨ï¼‰
     EXPECT_FALSE( pBuf->InquiryProvided( IID_IHSSBWritableMemoryBuffer ) );
 
-    // IUnknowniCOMj‚Ì QueryInterface ‚ª¬Œ÷‚µ‚Äƒ|ƒCƒ“ƒ^‚ª–ß‚é‚±‚Æ
+    // IUnknownï¼ˆCOMï¼‰ã® QueryInterface ãŒæˆåŠŸã—ã¦ãƒã‚¤ãƒ³ã‚¿ãŒæˆ»ã‚‹ã“ã¨
     void* pUnknown = nullptr;
     HRESULT hr = pBuf->QueryInterface( __uuidof( IUnknown ), &pUnknown );
     EXPECT_EQ( hr, S_OK );
     ASSERT_NE( pUnknown, nullptr );
     IUnknown* pUnk = reinterpret_cast<IUnknown*>( pUnknown );
-    // QueryInterface ‚ÍQÆƒJƒEƒ“ƒg‚ğ‘‚â‚·‚Í‚¸‚È‚Ì‚Å Release ‚µ‚Ä‚¨‚­
+    // QueryInterface ã¯å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’å¢—ã‚„ã™ã¯ãšãªã®ã§ Release ã—ã¦ãŠã
     pUnk->Release();
 
-    // –³Œø‚È/–¢À‘•‚Ì IID ‚É‘Î‚·‚é QueryInterface ‚Í¸”s‚Å‚ ‚é‚±‚Æ
+    // ç„¡åŠ¹ãª/æœªå®Ÿè£…ã® IID ã«å¯¾ã™ã‚‹ QueryInterface ã¯å¤±æ•—ã§ã‚ã‚‹ã“ã¨
     void* pOut = nullptr;
     hr = pBuf->QueryInterface( IID_IHSSBWritableMemoryBuffer, &pOut );
-    // À‘•‚É‹’‚é‚ªAE_NOINTERFACE ‚©¸”sƒR[ƒh‚Å‚ ‚é‚±‚Æ‚ğŠú‘Ò
+    // å®Ÿè£…ã«æ‹ ã‚‹ãŒã€E_NOINTERFACE ã‹å¤±æ•—ã‚³ãƒ¼ãƒ‰ã§ã‚ã‚‹ã“ã¨ã‚’æœŸå¾…
     EXPECT_TRUE( FAILED( hr ) );
     EXPECT_EQ( pOut, nullptr );
 
@@ -108,24 +108,24 @@ TEST( HSSB_ReadOnlyBuffer, AddRef_Release_BasicChecks ) {
     ASSERT_EQ( HSSBCreateReadOnlyMemoryBuffer( &pBuf, data, sizeof( data ) ), S_OK );
     ASSERT_NE( pBuf, nullptr );
 
-    // AddRef/Release ‚Í 0 ˆÈŠO‚Ì’l‚ğ•Ô‚·‚±‚ÆiCOM “I‚È–ß‚è’lƒ`ƒFƒbƒNj
+    // AddRef/Release ã¯ 0 ä»¥å¤–ã®å€¤ã‚’è¿”ã™ã“ã¨ï¼ˆCOM çš„ãªæˆ»ã‚Šå€¤ãƒã‚§ãƒƒã‚¯ï¼‰
     ULONG newCount = pBuf->AddRef();
     EXPECT_GT( newCount, 0u );
 
     ULONG afterRelease = pBuf->Release();
     EXPECT_GT( afterRelease, 0u );
 
-    // ÅI“I‚Éì¬‚ÌQÆ‚ğ‰ğ•ú‚µ‚ÄƒIƒuƒWƒFƒNƒg‚ğ”jŠü
+    // æœ€çµ‚çš„ã«ä½œæˆæ™‚ã®å‚ç…§ã‚’è§£æ”¾ã—ã¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç ´æ£„
     pBuf->Release();
 }
 
 
 TEST( HSSB_ReadOnlyBuffer, CreateReadOnlyMemoryBuffer_NullDataPointer_Fails ) {
     IHSSBReadOnlyMemoryBuffer* pBuf = nullptr;
-    // ƒf[ƒ^ƒ|ƒCƒ“ƒ^‚ª nullptr ‚Ìê‡‚Í‘½‚­‚ÌÀ‘•‚Å¸”s‚ğŠú‘Ò‚·‚é
+    // ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒ³ã‚¿ãŒ nullptr ã®å ´åˆã¯å¤šãã®å®Ÿè£…ã§å¤±æ•—ã‚’æœŸå¾…ã™ã‚‹
     HRESULT hr = HSSBCreateReadOnlyMemoryBuffer( &pBuf, nullptr, 4 );
     EXPECT_TRUE( FAILED( hr ) );
-    // À‘•‚É‚æ‚Á‚Ä‚Í pBuf ‚ª null ‚Ì‚Ü‚Ü‚Å‚ ‚é‚Í‚¸
+    // å®Ÿè£…ã«ã‚ˆã£ã¦ã¯ pBuf ãŒ null ã®ã¾ã¾ã§ã‚ã‚‹ã¯ãš
     EXPECT_EQ( pBuf, nullptr );
 }
 
@@ -133,7 +133,7 @@ TEST( HSSB_ReadOnlyBuffer, CreateReadOnlyMemoryBuffer_ZeroSize_Behavior ) {
     uint8_t dummy = 0;
     IHSSBReadOnlyMemoryBuffer* pBuf = nullptr;
     HRESULT hr = HSSBCreateReadOnlyMemoryBuffer( &pBuf, &dummy, 0 );
-    // À‘•‚ÉˆË‚é‚ªA¬Œ÷‚µ‚ÄƒTƒCƒY 0 ‚ÌƒIƒuƒWƒFƒNƒg‚ğ•Ô‚·‚±‚Æ‚ª–]‚Ü‚µ‚¢
+    // å®Ÿè£…ã«ä¾ã‚‹ãŒã€æˆåŠŸã—ã¦ã‚µã‚¤ã‚º 0 ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™ã“ã¨ãŒæœ›ã¾ã—ã„
     ASSERT_EQ( hr, E_INVALIDARG );
     ASSERT_EQ( pBuf, nullptr );
 }
@@ -145,12 +145,12 @@ TEST( HSSB_ReadOnlyBuffer, GetConstBufferPointer_WithOffset_ReturnsCorrectPointe
     ASSERT_NE( pBuf, nullptr );
 
     if ( pBuf ) {
-        // ƒIƒtƒZƒbƒg 2 ‚Ìæ“ª‚ğw‚·‚±‚Æ
+        // ã‚ªãƒ•ã‚»ãƒƒãƒˆ 2 ã®å…ˆé ­ã‚’æŒ‡ã™ã“ã¨
         const uint8_t* ptr = pBuf->GetConstBufferPointerType<uint8_t>( 2 );
         ASSERT_NE( ptr, nullptr );
         EXPECT_EQ( 0, std::memcmp( ptr, data.data( ) + 2, data.size( ) - 2 ) );
 
-        // ”ÍˆÍŠOƒAƒNƒZƒX‚Í nullptr ‚ğ•Ô‚·‚±‚Æ
+        // ç¯„å›²å¤–ã‚¢ã‚¯ã‚»ã‚¹ã¯ nullptr ã‚’è¿”ã™ã“ã¨
         const uint8_t* ptrOut = pBuf->GetConstBufferPointerType<uint8_t>( data.size( ) );
         EXPECT_EQ( ptrOut, nullptr );
 
@@ -159,16 +159,16 @@ TEST( HSSB_ReadOnlyBuffer, GetConstBufferPointer_WithOffset_ReturnsCorrectPointe
 }
 
 TEST( HSSB_ReadOnlyBuffer, IsValidElementNumberType_MismatchedSize ) {
-    // ƒoƒCƒg’·‚ª uint32_t ‚Ì”{”‚Å‚Í‚È‚¢ƒP[ƒX
+    // ãƒã‚¤ãƒˆé•·ãŒ uint32_t ã®å€æ•°ã§ã¯ãªã„ã‚±ãƒ¼ã‚¹
     uint8_t raw[] = { 1, 2, 3 }; // 3 bytes
     IHSSBReadOnlyMemoryBuffer* pBuf = nullptr;
     ASSERT_EQ( HSSBCreateReadOnlyMemoryBuffer( &pBuf, raw, sizeof( raw ) ), S_OK );
     ASSERT_NE( pBuf, nullptr );
 
-    // uint32_t ‚Ì—v‘f”‚Æ‚µ‚Ä‚Í 0 ŒÂi•”•ª“I‚É‘«‚è‚È‚¢j‚Í–³Œø
+    // uint32_t ã®è¦ç´ æ•°ã¨ã—ã¦ã¯ 0 å€‹ï¼ˆéƒ¨åˆ†çš„ã«è¶³ã‚Šãªã„ï¼‰ã¯ç„¡åŠ¹
     EXPECT_FALSE( pBuf->IsValidElementNumberType<uint32_t>( 0 ) );
 
-    // ‚½‚¾‚µƒoƒCƒg’PˆÊ‚Ì IsValidElementNumber ‚Í 0 ‚Í—LŒøiƒTƒCƒY=3 > 0j
+    // ãŸã ã—ãƒã‚¤ãƒˆå˜ä½ã® IsValidElementNumber ã¯ 0 ã¯æœ‰åŠ¹ï¼ˆã‚µã‚¤ã‚º=3 > 0ï¼‰
     EXPECT_TRUE( pBuf->IsValidElementNumber( 0 ) );
 
     pBuf->Release( );
@@ -180,7 +180,7 @@ TEST( HSSB_ReadOnlyBuffer, QueryInterface_NullOutParam_Fails ) {
     ASSERT_EQ( HSSBCreateReadOnlyMemoryBuffer( &pBuf, data, sizeof( data ) ), S_OK );
     ASSERT_NE( pBuf, nullptr );
 
-    // o—Íƒ|ƒCƒ“ƒ^‚ª nullptr ‚Ìê‡‚Í¸”siˆÀ‘S«j‚Ì‚±‚Æ‚ª‘½‚¢
+    // å‡ºåŠ›ãƒã‚¤ãƒ³ã‚¿ãŒ nullptr ã®å ´åˆã¯å¤±æ•—ï¼ˆå®‰å…¨æ€§ï¼‰ã®ã“ã¨ãŒå¤šã„
 
     if ( pBuf ) {
 

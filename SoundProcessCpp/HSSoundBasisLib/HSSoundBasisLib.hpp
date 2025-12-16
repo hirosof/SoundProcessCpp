@@ -1,8 +1,7 @@
 #pragma once
 
-// ŠeŽí’è‹`‚³‚ê‚Ä‚¢‚éƒwƒbƒ_[ƒtƒ@ƒCƒ‹‚ðƒCƒ“ƒNƒ‹[ƒh‚·‚é
-// ‚±‚Ìƒtƒ@ƒCƒ‹‚ðƒCƒ“ƒNƒ‹[ƒh‚·‚é‚¾‚¯‚ÅHSSoundBasisLib‚Ì‘S‹@”\‚ª—˜—p‰Â”\‚É‚È‚é
+// å„ç¨®å®šç¾©ã•ã‚Œã¦ã„ã‚‹ãƒ˜ãƒƒãƒ€ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã™ã‚‹
+// ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã™ã‚‹ã ã‘ã§HSSoundBasisLibã®å…¨æ©Ÿèƒ½ãŒåˆ©ç”¨å¯èƒ½ã«ãªã‚‹
 #include "HSSBCommon.hpp"
 #include "HSSBMemoryOperations.hpp"
 #include "HSSBMathFunctions.hpp"
-

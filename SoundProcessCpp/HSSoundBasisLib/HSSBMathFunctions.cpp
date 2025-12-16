@@ -1,13 +1,13 @@
-//	HSSBCommon.hpp“à•”‚ÅˆÈ‰º‚ğƒCƒ“ƒNƒ‹[ƒh‚µ‚Ä‚¢‚é
+//	HSSBCommon.hppå†…éƒ¨ã§ä»¥ä¸‹ã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã—ã¦ã„ã‚‹
 //		cmath
 //		Windows.h
-// ˆÈ‰º‚Í‚±‚Ìƒtƒ@ƒCƒ‹“à•”‚ÅƒCƒ“ƒNƒ‹[ƒh‚µ‚Ä‚¢‚é
+// ä»¥ä¸‹ã¯ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«å†…éƒ¨ã§ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã—ã¦ã„ã‚‹
 //		HSSBCommon.hpp
 #include "HSSBMathFunctions.hpp" 
 
-// “–‰‚ÍA std::numeric_limits‚Ìg—p‚ğŒŸ“¢‚µ‚½‚ªA
-// Windows.h “à‚Åmin‚Æmax‚ªƒ}ƒNƒ’è‹`‚³‚ê‚Ä‚¢‚é‚½‚ßA
-// ‹£‡‚ğ”ğ‚¯‚é‚½‚ß‚Élimits.h‚ğ’¼Úg—p‚·‚é‚±‚Æ‚É‚µ‚½B
+// å½“åˆã¯ã€ std::numeric_limitsã®ä½¿ç”¨ã‚’æ¤œè¨ã—ãŸãŒã€
+// Windows.h å†…ã§minã¨maxãŒãƒã‚¯ãƒ­å®šç¾©ã•ã‚Œã¦ã„ã‚‹ãŸã‚ã€
+// ç«¶åˆã‚’é¿ã‘ã‚‹ãŸã‚ã«limits.hã‚’ç›´æ¥ä½¿ç”¨ã™ã‚‹ã“ã¨ã«ã—ãŸã€‚
 #include <limits.h>
 
 
@@ -32,51 +32,51 @@ HSSOUNDBASISLIB_FUNCEXPORT bool  HSSBMathSupporter_CheckValidUInt64ToDouble( uin
 
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBMath64_CalculateSamplesBySeconds_Strict( uint64_t* pSamples, uint32_t sampling_frequency, double number_of_seconds, EHSSB_RoundMode  round_mode  ){
 
-	// ˆø”ƒ`ƒFƒbƒN
+	// å¼•æ•°ãƒã‚§ãƒƒã‚¯
 	if ( pSamples == nullptr ) {
 		return E_POINTER;
 	}
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	*pSamples = 0;
 
-	// ƒTƒ“ƒvƒŠƒ“ƒOü”g”‚ª0A‚Ü‚½‚Í•b”‚ª•‰‚Ì’l‚Ìê‡Aƒpƒ‰ƒ[ƒ^•s³‚Æ‚µ‚ÄƒGƒ‰[‚ğ•Ô‚·
+	// ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°å‘¨æ³¢æ•°ãŒ0ã€ã¾ãŸã¯ç§’æ•°ãŒè² ã®å€¤ã®å ´åˆã€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä¸æ­£ã¨ã—ã¦ã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 	if ( sampling_frequency == 0 || number_of_seconds < 0.0 ) {
 		return E_INVALIDARG;
 	}
 
-	// ÀÛ‚ÌƒTƒ“ƒvƒ‹”‚ğŒvZ
+	// å®Ÿéš›ã®ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’è¨ˆç®—
 	double real_samples = number_of_seconds * sampling_frequency;
 
-	// ƒI[ƒo[ƒtƒ[‚·‚éê‡AƒGƒ‰[‚ğ•Ô‚·
+	// ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã™ã‚‹å ´åˆã€ã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 	if ( real_samples > _UI64_MAX ) {
 		return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
 	}
 
-	// ¬”•”•ª‚Æ®”•”•ª‚É•ª—£‚µ‚ÄŠÛ‚ßˆ—‚Ì•K—v«‚ğŠm”F‚·‚é
+	// å°æ•°éƒ¨åˆ†ã¨æ•´æ•°éƒ¨åˆ†ã«åˆ†é›¢ã—ã¦ä¸¸ã‚å‡¦ç†ã®å¿…è¦æ€§ã‚’ç¢ºèªã™ã‚‹
 	double fractional_part;
 	double integer_part;
 	fractional_part = modf( real_samples, &integer_part );
 
-	// ¬”•”•ª‚ª”ñí‚É¬‚³‚¢ê‡A¬”•”•ª‚Í0‚Æ‚İ‚È‚µAŠÛ‚ßˆ—‚Í•s—v‚Æ”»’f‚·‚é
+	// å°æ•°éƒ¨åˆ†ãŒéå¸¸ã«å°ã•ã„å ´åˆã€å°æ•°éƒ¨åˆ†ã¯0ã¨ã¿ãªã—ã€ä¸¸ã‚å‡¦ç†ã¯ä¸è¦ã¨åˆ¤æ–­ã™ã‚‹
 	if ( fractional_part < DBL_EPSILON ) {
 		*pSamples = static_cast<uint64_t>( integer_part );
 		return S_OK;
 	}
 
-	// ŠÛ‚ßˆ—
+	// ä¸¸ã‚å‡¦ç†
 	double adjusted_value;
 	switch ( round_mode ) {
 		case EHSSB_RoundMode::Up:
-			// Ø‚èã‚°
+			// åˆ‡ã‚Šä¸Šã’
 			adjusted_value = integer_part + 1.0;
 			break;
 		case EHSSB_RoundMode::Down:
-			// Ø‚èÌ‚Ä
+			// åˆ‡ã‚Šæ¨ã¦
 			adjusted_value = integer_part;
 			break;
 		case EHSSB_RoundMode::Nearest:
-			// lÌŒÜ“ü
+			// å››æ¨äº”å…¥
 			if ( fractional_part < 0.5 ) {
 				adjusted_value = integer_part;
 			} else {
@@ -84,17 +84,17 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBMath64_CalculateSamplesBySeconds_Strict( 
 			}
 			break;
 		default:
-			// •s–¾‚Èƒ‚[ƒh‚Ìê‡AØ‚èÌ‚Ä‚Æ“¯‚¶ˆµ‚¢‚Æ‚·‚é
+			// ä¸æ˜ãªãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã€åˆ‡ã‚Šæ¨ã¦ã¨åŒã˜æ‰±ã„ã¨ã™ã‚‹
 			adjusted_value = integer_part;
 			break;
 	}
 
-	// ’²®Œ‹‰Ê‚ªƒI[ƒo[ƒtƒ[‚·‚éê‡‚àƒGƒ‰[‚ğ•Ô‚·
+	// èª¿æ•´çµæœãŒã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã™ã‚‹å ´åˆã‚‚ã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 	if ( adjusted_value > _UI64_MAX ) {
 		return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
 	}
 
-	// ’²®Œã‚Ì’l‚ğ•Ô‚·
+	// èª¿æ•´å¾Œã®å€¤ã‚’è¿”ã™
 	*pSamples = static_cast<uint64_t>( adjusted_value );
 
 	return S_OK;
@@ -102,18 +102,18 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBMath64_CalculateSamplesBySeconds_Strict( 
 
 HSSOUNDBASISLIB_FUNCEXPORT uint64_t HSSBMath64_CalculateSamplesBySeconds( uint32_t sampling_frequency, double number_of_seconds, EHSSB_RoundMode round_mode ) {
 
-	// Œ‹‰ÊŠi”[—p•Ï”
+	// çµæœæ ¼ç´ç”¨å¤‰æ•°
 	uint64_t samples = 0;
 
-	// “à•”ŠÖ”‚ğŒÄ‚Ño‚µ‚ÄŒvZ
-	// Šeˆø”‚Ì‘Ã“–«ƒ`ƒFƒbƒN‚Í“à•”ŠÖ”‚Ås‚Á‚Ä‚¢‚é‚½‚ßA‚±‚±‚Å‚ÍÈ—ª‚·‚é
+	// å†…éƒ¨é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦è¨ˆç®—
+	// å„å¼•æ•°ã®å¦¥å½“æ€§ãƒã‚§ãƒƒã‚¯ã¯å†…éƒ¨é–¢æ•°ã§è¡Œã£ã¦ã„ã‚‹ãŸã‚ã€ã“ã“ã§ã¯çœç•¥ã™ã‚‹
 	HRESULT hr = HSSBMath64_CalculateSamplesBySeconds_Strict( &samples, sampling_frequency, number_of_seconds, round_mode );
 	if ( FAILED( hr ) ) {
-		// ƒGƒ‰[”­¶‚Í0‚ğ•Ô‚·
+		// ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿæ™‚ã¯0ã‚’è¿”ã™
 		return 0;
 	}
 
-	// ŒvZŒ‹‰Ê‚ğ•Ô‚·
+	// è¨ˆç®—çµæœã‚’è¿”ã™
 	return samples;
 }
 
@@ -122,83 +122,82 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBMath32_CalculateSamplesBySeconds_Strict( 
 	uint64_t samples_64bit;
 
 
-	// 64ƒrƒbƒg”Å‚ÌŠÖ”‚ğŒÄ‚Ño‚µ‚ÄŒvZ
-	// Šeˆø”‚Ì‘Ã“–«ƒ`ƒFƒbƒN‚Í“à•”ŠÖ”‚Ås‚Á‚Ä‚¢‚é‚½‚ßA‚±‚±‚Å‚ÍÈ—ª‚·‚é
+	// 64ãƒ“ãƒƒãƒˆç‰ˆã®é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦è¨ˆç®—
+	// å„å¼•æ•°ã®å¦¥å½“æ€§ãƒã‚§ãƒƒã‚¯ã¯å†…éƒ¨é–¢æ•°ã§è¡Œã£ã¦ã„ã‚‹ãŸã‚ã€ã“ã“ã§ã¯çœç•¥ã™ã‚‹
 	HRESULT hr = HSSBMath64_CalculateSamplesBySeconds_Strict( &samples_64bit, sampling_frequency, number_of_seconds, round_mode );
 
 	if ( FAILED( hr ) ) {
-		// ƒGƒ‰[”­¶‚Í‚»‚Ì‚Ü‚Ü•Ô‚·
+		// ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿæ™‚ã¯ãã®ã¾ã¾è¿”ã™
 		return hr;
 	}
 
-	// 32ƒrƒbƒg‚Éû‚Ü‚ç‚È‚¢ê‡AƒI[ƒo[ƒtƒ[ƒGƒ‰[‚ğ•Ô‚·
+	// 32ãƒ“ãƒƒãƒˆã«åã¾ã‚‰ãªã„å ´åˆã€ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 	if ( samples_64bit > _UI32_MAX ) {
 		return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
 	}
 
-	// ŒvZŒ‹‰Ê‚ğ•Ô‚·
+	// è¨ˆç®—çµæœã‚’è¿”ã™
 	*pSamples = static_cast<uint32_t>( samples_64bit );
 	return S_OK;
 }
 
 HSSOUNDBASISLIB_FUNCEXPORT uint32_t HSSBMath32_CalculateSamplesBySeconds( uint32_t sampling_frequency, double number_of_seconds, EHSSB_RoundMode round_mode ) {
-	// Œ‹‰ÊŠi”[—p•Ï”
+	// çµæœæ ¼ç´ç”¨å¤‰æ•°
 	uint32_t samples = 0;
 
-	// “à•”ŠÖ”‚ğŒÄ‚Ño‚µ‚ÄŒvZ
-	// Šeˆø”‚Ì‘Ã“–«ƒ`ƒFƒbƒN‚Í“à•”ŠÖ”‚Ås‚Á‚Ä‚¢‚é‚½‚ßA‚±‚±‚Å‚ÍÈ—ª‚·‚é
+	// å†…éƒ¨é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦è¨ˆç®—
+	// å„å¼•æ•°ã®å¦¥å½“æ€§ãƒã‚§ãƒƒã‚¯ã¯å†…éƒ¨é–¢æ•°ã§è¡Œã£ã¦ã„ã‚‹ãŸã‚ã€ã“ã“ã§ã¯çœç•¥ã™ã‚‹
 	HRESULT hr = HSSBMath32_CalculateSamplesBySeconds_Strict( &samples, sampling_frequency, number_of_seconds, round_mode );
 	if ( FAILED( hr ) ) {
-		// ƒGƒ‰[”­¶‚Í0‚ğ•Ô‚·
+		// ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿæ™‚ã¯0ã‚’è¿”ã™
 		return 0;
 	}
 
-	// ŒvZŒ‹‰Ê‚ğ•Ô‚·
+	// è¨ˆç®—çµæœã‚’è¿”ã™
 	return samples;
 }
 
 
 HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBMath_CalculateBytesBySamples_Strict( size_t* pBytesSize, uint64_t samples, uint8_t channels, uint16_t bits_per_sample ) {
 
-	// NULLƒ|ƒCƒ“ƒ^[ƒ`ƒFƒbƒN
+	// NULLãƒã‚¤ãƒ³ã‚¿ãƒ¼ãƒã‚§ãƒƒã‚¯
 	if ( !pBytesSize ) {
 		return E_POINTER;
 	}
 
-	// “ü—Í’l‚Ìƒ`ƒFƒbƒN
+	// å…¥åŠ›å€¤ã®ãƒã‚§ãƒƒã‚¯
 	if ( samples == 0 || channels == 0 || bits_per_sample == 0 ) {
 		return E_INVALIDARG;
 	}
 
-	// —Êq‰»ƒrƒbƒg”‚ğƒoƒCƒg”‚É•ÏŠ·iØ‚èã‚°j
-	// ŒvZŒ‹‰Ê‚Í16ƒrƒbƒg‚Éû‚Ü‚é‚ªAŒvZ’†‚ÌƒI[ƒo[ƒtƒ[‘Îô‚Ì‚½‚ßA32ƒrƒbƒgŒ^‚ğŒo—R‚·‚é
+	// é‡å­åŒ–ãƒ“ãƒƒãƒˆæ•°ã‚’ãƒã‚¤ãƒˆæ•°ã«å¤‰æ›ï¼ˆåˆ‡ã‚Šä¸Šã’ï¼‰
+	// è¨ˆç®—çµæœã¯16ãƒ“ãƒƒãƒˆã«åã¾ã‚‹ãŒã€è¨ˆç®—ä¸­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼å¯¾ç­–ã®ãŸã‚ã€32ãƒ“ãƒƒãƒˆå‹ã‚’çµŒç”±ã™ã‚‹
 	uint16_t bytes_per_sample = static_cast<uint16_t> ( ( static_cast<uint32_t>( bits_per_sample ) + 7 ) / 8 );
 
-	// 1ƒTƒ“ƒvƒ‹‚ ‚½‚è‚ÌƒuƒƒbƒNƒAƒ‰ƒCƒ“‚ğŒvZ
-	// ˆÈ‰º‚ÌŠÏ“_‚Å‚±‚±‚Å‚ÌŒvZ‚ÍƒI[ƒo[ƒtƒ[‚µ‚È‚¢‚Æl‚¦‚ç‚ê‚é
-	//		‚Ü‚¸Abytes_per_sample (uint16_t : 16ƒrƒbƒg) * channels (uint8_t : 8ƒrƒbƒg) = Å‘å24ƒrƒbƒg‚Å‚ ‚é
-	//		‚»‚ê‚É‘Î‚µAsize_t‚ÍŠÂ‹«‚É‚æ‚Á‚Ä•Ï‚í‚é‚ª32ƒrƒbƒg‚Ü‚½‚Í64ƒrƒbƒg‚Å‚ ‚é‚½‚ß\•ª‚È”F¯
+	// 1ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®ãƒ–ãƒ­ãƒƒã‚¯ã‚¢ãƒ©ã‚¤ãƒ³ã‚’è¨ˆç®—
+	// ä»¥ä¸‹ã®è¦³ç‚¹ã§ã“ã“ã§ã®è¨ˆç®—ã¯ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã—ãªã„ã¨è€ƒãˆã‚‰ã‚Œã‚‹
+	//		ã¾ãšã€bytes_per_sample (uint16_t : 16ãƒ“ãƒƒãƒˆ) * channels (uint8_t : 8ãƒ“ãƒƒãƒˆ) = æœ€å¤§24ãƒ“ãƒƒãƒˆã§ã‚ã‚‹
+	//		ãã‚Œã«å¯¾ã—ã€size_tã¯ç’°å¢ƒã«ã‚ˆã£ã¦å¤‰ã‚ã‚‹ãŒ32ãƒ“ãƒƒãƒˆã¾ãŸã¯64ãƒ“ãƒƒãƒˆã§ã‚ã‚‹ãŸã‚ååˆ†ãªèªè­˜
 	size_t blockalign = channels * bytes_per_sample;
 
 	if ( samples <= ( static_cast<uint64_t>(SIZE_MAX) / blockalign ) ){
 
-		// ˆê’UA64ƒrƒbƒg‚ÅŒvZ
+		// ä¸€æ—¦ã€64ãƒ“ãƒƒãƒˆã§è¨ˆç®—
 		uint64_t total_bytes = samples * blockalign;
 
-		// ˆÀ‘S‚Ì‚½‚ßAsize_t‚Éû‚Ü‚é‚©Äƒ`ƒFƒbƒN
+		// å®‰å…¨ã®ãŸã‚ã€size_tã«åã¾ã‚‹ã‹å†ãƒã‚§ãƒƒã‚¯
 		if ( total_bytes <= SIZE_MAX ) {
 			*pBytesSize = static_cast<size_t>( total_bytes );
 			return S_OK;
 		} else {
-			// ƒI[ƒo[ƒtƒ[‚·‚éê‡AƒGƒ‰[‚ğ•Ô‚·
+			// ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã™ã‚‹å ´åˆã€ã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 			return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
 		}
 
 	} else {
-		// ƒI[ƒo[ƒtƒ[‚·‚éê‡AƒGƒ‰[‚ğ•Ô‚·
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã™ã‚‹å ´åˆã€ã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
 	}
 
 }
-
 

@@ -1,20 +1,20 @@
 /*
-	©ìƒ‰ƒCƒuƒ‰ƒŠwHSSoundBasisLibx‚É‚æ‚Á‚Ä’ñ‹Ÿ‚µ‚Ä‚¢‚éAƒƒ‚ƒŠŠÇ—Œn‚ÌƒTƒ“ƒvƒ‹ƒvƒƒOƒ‰ƒ€
-	(¦’P‘ÌƒeƒXƒg‚ÌƒvƒƒOƒ‰ƒ€‚Å‚Í‚ ‚è‚Ü‚¹‚ñ)
+	è‡ªä½œãƒ©ã‚¤ãƒ–ãƒ©ãƒªã€HSSoundBasisLibã€ã«ã‚ˆã£ã¦æä¾›ã—ã¦ã„ã‚‹ã€ãƒ¡ãƒ¢ãƒªç®¡ç†ç³»ã®ã‚µãƒ³ãƒ—ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
+	(â€»å˜ä½“ãƒ†ã‚¹ãƒˆã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§ã¯ã‚ã‚Šã¾ã›ã‚“)
 */
 
-// Windows.h ‚Ì min/max ƒ}ƒNƒ’è‹`‚ğ–³Œø‰»
+// Windows.h ã® min/max ãƒã‚¯ãƒ­å®šç¾©ã‚’ç„¡åŠ¹åŒ–
 #define NOMINMAX
 
 #include <cstdio>
 #include <cstdint>
 #include <locale>
 #include <atlbase.h>
-#include <algorithm> // std::min ‚ğg—p‚·‚é‚½‚ß‚É’Ç‰Á
+#include <algorithm> // std::min ã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ã«è¿½åŠ 
 #include <map>
 
-// ¦ HSSoundBasisLib.hpp‚ğƒCƒ“ƒNƒ‹[ƒh‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄAWindows.h‚àƒCƒ“ƒNƒ‹[ƒh‚³‚ê‚Ü‚·
-// ¦ ‚½‚¾‚µAHSSoundBasisLib.hpp‚ª’¼ÚWindows.h‚ğƒCƒ“ƒNƒ‹[ƒh‚µ‚Ä‚¢‚é‚í‚¯‚Å‚Í‚È‚­•Ê‚Ìƒwƒbƒ_[‚É‚æ‚Á‚Ä“Ç‚İ‚Ü‚ê‚Ü‚·
+// â€» HSSoundBasisLib.hppã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã™ã‚‹ã“ã¨ã«ã‚ˆã£ã¦ã€Windows.hã‚‚ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã•ã‚Œã¾ã™
+// â€» ãŸã ã—ã€HSSoundBasisLib.hppãŒç›´æ¥Windows.hã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã—ã¦ã„ã‚‹ã‚ã‘ã§ã¯ãªãåˆ¥ã®ãƒ˜ãƒƒãƒ€ãƒ¼ã«ã‚ˆã£ã¦èª­ã¿è¾¼ã¾ã‚Œã¾ã™
 #include "../HSSoundBasisLib/HSSoundBasisLib.hpp"
 
 void Sample_MemoryOwner( void );
@@ -22,7 +22,7 @@ void Sample_ReadOnlyMemoryBuffer( void );
 void Sample_ReadOnlyMemoryBuffer_DumpData( IHSSBReadOnlyMemoryBuffer *pBuffer );
 
 
-// ƒTƒ“ƒvƒ‹ƒ‚[ƒh—ñ‹“‘Ì
+// ã‚µãƒ³ãƒ—ãƒ«ãƒ¢ãƒ¼ãƒ‰åˆ—æŒ™ä½“
 enum class SampleMode {
 	MemoryOwner = 0,
 	ReadOnlyMemoryBuffer,
@@ -34,36 +34,37 @@ enum class SampleMode {
 int main( void ) {
 
 	setlocale( LC_ALL, "Japanese" );
+    SetConsoleOutputCP( 65001 ); // UTF-8ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸ã«å¤‰æ›´
 
 
-	std::map<SampleMode , const char*> sampleModeNames = {
-		{ SampleMode::MemoryOwner, "ƒƒ‚ƒŠƒI[ƒi[" },
-		{ SampleMode::ReadOnlyMemoryBuffer, "“Ç‚İæ‚èê—pƒƒ‚ƒŠƒoƒbƒtƒ@" }
+	std::map<SampleMode , const wchar_t*> sampleModeNames = {
+		{ SampleMode::MemoryOwner, L"ãƒ¡ãƒ¢ãƒªã‚ªãƒ¼ãƒŠãƒ¼" },
+		{ SampleMode::ReadOnlyMemoryBuffer, L"èª­ã¿å–ã‚Šå°‚ç”¨ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡" }
 	};
 
 
-	printf( "HSSoundBasisLib ƒƒ‚ƒŠŠÇ—ƒTƒ“ƒvƒ‹ƒvƒƒOƒ‰ƒ€\n" );
+	wprintf( L"HSSoundBasisLib ãƒ¡ãƒ¢ãƒªç®¡ç†ã‚µãƒ³ãƒ—ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒ \n" );
 
-	printf( "=== ƒTƒ“ƒvƒ‹ˆê—— ===\n" );
+	wprintf( L"=== ã‚µãƒ³ãƒ—ãƒ«ä¸€è¦§ ===\n" );
 
 	for ( const auto& pair : sampleModeNames ) {
 		if ( pair.first >= SampleMode::End ) {
 			continue;
 		}
-		printf( "\t%d: %s\n", static_cast<int>( pair.first ), pair.second );
+		wprintf( L"\t%d: %s\n", static_cast<int>( pair.first ), pair.second );
 	}
 
-	printf( "\nÀs‚µ‚½‚¢ƒTƒ“ƒvƒ‹‚Ì”Ô†‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢: " );
+	wprintf( L"\nå®Ÿè¡Œã—ãŸã„ã‚µãƒ³ãƒ—ãƒ«ã®ç•ªå·ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„: " );
 
 	int sampleNo = 0;
 	(void)scanf_s( "%d", &sampleNo );
 
 	if ( static_cast<int>( SampleMode::End ) <= sampleNo ) {
-		printf( "•s³‚È”Ô†‚ª“ü—Í‚³‚ê‚Ü‚µ‚½BƒvƒƒOƒ‰ƒ€‚ğI—¹‚µ‚Ü‚·B\n" );
+		wprintf( L"ä¸æ­£ãªç•ªå·ãŒå…¥åŠ›ã•ã‚Œã¾ã—ãŸã€‚ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’çµ‚äº†ã—ã¾ã™ã€‚\n" );
 		return 0;
 	}
 
-	// ‘I‘ğ‚³‚ê‚½ƒTƒ“ƒvƒ‹ƒ‚[ƒh
+	// é¸æŠã•ã‚ŒãŸã‚µãƒ³ãƒ—ãƒ«ãƒ¢ãƒ¼ãƒ‰
 	SampleMode selectedMode = static_cast<SampleMode>( sampleNo );
 	switch ( selectedMode ) {
 		case SampleMode::MemoryOwner:
@@ -73,8 +74,8 @@ int main( void ) {
 			Sample_ReadOnlyMemoryBuffer( );
 			break;
 		default:
-			// ”O‚Ì‚½‚ß•s³‚È”Ô†‚ª—ˆ‚½ê‡‚Ìˆ—
-			printf( "•s³‚È”Ô†‚ª“ü—Í‚³‚ê‚Ü‚µ‚½BƒvƒƒOƒ‰ƒ€‚ğI—¹‚µ‚Ü‚·B\n" );
+			// å¿µã®ãŸã‚ä¸æ­£ãªç•ªå·ãŒæ¥ãŸå ´åˆã®å‡¦ç†
+			wprintf( L"ä¸æ­£ãªç•ªå·ãŒå…¥åŠ›ã•ã‚Œã¾ã—ãŸã€‚ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’çµ‚äº†ã—ã¾ã™ã€‚\n" );
 			return 0;
 	}
 	return 0;
@@ -83,26 +84,26 @@ int main( void ) {
 
 void Sample_MemoryOwner( void ) {
 
-	// IHSSBMemoryOwner‚ÍIUnknown‚ğÀ‘•‚µ‚Ä‚¢‚é‚½‚ßACComPtr‚ğg—p‚Å‚«‚é
+	// IHSSBMemoryOwnerã¯IUnknownã‚’å®Ÿè£…ã—ã¦ã„ã‚‹ãŸã‚ã€CComPtrã‚’ä½¿ç”¨ã§ãã‚‹
 	CComPtr<IHSSBMemoryOwner> memoryOwner;
 
-	printf( "=== ƒƒ‚ƒŠƒI[ƒi[‚ÌƒTƒ“ƒvƒ‹ ===\n" );
+	wprintf( L"=== ãƒ¡ãƒ¢ãƒªã‚ªãƒ¼ãƒŠãƒ¼ã®ã‚µãƒ³ãƒ—ãƒ« ===\n" );
 
-	// ƒƒ‚ƒŠŠm•ÛƒTƒCƒY
+	// ãƒ¡ãƒ¢ãƒªç¢ºä¿ã‚µã‚¤ã‚º
 	size_t BufferAllocateSize = 512;
 
-	// ƒƒ‚ƒŠ‚ğŠm•Û
-	// ¦ HeapAlloc‚Ìƒƒ‚ƒŠ‚ğˆÚ÷‚·‚éê‡AHeapƒnƒ“ƒhƒ‹‚ÍGetProcessHeap‚Åæ“¾‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+	// ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
+	// â€» HeapAllocã®ãƒ¡ãƒ¢ãƒªã‚’ç§»è­²ã™ã‚‹å ´åˆã€Heapãƒãƒ³ãƒ‰ãƒ«ã¯GetProcessHeapã§å–å¾—ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	void* pBuffer = HeapAlloc( GetProcessHeap( ), 0, BufferAllocateSize );
 
-	// Šm•Û‚É¸”s‚µ‚½ê‡‚ÍI—¹
+	// ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
 	if ( !pBuffer ) {
-		printf( "HeapAlloc ¸”s\n" );
+		wprintf( L"HeapAlloc å¤±æ•—\n" );
 		return;
 	}
 
-	// pBuffer‚Éƒf[ƒ^‚ğ‘‚«‚Ş
-	// ’l‚Í0`255‚ğ‡”Ô‚É‘‚«‚Ş
+	// pBufferã«ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
+	// å€¤ã¯0ï½255ã‚’é †ç•ªã«æ›¸ãè¾¼ã‚€
 	uint8_t* pByteBuffer = static_cast<uint8_t*>( pBuffer );
 	for ( size_t i = 0; i < BufferAllocateSize; ++i ) {
 		pByteBuffer[i] = static_cast<uint8_t>( i & 0xFF );
@@ -111,128 +112,128 @@ void Sample_MemoryOwner( void ) {
 
 	HRESULT hr;
 
-	// HSSBCreateReadOnlyMemoryBuffer‚É“n‚·Œë‚Á‚½ƒTƒCƒY‚ğ—pˆÓ
-	// ‚±‚±‚Å‚ÍABufferAllocateSize‚Ì3”{‚ğ’Ê’m‚·‚é‚±‚Æ‚Æ‚µ‚Ü‚·B
+	// HSSBCreateReadOnlyMemoryBufferã«æ¸¡ã™èª¤ã£ãŸã‚µã‚¤ã‚ºã‚’ç”¨æ„
+	// ã“ã“ã§ã¯ã€BufferAllocateSizeã®3å€ã‚’é€šçŸ¥ã™ã‚‹ã“ã¨ã¨ã—ã¾ã™ã€‚
 	size_t OverSizedNotifySize = BufferAllocateSize * 3;
 
-	// ƒq[ƒvƒƒ‚ƒŠ‚ÌŠ—LŒ ‚ğ‚Âƒƒ‚ƒŠƒI[ƒi[‚ğì¬
+	// ãƒ’ãƒ¼ãƒ—ãƒ¡ãƒ¢ãƒªã®æ‰€æœ‰æ¨©ã‚’æŒã¤ãƒ¡ãƒ¢ãƒªã‚ªãƒ¼ãƒŠãƒ¼ã‚’ä½œæˆ
 	hr = HSSBCreateMemoryOwner( &memoryOwner,
-		// ˆÚ÷‚·‚éƒoƒbƒtƒ@
+		// ç§»è­²ã™ã‚‹ãƒãƒƒãƒ•ã‚¡
 		pBuffer,
-		// ˆÓ}“I‚ÉŒë‚Á‚½ƒTƒCƒY‚ğ’Ê’m
+		// æ„å›³çš„ã«èª¤ã£ãŸã‚µã‚¤ã‚ºã‚’é€šçŸ¥
 		OverSizedNotifySize,
-		// ŠÇ—‚ğˆÚ÷‚µA‚Ü‚½AŠY“–‚Ìƒƒ‚ƒŠ‚ÍHeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚Å‚ ‚é‚±‚Æ‚ğ’Ê’m‚µ‚Ü‚·
+		// ç®¡ç†ã‚’ç§»è­²ã—ã€ã¾ãŸã€è©²å½“ã®ãƒ¡ãƒ¢ãƒªã¯HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã§ã‚ã‚‹ã“ã¨ã‚’é€šçŸ¥ã—ã¾ã™
 		EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced
 	);
 
-	// ì¬‚É¸”s‚µ‚½ê‡
+	// ä½œæˆã«å¤±æ•—ã—ãŸå ´åˆ
 	if ( FAILED( hr ) ) {
-		printf( "HSSBCreateMemoryOwner ¸”s. hr=0x%08X\n", hr );
-		// Š—LŒ ‚ğ‚½‚È‚¢ê‡‚Í©•ª‚Å‰ğ•ú‚·‚é•K—v‚ª‚ ‚é
-		// ‚±‚ê‚ÍAIHSSBMemoryOwner‚Ö‚ÌŠÇ—ˆÚ÷‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¢‚½‚ß‚Å‚·
+		wprintf( L"HSSBCreateMemoryOwner å¤±æ•—. hr=0x%08X\n", hr );
+		// æ‰€æœ‰æ¨©ã‚’æŒãŸãªã„å ´åˆã¯è‡ªåˆ†ã§è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
+		// ã“ã‚Œã¯ã€IHSSBMemoryOwnerã¸ã®ç®¡ç†ç§»è­²ãŒå®Œäº†ã—ã¦ã„ãªã„ãŸã‚ã§ã™
 		HeapFree( GetProcessHeap( ), 0, pBuffer );
 		return;
 	}
 
 
-	// æ‚Ù‚ÇAƒTƒCƒYw’è‚ğ‘½‚­’Ê’m‚µ‚½‚½‚ßS_OK‚Í•Ô‚ç‚È‚¢‚Í‚¸‚Å‚ ‚éB‚±‚ê‚ÍAHeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚ğˆÚ÷‚µ‚æ‚¤‚Æ‚µ‚½ÛA
-	// HSSBCreateMemoryOwner“à•”‚ÅHeapSize‚ÅÀÛ‚ÌƒTƒCƒY‚ğŠm”F‚µA
-	// ÀÛ‚ÌƒTƒCƒY‚ªw’è‚³‚ê‚½ƒTƒCƒY‚æ‚è‚à¬‚³‚¢ê‡A ‚»‚ê‚ğ‚à‚Æ‚ÉÀ‘•ƒNƒ‰ƒX“à‚ÅŠÇ—‚·‚éƒTƒCƒY‚ğ’²®‚µA
-	// HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED‚ğ•Ô‚·‚½‚ß‚Å‚ ‚éB
+	// å…ˆã»ã©ã€ã‚µã‚¤ã‚ºæŒ‡å®šã‚’å¤šãé€šçŸ¥ã—ãŸãŸã‚S_OKã¯è¿”ã‚‰ãªã„ã¯ãšã§ã‚ã‚‹ã€‚ã“ã‚Œã¯ã€HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã‚’ç§»è­²ã—ã‚ˆã†ã¨ã—ãŸéš›ã€
+	// HSSBCreateMemoryOwnerå†…éƒ¨ã§HeapSizeã§å®Ÿéš›ã®ã‚µã‚¤ã‚ºã‚’ç¢ºèªã—ã€
+	// å®Ÿéš›ã®ã‚µã‚¤ã‚ºãŒæŒ‡å®šã•ã‚ŒãŸã‚µã‚¤ã‚ºã‚ˆã‚Šã‚‚å°ã•ã„å ´åˆã€ ãã‚Œã‚’ã‚‚ã¨ã«å®Ÿè£…ã‚¯ãƒ©ã‚¹å†…ã§ç®¡ç†ã™ã‚‹ã‚µã‚¤ã‚ºã‚’èª¿æ•´ã—ã€
+	// HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTEDã‚’è¿”ã™ãŸã‚ã§ã‚ã‚‹ã€‚
 	if ( hr != S_OK ) {
-		printf( "HSSBCreateMemoryOwner Result hr = 0x%08X\n", hr );
-		printf( "HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = 0x%08X\n\n", HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED );
+		wprintf( L"HSSBCreateMemoryOwner Result hr = 0x%08X\n", hr );
+		wprintf( L"HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = 0x%08X\n\n", HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED );
 		if ( hr == HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED ) {
-			printf( "\t‚±‚Ì‚æ‚¤‚ÉAÀÛ‚ÌƒTƒCƒY‚æ‚è‘å‚«‚¢ƒTƒCƒY‚ğw’è‚µ‚½ê‡A\n" );
-			printf( "\tHSSB_S_BUT_MANAGED_SIZE_ADJUSTED‚ª•Ô‚è‚Ü‚·B \n" );
-			printf( "\t(HeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚ğˆÚ÷‚µ‚½ê‡‚Ì‚İ)\n\n" );
+			wprintf( L"\tã“ã®ã‚ˆã†ã«ã€å®Ÿéš›ã®ã‚µã‚¤ã‚ºã‚ˆã‚Šå¤§ãã„ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã—ãŸå ´åˆã€\n" );
+			wprintf( L"\tHSSB_S_BUT_MANAGED_SIZE_ADJUSTEDãŒè¿”ã‚Šã¾ã™ã€‚ \n" );
+			wprintf( L"\t(HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã‚’ç§»è­²ã—ãŸå ´åˆã®ã¿)\n\n" );
 		} else {
-			printf( "¦ ƒ‰ƒCƒuƒ‰ƒŠ‘¤‚ÌƒoƒO‚Ì‰Â”\«‚ª‚ ‚è‚Ü‚· ¦\n" );
+			wprintf( L"â€» ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå´ã®ãƒã‚°ã®å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ â€»\n" );
 		}
-		printf( "‹ï‘Ì“I‚ÉAˆÈ‰º‚Ì‚æ‚¤‚ÉƒTƒCƒY’²®‚ª‚³‚ê‚Ü‚·B\n" );
-		printf( "\tHSSBCreateMemoryOwner‚É“n‚µ‚½ƒoƒbƒtƒ@‚ÌÀÛ‚ÌŠm•ÛƒTƒCƒYF%zu\n", BufferAllocateSize );
-		printf( "\tHSSBCreateMemoryOwner‚É“n‚µ‚½ƒTƒCƒYF%zu\n", OverSizedNotifySize );
-		printf( "\tHSSBCreateMemoryOwner‚ª”F¯‚µ‚Ä‚¢‚éƒTƒCƒYF%zu\n\n", memoryOwner->GetSize( ) );
+		wprintf( L"å…·ä½“çš„ã«ã€ä»¥ä¸‹ã®ã‚ˆã†ã«ã‚µã‚¤ã‚ºèª¿æ•´ãŒã•ã‚Œã¾ã™ã€‚\n" );
+		wprintf( L"\tHSSBCreateMemoryOwnerã«æ¸¡ã—ãŸãƒãƒƒãƒ•ã‚¡ã®å®Ÿéš›ã®ç¢ºä¿ã‚µã‚¤ã‚ºï¼š%zu\n", BufferAllocateSize );
+		wprintf( L"\tHSSBCreateMemoryOwnerã«æ¸¡ã—ãŸã‚µã‚¤ã‚ºï¼š%zu\n", OverSizedNotifySize );
+		wprintf( L"\tHSSBCreateMemoryOwnerãŒèªè­˜ã—ã¦ã„ã‚‹ã‚µã‚¤ã‚ºï¼š%zu\n\n", memoryOwner->GetSize( ) );
 	} else {
-		printf( "¦ ƒ‰ƒCƒuƒ‰ƒŠ‘¤‚ÌƒoƒO‚Ì‰Â”\«‚ª‚ ‚è‚Ü‚· ¦\n" );
+		wprintf( L"â€» ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå´ã®ãƒã‚°ã®å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ â€»\n" );
 	}
 
-	printf( "\n" );
+	wprintf( L"\n" );
 
-	// Detach‚Åƒoƒbƒtƒ@‚ğæ‚èo‚·
+	// Detachã§ãƒãƒƒãƒ•ã‚¡ã‚’å–ã‚Šå‡ºã™
 	void* pDetachedBuffer = nullptr;
 	hr = memoryOwner->Detach( &pDetachedBuffer );
 
 	if ( FAILED( hr ) ) {
-		printf( "Detach ¸”s. hr=0x%08X\n", hr );
+		wprintf( L"Detach å¤±æ•—. hr=0x%08X\n", hr );
 		return;
 	}
 
-	printf( "Detach ¬Œ÷. æ‚èo‚µ‚½ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^: %p\n", pDetachedBuffer );
+	wprintf( L"Detach æˆåŠŸ. å–ã‚Šå‡ºã—ãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿: %p\n", pDetachedBuffer );
 	
-	// ‚±‚ÌA“–‰‚ÉˆÚ÷‚µ‚½ƒoƒbƒtƒ@ƒ|ƒCƒ“ƒ^‚Æ“¯‚¶‚Å‚ ‚é‚±‚Æ‚ğŠm”F
+	// ã“ã®æ™‚ã€å½“åˆã«ç§»è­²ã—ãŸãƒãƒƒãƒ•ã‚¡ãƒã‚¤ãƒ³ã‚¿ã¨åŒã˜ã§ã‚ã‚‹ã“ã¨ã‚’ç¢ºèª
 	if ( pDetachedBuffer != pBuffer ) {
 
-		printf( "¦ ƒ‰ƒCƒuƒ‰ƒŠ‘¤‚ÌƒoƒO‚Ì‰Â”\«‚ª‚ ‚è‚Ü‚· ¦\n" );
+		wprintf( L"â€» ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå´ã®ãƒã‚°ã®å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ â€»\n" );
 		return;
 	}
 
-	printf( "æ‚èo‚µ‚½ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^‚ÍA“–‰ˆÚ÷‚µ‚½ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^‚Æ“¯‚¶‚Å‚·B\n" );
+	wprintf( L"å–ã‚Šå‡ºã—ãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿ã¯ã€å½“åˆç§»è­²ã—ãŸãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿ã¨åŒã˜ã§ã™ã€‚\n" );
 
-	// ¡“x‚ÍAttach‚ÅÄ“xƒoƒbƒtƒ@‚ğƒAƒ^ƒbƒ`‚·‚é
-	// ¡“x‚ÍA³‚µ‚¢ƒTƒCƒY‚ğ’Ê’m‚µ‚Ü‚·
+	// ä»Šåº¦ã¯Attachã§å†åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¢ã‚¿ãƒƒãƒã™ã‚‹
+	// ä»Šåº¦ã¯ã€æ­£ã—ã„ã‚µã‚¤ã‚ºã‚’é€šçŸ¥ã—ã¾ã™
 
 	hr = memoryOwner->Attach( pDetachedBuffer, BufferAllocateSize,
 		EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced
 	);
 
 	if ( FAILED( hr ) ) {
-		printf( "Attach ¸”s. hr=0x%08X\n", hr );
-		// Š—LŒ ‚ğ‚½‚È‚¢ê‡‚Í©•ª‚Å‰ğ•ú‚·‚é•K—v‚ª‚ ‚é
+		wprintf( L"Attach å¤±æ•—. hr=0x%08X\n", hr );
+		// æ‰€æœ‰æ¨©ã‚’æŒãŸãªã„å ´åˆã¯è‡ªåˆ†ã§è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
 		HeapFree( GetProcessHeap( ), 0, pDetachedBuffer );
 		return;
 	}
 
 
-	printf( "Attach ¬Œ÷.\n" );
+	wprintf( L"Attach æˆåŠŸ.\n" );
 
-	// ³‚µ‚¢ƒTƒCƒY‚ğ’Ê’m‚µ‚½‚½‚ßAS_OK‚ª•Ô‚é‚Í‚¸‚Å‚ ‚é
+	// æ­£ã—ã„ã‚µã‚¤ã‚ºã‚’é€šçŸ¥ã—ãŸãŸã‚ã€S_OKãŒè¿”ã‚‹ã¯ãšã§ã‚ã‚‹
 	if ( hr == S_OK ) {
-		printf( "’Ê’m‚µ‚½ƒTƒCƒY‚Å³‚µ‚­ƒAƒ^ƒbƒ`‚³‚ê‚Ü‚µ‚½B\n" );
+		wprintf( L"é€šçŸ¥ã—ãŸã‚µã‚¤ã‚ºã§æ­£ã—ãã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¾ã—ãŸã€‚\n" );
 	} else {
-		printf( "¦ ƒ‰ƒCƒuƒ‰ƒŠ‘¤‚ÌƒoƒO‚Ì‰Â”\«‚ª‚ ‚è‚Ü‚· ¦\n" );
+		wprintf( L"â€» ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå´ã®ãƒã‚°ã®å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ â€»\n" );
 	}
 
-	// CComPtr‚É‚æ‚Á‚ÄARelease‚ª©“®‚ÅŒÄ‚Î‚ê‚é‚½‚ßA‰ğ•ú•s—v
-	// ¡‰ñˆÚ÷‚µ‚½ƒoƒbƒtƒ@‚ÍAHeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚Å‚ ‚é‚±‚Æ‚ğ’Ê’m‚µ‚Ä‚¢‚½‚½‚ßA
-	// QÆƒJƒEƒ“ƒ^‚ª0‚É‚È‚èAIHSSBMemoryOwner‚ª‰ğ•ú‚³‚ê‚éÛ‚É
-	// HeapFree‚ªŒÄ‚Î‚êAˆÚ÷‚µ‚½ƒoƒbƒtƒ@‚ª©“®‚Å‰ğ•ú‚³‚ê‚Ü‚·B
+	// CComPtrã«ã‚ˆã£ã¦ã€ReleaseãŒè‡ªå‹•ã§å‘¼ã°ã‚Œã‚‹ãŸã‚ã€è§£æ”¾ä¸è¦
+	// ä»Šå›ç§»è­²ã—ãŸãƒãƒƒãƒ•ã‚¡ã¯ã€HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã§ã‚ã‚‹ã“ã¨ã‚’é€šçŸ¥ã—ã¦ã„ãŸãŸã‚ã€
+	// å‚ç…§ã‚«ã‚¦ãƒ³ã‚¿ãŒ0ã«ãªã‚Šã€IHSSBMemoryOwnerãŒè§£æ”¾ã•ã‚Œã‚‹éš›ã«
+	// HeapFreeãŒå‘¼ã°ã‚Œã€ç§»è­²ã—ãŸãƒãƒƒãƒ•ã‚¡ãŒè‡ªå‹•ã§è§£æ”¾ã•ã‚Œã¾ã™ã€‚
 }
 
 
 void Sample_ReadOnlyMemoryBuffer( void ) {
 
 
-	// IHSSBReadOnlyMemoryBuffer‚ÍIUnknown‚ğÀ‘•‚µ‚Ä‚¢‚é‚½‚ßACComPtr‚ğg—p‚Å‚«‚é
+	// IHSSBReadOnlyMemoryBufferã¯IUnknownã‚’å®Ÿè£…ã—ã¦ã„ã‚‹ãŸã‚ã€CComPtrã‚’ä½¿ç”¨ã§ãã‚‹
 	CComPtr<IHSSBReadOnlyMemoryBuffer> readOnlyBuffer;
 
-	printf( "=== “Ç‚İæ‚èê—pƒƒ‚ƒŠƒoƒbƒtƒ@‚ÌƒTƒ“ƒvƒ‹ ===\n" );
+	wprintf( L"=== èª­ã¿å–ã‚Šå°‚ç”¨ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã®ã‚µãƒ³ãƒ—ãƒ« ===\n" );
 
-	// ƒƒ‚ƒŠŠm•ÛƒTƒCƒY
+	// ãƒ¡ãƒ¢ãƒªç¢ºä¿ã‚µã‚¤ã‚º
 	size_t BufferAllocateSize = 512;
 
-	// ƒƒ‚ƒŠ‚ğŠm•Û
-	// ¦ HeapAlloc‚Ìƒƒ‚ƒŠ‚ğˆÚ÷‚·‚éê‡AHeapƒnƒ“ƒhƒ‹‚ÍGetProcessHeap‚Åæ“¾‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+	// ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
+	// â€» HeapAllocã®ãƒ¡ãƒ¢ãƒªã‚’ç§»è­²ã™ã‚‹å ´åˆã€Heapãƒãƒ³ãƒ‰ãƒ«ã¯GetProcessHeapã§å–å¾—ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
 	void* pBuffer = HeapAlloc( GetProcessHeap( ), 0, BufferAllocateSize );
 
-	// Šm•Û‚É¸”s‚µ‚½ê‡‚ÍI—¹
+	// ç¢ºä¿ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
 	if ( !pBuffer ) {
-		printf( "HeapAlloc ¸”s\n" );
+		wprintf( L"HeapAlloc å¤±æ•—\n" );
 		return;
 	}
 
-	// pBuffer‚Éƒf[ƒ^‚ğ‘‚«‚Ş
-	// ’l‚Í0`255‚ğ‡”Ô‚É‘‚«‚Ş
+	// pBufferã«ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
+	// å€¤ã¯0ï½255ã‚’é †ç•ªã«æ›¸ãè¾¼ã‚€
 	uint8_t* pByteBuffer = static_cast<uint8_t*>( pBuffer );
 	for ( size_t i = 0; i < BufferAllocateSize; ++i ) {
 		pByteBuffer[i] = static_cast<uint8_t>( i & 0xFF );
@@ -241,118 +242,117 @@ void Sample_ReadOnlyMemoryBuffer( void ) {
 
 	HRESULT hr;
 
-	// HSSBCreateReadOnlyMemoryBuffer‚É“n‚·Œë‚Á‚½ƒTƒCƒY‚ğ—pˆÓ
-	// ‚±‚±‚Å‚ÍABufferAllocateSize‚Ì”{‚ğ’Ê’m‚·‚é‚±‚Æ‚Æ‚µ‚Ü‚·B
+	// HSSBCreateReadOnlyMemoryBufferã«æ¸¡ã™èª¤ã£ãŸã‚µã‚¤ã‚ºã‚’ç”¨æ„
+	// ã“ã“ã§ã¯ã€BufferAllocateSizeã®å€ã‚’é€šçŸ¥ã™ã‚‹ã“ã¨ã¨ã—ã¾ã™ã€‚
 	size_t OverSizedNotifySize = BufferAllocateSize * 2;
 
-	// ƒq[ƒvƒƒ‚ƒŠ‚ÌŠ—LŒ ‚ğ‚Â“Ç‚İæ‚èê—pƒƒ‚ƒŠƒoƒbƒtƒ@‚ğì¬
+	// ãƒ’ãƒ¼ãƒ—ãƒ¡ãƒ¢ãƒªã®æ‰€æœ‰æ¨©ã‚’æŒã¤èª­ã¿å–ã‚Šå°‚ç”¨ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 	hr = HSSBCreateReadOnlyMemoryBuffer( &readOnlyBuffer,
 
-		// ˆÚ÷‚·‚éƒoƒbƒtƒ@
+		// ç§»è­²ã™ã‚‹ãƒãƒƒãƒ•ã‚¡
 		pBuffer,
 
-		// ˆÓ}“I‚ÉŒë‚Á‚½ƒTƒCƒY‚ğ’Ê’m
+		// æ„å›³çš„ã«èª¤ã£ãŸã‚µã‚¤ã‚ºã‚’é€šçŸ¥
 		OverSizedNotifySize,
 
-		// ŠÇ—‚ğˆÚ÷‚µA‚Ü‚½AŠY“–‚Ìƒƒ‚ƒŠ‚ÍHeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚Å‚ ‚é‚±‚Æ‚ğ’Ê’m‚µ‚Ü‚·
+		// ç®¡ç†ã‚’ç§»è­²ã—ã€ã¾ãŸã€è©²å½“ã®ãƒ¡ãƒ¢ãƒªã¯HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã§ã‚ã‚‹ã“ã¨ã‚’é€šçŸ¥ã—ã¾ã™
 		EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced
 	);
 
-	// ì¬‚É¸”s‚µ‚½ê‡
+	// ä½œæˆã«å¤±æ•—ã—ãŸå ´åˆ
 	if ( FAILED( hr ) ) {
-		printf( "HSSBCreateReadOnlyMemoryBuffer ¸”s. hr=0x%08X\n", hr );
-		// Š—LŒ ‚ğ‚½‚È‚¢ê‡‚Í©•ª‚Å‰ğ•ú‚·‚é•K—v‚ª‚ ‚é
-		// ‚±‚ê‚ÍAIHSSBReadOnlyMemoryBuffer‚Ö‚ÌŠÇ—ˆÚ÷‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¢‚½‚ß‚Å‚·
+		wprintf( L"HSSBCreateReadOnlyMemoryBuffer å¤±æ•—. hr=0x%08X\n", hr );
+		// æ‰€æœ‰æ¨©ã‚’æŒãŸãªã„å ´åˆã¯è‡ªåˆ†ã§è§£æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
+		// ã“ã‚Œã¯ã€IHSSBReadOnlyMemoryBufferã¸ã®ç®¡ç†ç§»è­²ãŒå®Œäº†ã—ã¦ã„ãªã„ãŸã‚ã§ã™
 		HeapFree( GetProcessHeap( ), 0, pBuffer );
 		return;
 	}
 
-	// æ‚Ù‚ÇAƒTƒCƒYw’è‚ğ‘½‚­’Ê’m‚µ‚½‚½‚ßS_OK‚Í•Ô‚ç‚È‚¢‚Í‚¸‚Å‚ ‚éB‚±‚ê‚ÍAHeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚ğˆÚ÷‚µ‚æ‚¤‚Æ‚µ‚½ÛA
-	// HSSBCreateReadOnlyMemoryBuffer“à•”‚ÅHeapSize‚ÅÀÛ‚ÌƒTƒCƒY‚ğŠm”F‚µA
-	// ÀÛ‚ÌƒTƒCƒY‚ªw’è‚³‚ê‚½ƒTƒCƒY‚æ‚è‚à¬‚³‚¢ê‡A ‚»‚ê‚ğ‚à‚Æ‚ÉÀ‘•ƒNƒ‰ƒX“à‚ÅŠÇ—‚·‚éƒTƒCƒY‚ğ’²®‚µA
-	// HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED‚ğ•Ô‚·‚½‚ß‚Å‚ ‚éB
+	// å…ˆã»ã©ã€ã‚µã‚¤ã‚ºæŒ‡å®šã‚’å¤šãé€šçŸ¥ã—ãŸãŸã‚S_OKã¯è¿”ã‚‰ãªã„ã¯ãšã§ã‚ã‚‹ã€‚ã“ã‚Œã¯ã€HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã‚’ç§»è­²ã—ã‚ˆã†ã¨ã—ãŸéš›ã€
+	// HSSBCreateReadOnlyMemoryBufferå†…éƒ¨ã§HeapSizeã§å®Ÿéš›ã®ã‚µã‚¤ã‚ºã‚’ç¢ºèªã—ã€
+	// å®Ÿéš›ã®ã‚µã‚¤ã‚ºãŒæŒ‡å®šã•ã‚ŒãŸã‚µã‚¤ã‚ºã‚ˆã‚Šã‚‚å°ã•ã„å ´åˆã€ ãã‚Œã‚’ã‚‚ã¨ã«å®Ÿè£…ã‚¯ãƒ©ã‚¹å†…ã§ç®¡ç†ã™ã‚‹ã‚µã‚¤ã‚ºã‚’èª¿æ•´ã—ã€
+	// HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTEDã‚’è¿”ã™ãŸã‚ã§ã‚ã‚‹ã€‚
 	if ( hr != S_OK ) {
-		printf( "HSSBCreateReadOnlyMemoryBuffer Result hr = 0x%08X\n", hr );
-		printf( "HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = 0x%08X\n\n", HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED );
+		wprintf( L"HSSBCreateReadOnlyMemoryBuffer Result hr = 0x%08X\n", hr );
+		wprintf( L"HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED = 0x%08X\n\n", HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED );
 
 		if ( hr == HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED ) {
-			printf( "\t‚±‚Ì‚æ‚¤‚ÉAÀÛ‚ÌƒTƒCƒY‚æ‚è‘å‚«‚¢ƒTƒCƒY‚ğw’è‚µ‚½ê‡A\n" );
-			printf( "\tHSSB_S_BUT_MANAGED_SIZE_ADJUSTED‚ª•Ô‚è‚Ü‚·B \n" );
-			printf( "\t(HeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚ğˆÚ÷‚µ‚½ê‡‚Ì‚İ)\n\n" );
+			wprintf( L"\tã“ã®ã‚ˆã†ã«ã€å®Ÿéš›ã®ã‚µã‚¤ã‚ºã‚ˆã‚Šå¤§ãã„ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã—ãŸå ´åˆã€\n" );
+			wprintf( L"\tHSSB_S_BUT_MANAGED_SIZE_ADJUSTEDãŒè¿”ã‚Šã¾ã™ã€‚ \n" );
+			wprintf( L"\t(HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã‚’ç§»è­²ã—ãŸå ´åˆã®ã¿)\n\n" );
 		} else {
-			printf( "¦ ƒ‰ƒCƒuƒ‰ƒŠ‘¤‚ÌƒoƒO‚Ì‰Â”\«‚ª‚ ‚è‚Ü‚· ¦\n" );
+			wprintf( L"â€» ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå´ã®ãƒã‚°ã®å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ â€»\n" );
 		}
 
-		printf( "‹ï‘Ì“I‚ÉAˆÈ‰º‚Ì‚æ‚¤‚ÉƒTƒCƒY’²®‚ª‚³‚ê‚Ü‚·B\n" );
+		wprintf( L"å…·ä½“çš„ã«ã€ä»¥ä¸‹ã®ã‚ˆã†ã«ã‚µã‚¤ã‚ºèª¿æ•´ãŒã•ã‚Œã¾ã™ã€‚\n" );
 
-		printf( "\tHSSBCreateReadOnlyMemoryBuffer‚É“n‚µ‚½ƒoƒbƒtƒ@‚ÌÀÛ‚ÌŠm•ÛƒTƒCƒYF%zu\n", BufferAllocateSize );
-		printf( "\tHSSBCreateReadOnlyMemoryBuffer‚É“n‚µ‚½ƒTƒCƒYF%zu\n", OverSizedNotifySize );
-		printf( "\tHSSBCreateReadOnlyMemoryBuffer‚ª”F¯‚µ‚Ä‚¢‚éƒTƒCƒYF%zu\n\n", readOnlyBuffer->GetSize( ) );
+		wprintf( L"\tHSSBCreateReadOnlyMemoryBufferã«æ¸¡ã—ãŸãƒãƒƒãƒ•ã‚¡ã®å®Ÿéš›ã®ç¢ºä¿ã‚µã‚¤ã‚ºï¼š%zu\n", BufferAllocateSize );
+		wprintf( L"\tHSSBCreateReadOnlyMemoryBufferã«æ¸¡ã—ãŸã‚µã‚¤ã‚ºï¼š%zu\n", OverSizedNotifySize );
+		wprintf( L"\tHSSBCreateReadOnlyMemoryBufferãŒèªè­˜ã—ã¦ã„ã‚‹ã‚µã‚¤ã‚ºï¼š%zu\n\n", readOnlyBuffer->GetSize( ) );
 
 	} else {
-		printf( "¦ ƒ‰ƒCƒuƒ‰ƒŠ‘¤‚ÌƒoƒO‚Ì‰Â”\«‚ª‚ ‚è‚Ü‚· ¦\n" );
+		wprintf( L"â€» ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå´ã®ãƒã‚°ã®å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ â€»\n" );
 	}
 
-	printf( "\n" );
+	wprintf( L"\n" );
 
-	// IHSSBReadOnlyMemoryBuffer‚ÍA“à•”‚ÅƒTƒCƒYî•ñ‚ğ•Û—L‚µ‚Ä‚¨‚èA
-	// ŒÄ‚Ño‚µæ‚ÅŠm”F‚Å‚«‚é‚½‚ßAˆÀ‘S‚É“n‚¹‚Ü‚·B
-	// ‚±‚±‚Å‚ÍA—á‚Æ‚µ‚ÄA“Ç‚İæ‚èê—pƒƒ‚ƒŠƒoƒbƒtƒ@‚Ì“à—e‚ğƒ_ƒ“ƒv‚·‚éŠÖ”‚ğŒÄ‚Ñ‚Ü‚·
+	// IHSSBReadOnlyMemoryBufferã¯ã€å†…éƒ¨ã§ã‚µã‚¤ã‚ºæƒ…å ±ã‚’ä¿æœ‰ã—ã¦ãŠã‚Šã€
+	// å‘¼ã³å‡ºã—å…ˆã§ç¢ºèªã§ãã‚‹ãŸã‚ã€å®‰å…¨ã«æ¸¡ã›ã¾ã™ã€‚
+	// ã“ã“ã§ã¯ã€ä¾‹ã¨ã—ã¦ã€èª­ã¿å–ã‚Šå°‚ç”¨ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹é–¢æ•°ã‚’å‘¼ã³ã¾ã™
 	Sample_ReadOnlyMemoryBuffer_DumpData( readOnlyBuffer );
 
-	printf( "\n" );
+	wprintf( L"\n" );
 
 
-	// CComPtr‚É‚æ‚Á‚ÄARelease‚ª©“®‚ÅŒÄ‚Î‚ê‚é‚½‚ßA‰ğ•ú•s—v
-	// ¡‰ñˆÚ÷‚µ‚½ƒoƒbƒtƒ@‚ÍAHeapAlloc‚ÅŠm•Û‚µ‚½‚à‚Ì‚Å‚ ‚é‚±‚Æ‚ğ’Ê’m‚µ‚Ä‚¢‚½‚½‚ßA
-	// QÆƒJƒEƒ“ƒ^‚ª0‚É‚È‚èAIHSSBReadOnlyMemoryBuffer‚ª‰ğ•ú‚³‚ê‚éÛ‚É
-	// HeapFree‚ªŒÄ‚Î‚êAˆÚ÷‚µ‚½ƒoƒbƒtƒ@‚ª©“®‚Å‰ğ•ú‚³‚ê‚Ü‚·B
+	// CComPtrã«ã‚ˆã£ã¦ã€ReleaseãŒè‡ªå‹•ã§å‘¼ã°ã‚Œã‚‹ãŸã‚ã€è§£æ”¾ä¸è¦
+	// ä»Šå›ç§»è­²ã—ãŸãƒãƒƒãƒ•ã‚¡ã¯ã€HeapAllocã§ç¢ºä¿ã—ãŸã‚‚ã®ã§ã‚ã‚‹ã“ã¨ã‚’é€šçŸ¥ã—ã¦ã„ãŸãŸã‚ã€
+	// å‚ç…§ã‚«ã‚¦ãƒ³ã‚¿ãŒ0ã«ãªã‚Šã€IHSSBReadOnlyMemoryBufferãŒè§£æ”¾ã•ã‚Œã‚‹éš›ã«
+	// HeapFreeãŒå‘¼ã°ã‚Œã€ç§»è­²ã—ãŸãƒãƒƒãƒ•ã‚¡ãŒè‡ªå‹•ã§è§£æ”¾ã•ã‚Œã¾ã™ã€‚
 }
 
 void Sample_ReadOnlyMemoryBuffer_DumpData( IHSSBReadOnlyMemoryBuffer* pBuffer ) {
 
 	if ( !pBuffer ) {
-		printf( "pBuffer‚Ínullptr‚Å‚·\n" );
+		wprintf( L"pBufferã¯nullptrã§ã™\n" );
 		return;
 	}
 
-	// ƒoƒbƒtƒ@ƒTƒCƒY‚ğæ“¾
+	// ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å–å¾—
 	const size_t BufferSize = pBuffer->GetSize( );
-	printf( "“Ç‚İæ‚èê—pƒƒ‚ƒŠƒoƒbƒtƒ@‚ÌƒTƒCƒY: %zu ƒoƒCƒg\n", BufferSize );
+	wprintf( L"èª­ã¿å–ã‚Šå°‚ç”¨ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º: %zu ãƒã‚¤ãƒˆ\n", BufferSize );
 	if ( BufferSize == 0 ) {
-		// ƒTƒCƒY‚ª0‚Ìê‡‚Íƒ_ƒ“ƒv‚µ‚È‚¢B
+		// ã‚µã‚¤ã‚ºãŒ0ã®å ´åˆã¯ãƒ€ãƒ³ãƒ—ã—ãªã„ã€‚
 		return;
 	}
 
-	// IsValidElementNumber‚ğ—˜—p‚µ‚ÄAƒCƒ“ƒfƒbƒNƒX‚ª—LŒø‚©‚ğŠm”F‚Å‚«‚Ü‚·B
+	// IsValidElementNumberã‚’åˆ©ç”¨ã—ã¦ã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒæœ‰åŠ¹ã‹ã‚’ç¢ºèªã§ãã¾ã™ã€‚
 	if ( pBuffer->IsValidElementNumber( 0 ) ) {
 
-		// æ“ª‚Ìƒoƒbƒtƒ@ƒ|ƒCƒ“ƒ^‚ğconst uint8_t* ‚Åæ“¾
-		// GetConstBufferPointerType‚ªÀ‘•‚³‚ê‚Ä‚¨‚èA•Ê“rŒ^ƒLƒƒƒXƒg‚ª•s—v
-		// ‚È‚¨AƒCƒ“ƒfƒbƒNƒX‚ª—LŒø‚Å‚ ‚é‚±‚Æ‚ğæ‚ÉAƒ`ƒFƒbƒNÏ‚İ‚Ì‚½‚ßnullptrƒ`ƒFƒbƒN‚Í–³‚­‚Ä‚æ‚¢
-		// “à•”À‘•ãAIsValidElementNumber‚ª“à•”‚ÅŒÄ‚Ño‚³‚ê‚Ä‚¨‚èA—LŒø‚Å‚ ‚ê‚ÎA
-		// —LŒø‚Èƒoƒbƒtƒ@‚ª•Ô‚è‚Ü‚·B
-		// ‚½‚¾‚µAIsValidElementNumber‚ªfalse‚ğ•Ô‚·ƒP[ƒX‚Ìê‡Anullptr‚ª•Ô‚é‚Ì‚ÅA
-		// IsValidElementNumber‚Å–‘OŠm”F‚ğ‚µ‚È‚¢ê‡‚Ínullptrƒ`ƒFƒbƒN‚ğ„§‚µ‚Ü‚·B
+		// å…ˆé ­ã®ãƒãƒƒãƒ•ã‚¡ãƒã‚¤ãƒ³ã‚¿ã‚’const uint8_t* ã§å–å¾—
+		// GetConstBufferPointerTypeãŒå®Ÿè£…ã•ã‚Œã¦ãŠã‚Šã€åˆ¥é€”å‹ã‚­ãƒ£ã‚¹ãƒˆãŒä¸è¦
+		// ãªãŠã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒæœ‰åŠ¹ã§ã‚ã‚‹ã“ã¨ã‚’å…ˆã«ã€ãƒã‚§ãƒƒã‚¯æ¸ˆã¿ã®ãŸã‚nullptrãƒã‚§ãƒƒã‚¯ã¯ç„¡ãã¦ã‚ˆã„
+		// å†…éƒ¨å®Ÿè£…ä¸Šã€IsValidElementNumberãŒå†…éƒ¨ã§å‘¼ã³å‡ºã•ã‚Œã¦ãŠã‚Šã€æœ‰åŠ¹ã§ã‚ã‚Œã°ã€
+		// æœ‰åŠ¹ãªãƒãƒƒãƒ•ã‚¡ãŒè¿”ã‚Šã¾ã™ã€‚
+		// ãŸã ã—ã€IsValidElementNumberãŒfalseã‚’è¿”ã™ã‚±ãƒ¼ã‚¹ã®å ´åˆã€nullptrãŒè¿”ã‚‹ã®ã§ã€
+		// IsValidElementNumberã§äº‹å‰ç¢ºèªã‚’ã—ãªã„å ´åˆã¯nullptrãƒã‚§ãƒƒã‚¯ã‚’æ¨å¥¨ã—ã¾ã™ã€‚
 		const uint8_t* pData = pBuffer->GetConstBufferPointerType<uint8_t>( 0 );
 
 
-		// –‘O‚ÉƒCƒ“ƒfƒbƒNƒX‚Ì—LŒø«‚ğŠm”F‚µ‚Ä‚©‚çƒoƒbƒtƒ@ƒ|ƒCƒ“ƒ^‚ğæ“¾‚µ‚½‚½‚ßAnullptrƒ`ƒFƒbƒN‚ÍÈ—ª
+		// äº‹å‰ã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æœ‰åŠ¹æ€§ã‚’ç¢ºèªã—ã¦ã‹ã‚‰ãƒãƒƒãƒ•ã‚¡ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã—ãŸãŸã‚ã€nullptrãƒã‚§ãƒƒã‚¯ã¯çœç•¥
 
-		// ƒf[ƒ^“à—e‚Ìƒ_ƒ“ƒv‚ğÀ{
+		// ãƒ‡ãƒ¼ã‚¿å†…å®¹ã®ãƒ€ãƒ³ãƒ—ã‚’å®Ÿæ–½
 		const size_t MaxDumpSize = 2048;
 		const size_t DumpBytesSizeByLine = 16;
 
 		const size_t RealDumpSize = std::min( BufferSize, MaxDumpSize );
-		printf( "ƒf[ƒ^“à—e (Å‘åƒ_ƒ“ƒvƒTƒCƒYF%zuƒoƒCƒg)\n", MaxDumpSize );
-		printf( "\t" );
+		wprintf( L"ãƒ‡ãƒ¼ã‚¿å†…å®¹ (æœ€å¤§ãƒ€ãƒ³ãƒ—ã‚µã‚¤ã‚ºï¼š%zuãƒã‚¤ãƒˆ)\n", MaxDumpSize );
+		wprintf( L"\t" );
 		for ( size_t i = 0; i < RealDumpSize; ++i ) {
-			printf( "%02X ", pData[i] );
+			wprintf( L"%02X ", pData[i] );
 			if ( ( ( i + 1 ) % DumpBytesSizeByLine ) == 0 ) {
-				printf( "\n\t" );
+				wprintf( L"\n\t" );
 			}
 		}
 	}
-	printf( "\n" );
+	wprintf( L"\n" );
 }
-

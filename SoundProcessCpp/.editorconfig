@@ -1,0 +1,15 @@
+
+# このファイルを最上位設定として扱う
+root = true
+
+# 全ファイル共通設定
+[*]
+end_of_line = crlf        # Windows環境ならCRLF、Linuxならlf
+insert_final_newline = true
+charset = utf-8           # UTF-8（BOMなし）
+
+# C++ファイル専用設定
+[*.{cpp,h,hpp}]
+indent_style = space      # インデントはスペース
+indent_size = 4           # インデント幅4
+charset = utf-8           # UTF-8（BOMなし）

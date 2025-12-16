@@ -77,7 +77,7 @@ bool impl_IHSSBNormalizedPCMBuffer::InquiryProvided( REFIID TargetIID ) const {
 
 bool impl_IHSSBNormalizedPCMBuffer::InquiryProvidedExtraService( REFIID TargetIID ) const {
 
-	// IHSSBMemoryBuffer‚Ì’ñ‹Ÿ‚ÍŠÇ—ŠO‚Å‚Ìƒƒ‚ƒŠƒTƒCƒY‚ª•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚é‚½‚ß–¢ƒTƒ|[ƒgˆµ‚¢‚Æ‚·‚é
+	// IHSSBMemoryBufferã®æä¾›ã¯ç®¡ç†å¤–ã§ã®ãƒ¡ãƒ¢ãƒªã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚Œã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ãŸã‚æœªã‚µãƒãƒ¼ãƒˆæ‰±ã„ã¨ã™ã‚‹
 	if ( IsEqualIID( TargetIID, IID_IHSSBMemoryBuffer ) ) {
 		return false;
 	}
@@ -91,7 +91,7 @@ bool impl_IHSSBNormalizedPCMBuffer::InquiryProvidedExtraService( REFIID TargetII
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::QueryExtraService( REFIID riid, void** ppvObject ) {
 
-	// IHSSBMemoryBuffer‚Ì’ñ‹Ÿ‚ÍŠÇ—ŠO‚Å‚Ìƒƒ‚ƒŠƒTƒCƒY‚ª•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚é‚½‚ß–¢ƒTƒ|[ƒgˆµ‚¢‚Æ‚·‚é
+	// IHSSBMemoryBufferã®æä¾›ã¯ç®¡ç†å¤–ã§ã®ãƒ¡ãƒ¢ãƒªã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚Œã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ãŸã‚æœªã‚µãƒãƒ¼ãƒˆæ‰±ã„ã¨ã™ã‚‹
 	if ( IsEqualIID( riid, IID_IHSSBMemoryBuffer ) ) {
 		return  HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
 	}
@@ -107,7 +107,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::QueryExtraService( REFIID riid, void** pp
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( size_t number_of_samples, uint8_t number_of_channels ) {
 
-	// ‚·‚Å‚É‰Šú‰»Ï‚İ‚È‚çÄ‰Šú‰»‚Í‹–‰Â‚µ‚È‚¢
+	// ã™ã§ã«åˆæœŸåŒ–æ¸ˆã¿ãªã‚‰å†åˆæœŸåŒ–ã¯è¨±å¯ã—ãªã„
 	if ( this->m_MemoryBuffer.p ) {
 		return HRESULT_FROM_WIN32( ERROR_ALREADY_INITIALIZED);
 	}
@@ -115,8 +115,8 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( size_t number_of_samples, uin
 	size_t total_size;
 	HRESULT hr;
 
-	// ƒoƒCƒg”‚ğŒvZ
-	//		”õlFnumber_of_samples‚ânumber_of_channels‚Ì’l‚Í0ƒ`ƒFƒbƒN‚ğŠÜ‚ß‚ÄA‚±‚ÌŠÖ”‚Ì“à•”‚Åƒ`ƒFƒbƒN‚µ‚Ä‚¢‚é
+	// ãƒã‚¤ãƒˆæ•°ã‚’è¨ˆç®—
+	//		å‚™è€ƒï¼šnumber_of_samplesã‚„number_of_channelsã®å€¤ã¯0ãƒã‚§ãƒƒã‚¯ã‚’å«ã‚ã¦ã€ã“ã®é–¢æ•°ã®å†…éƒ¨ã§ãƒã‚§ãƒƒã‚¯ã—ã¦ã„ã‚‹
 	hr = HSSBMath_CalculateBytesBySamples_StrictType<double>( &total_size, 
 		static_cast<uint64_t>( number_of_samples ),
 		number_of_channels );
@@ -125,21 +125,21 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( size_t number_of_samples, uin
 		return hr;
 	}
 
-	// ƒƒ‚ƒŠƒoƒbƒtƒ@ƒIƒuƒWƒFƒNƒg‚ğì¬
+	// ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆ
 	hr = HSSBCreateMemoryBuffer( &this->m_MemoryBuffer );
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
 
-	// ƒƒ‚ƒŠƒoƒbƒtƒ@‚ğŠm•Û
+	// ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
 	hr = this->m_MemoryBuffer->Prepare( total_size );
 	if ( FAILED(hr) ) {
-		// Prepare ‚É¸”s‚µ‚½ê‡Aì¬‚µ‚½ƒƒ‚ƒŠƒoƒbƒtƒ@‚ğ‰ğ•ú‚µ‚ÄÄs‰Â”\‚Èó‘Ô‚É–ß‚·
+		// Prepare ã«å¤±æ•—ã—ãŸå ´åˆã€ä½œæˆã—ãŸãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾ã—ã¦å†è©¦è¡Œå¯èƒ½ãªçŠ¶æ…‹ã«æˆ»ã™
 		this->m_MemoryBuffer.Release();
 		return hr;
 	}
 
-	// ¬Œ÷‚µ‚½‚ç“à•”ó‘Ô‚ğİ’è
+	// æˆåŠŸã—ãŸã‚‰å†…éƒ¨çŠ¶æ…‹ã‚’è¨­å®š
 	this->m_Channels = number_of_channels;
 	this->m_NumberOfSamples = number_of_samples;
 
@@ -147,9 +147,9 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( size_t number_of_samples, uin
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( uint32_t sampling_frequency, uint32_t number_of_seconds, uint8_t number_of_channels ) {
-	// “à•”‚Ådouble”Å‚ÌŠÖ”‚ğŒÄ‚Ño‚·
-	// ‚È‚¨Anumber_of_seconds‚Íuint32_t‚È‚Ì‚Å•ÏŠ·‚É‚æ‚éî•ñ‘¹¸‚Í”­¶‚µ‚È‚¢
-	// ’l‚Ìƒ`ƒFƒbƒN‚Í“à•”‚Ås‚¤‚½‚ß‚±‚±‚Å‚ÍÈ—ª‚·‚é
+	// å†…éƒ¨ã§doubleç‰ˆã®é–¢æ•°ã‚’å‘¼ã³å‡ºã™
+	// ãªãŠã€number_of_secondsã¯uint32_tãªã®ã§å¤‰æ›ã«ã‚ˆã‚‹æƒ…å ±æå¤±ã¯ç™ºç”Ÿã—ãªã„
+	// å€¤ã®ãƒã‚§ãƒƒã‚¯ã¯å†…éƒ¨ã§è¡Œã†ãŸã‚ã“ã“ã§ã¯çœç•¥ã™ã‚‹
 	return this->Initialize( sampling_frequency, static_cast<double>( number_of_seconds ), number_of_channels  , EHSSB_RoundMode::Down);
 }
 
@@ -158,7 +158,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( uint32_t sampling_frequency, 
 	size_t size_of_size_t = sizeof( size_t );
 	HRESULT hr;
 
-	// size_t ‚ÌƒTƒCƒY‚É‰‚¶‚Äˆ—‚ğ•ªŠò (‚±‚ê‚É‚æ‚èAƒI[ƒo[ƒtƒ[‚Í–h~‚Å‚«‚é)
+	// size_t ã®ã‚µã‚¤ã‚ºã«å¿œã˜ã¦å‡¦ç†ã‚’åˆ†å² (ã“ã‚Œã«ã‚ˆã‚Šã€ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã¯é˜²æ­¢ã§ãã‚‹)
 	if ( size_of_size_t == 4 ) {
 
 		uint32_t calculated_samples;
@@ -167,7 +167,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( uint32_t sampling_frequency, 
 			return hr;
 		}
 
-		// HSSBMath32_CalculateSamplesBySeconds_Strict‚Ìd—lã0‚Í•Ô‚ç‚È‚¢‚Í‚¸‚¾‚ª”O‚Ì‚½‚ßƒ`ƒFƒbƒN
+		// HSSBMath32_CalculateSamplesBySeconds_Strictã®ä»•æ§˜ä¸Š0ã¯è¿”ã‚‰ãªã„ã¯ãšã ãŒå¿µã®ãŸã‚ãƒã‚§ãƒƒã‚¯
 		if ( calculated_samples == 0 ) {
 			return E_INVALIDARG;
 		}
@@ -181,14 +181,14 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( uint32_t sampling_frequency, 
 			return hr;
 		}
 
-		// HSSBMath64_CalculateSamplesBySeconds_Strict‚Ìd—lã0‚Í•Ô‚ç‚È‚¢‚Í‚¸‚¾‚ª”O‚Ì‚½‚ßƒ`ƒFƒbƒN
+		// HSSBMath64_CalculateSamplesBySeconds_Strictã®ä»•æ§˜ä¸Š0ã¯è¿”ã‚‰ãªã„ã¯ãšã ãŒå¿µã®ãŸã‚ãƒã‚§ãƒƒã‚¯
 		if ( calculated_samples == 0 ) {
 			return E_INVALIDARG;
 		}
 
 		return this->Initialize( static_cast<size_t>( calculated_samples ), number_of_channels );
 	} else {
-		// size_t ‚ª32ƒrƒbƒg‚Å‚à64ƒrƒbƒg‚Å‚à‚È‚¢ŠÂ‹«‚ÍƒTƒ|[ƒg‚µ‚È‚¢
+		// size_t ãŒ32ãƒ“ãƒƒãƒˆã§ã‚‚64ãƒ“ãƒƒãƒˆã§ã‚‚ãªã„ç’°å¢ƒã¯ã‚µãƒãƒ¼ãƒˆã—ãªã„
 		return E_NOTIMPL;
 	}
 
@@ -210,14 +210,14 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::GetBytesIndex( size_t* pOutBytesIndex, si
 
 	size_t element_index;
 
-	// ƒTƒ“ƒvƒ‹ƒCƒ“ƒfƒbƒNƒX‚Æƒ`ƒƒƒ“ƒlƒ‹ƒCƒ“ƒfƒbƒNƒX‚©‚ç—v‘fƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	// ã‚µãƒ³ãƒ—ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ãƒãƒ£ãƒ³ãƒãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰è¦ç´ ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	HRESULT hr = this->GetIndex( &element_index, sample_index, channel_index );
 
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
 
-	// ƒoƒCƒgƒCƒ“ƒfƒbƒNƒX‚ğŒvZ‚µ‚Ä•Ô‚·
+	// ãƒã‚¤ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨ˆç®—ã—ã¦è¿”ã™
 	*pOutBytesIndex = element_index * sizeof( double );
 
 	return S_OK;
@@ -249,7 +249,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::GetValue( double* pOutValue, size_t sampl
 		return hr;
 	}
 
-	// ƒoƒbƒtƒ@‚©‚ç’l‚ğæ“¾
+	// ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰å€¤ã‚’å–å¾—
 	const double *pBuffer =	this->m_MemoryBuffer->GetConstBufferPointerType<double>( index );
 	if ( !pBuffer ) {
 		return E_FAIL;
@@ -294,7 +294,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::CreateEmptyChannelBuffer( IHSSBWritableMe
 		return hr;
 	}
 
-	// ƒ`ƒƒƒ“ƒlƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”‚ğŒvZ
+	// ãƒãƒ£ãƒ³ãƒãƒ«ã‚ãŸã‚Šã®ãƒã‚¤ãƒˆæ•°ã‚’è¨ˆç®—
 	size_t channel_bytes;
 	hr = HSSBMath_CalculateBytesBySamples_StrictType<double>( &channel_bytes,
 		static_cast<uint64_t>( this->m_NumberOfSamples ),
@@ -304,13 +304,13 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::CreateEmptyChannelBuffer( IHSSBWritableMe
 		return hr;
 	}
 
-	// ƒƒ‚ƒŠƒoƒbƒtƒ@‚ğŠm•Û
+	// ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
 	hr = channel_buffer->Prepare( channel_bytes );
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
 
-	// ¬Œ÷‚µ‚½‚ço—Í
+	// æˆåŠŸã—ãŸã‚‰å‡ºåŠ›
 	return channel_buffer->QueryInterface( IID_IHSSBWritableMemoryBuffer, reinterpret_cast<void**>( ppBuffer ) );
 }
 
@@ -324,153 +324,153 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::CreateChannelBuffer( IHSSBWritableMemoryB
 
 	CComPtr<IHSSBWritableMemoryBuffer> channel_buffer;
 
-	// ‹ó‚Ìƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚ğì¬
+	// ç©ºã®ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 	HRESULT hr = this->CreateEmptyChannelBuffer( &channel_buffer );
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
 
-	// Œ³‚Ìƒoƒbƒtƒ@‚©‚çƒ`ƒƒƒ“ƒlƒ‹ƒf[ƒ^‚ğƒRƒs[
+	// å…ƒã®ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ãƒãƒ£ãƒ³ãƒãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
 	hr = this->ExportChannelData( channel_buffer, channel_index );
 
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
 
-	// ¬Œ÷‚µ‚½‚ço—Í
+	// æˆåŠŸã—ãŸã‚‰å‡ºåŠ›
 	return channel_buffer->QueryInterface( IID_IHSSBWritableMemoryBuffer, reinterpret_cast<void**>( ppBuffer ) );
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::ExportChannelData( IHSSBWritableMemoryBuffer* pChannelBuffer, uint8_t channel_index ) const {
 
-	// ‰Šú‰»‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
+	// åˆæœŸåŒ–ã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 
-	// ƒGƒNƒXƒ|[ƒgİ’è‚ğì¬
+	// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆè¨­å®šã‚’ä½œæˆ
 	ExportImportSettings settings;
 
-	// Šeƒƒ“ƒo[‚Ì’l‚ğİ’è
-	// ‚±‚ÌƒZƒbƒg“à—e‚É‚æ‚èA‘SƒTƒ“ƒvƒ‹‚ğƒGƒNƒXƒ|[ƒg‚·‚éİ’è‚É‚È‚é
+	// å„ãƒ¡ãƒ³ãƒãƒ¼ã®å€¤ã‚’è¨­å®š
+	// ã“ã®ã‚»ãƒƒãƒˆå†…å®¹ã«ã‚ˆã‚Šã€å…¨ã‚µãƒ³ãƒ—ãƒ«ã‚’ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã™ã‚‹è¨­å®šã«ãªã‚‹
 
-	// ‘SƒTƒ“ƒvƒ‹‚ğƒGƒNƒXƒ|[ƒg‚·‚éİ’è‚É‚·‚é
+	// å…¨ã‚µãƒ³ãƒ—ãƒ«ã‚’ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã™ã‚‹è¨­å®šã«ã™ã‚‹
 	settings.sample_length = this->m_NumberOfSamples;
 
-	// ƒGƒNƒXƒ|[ƒgŠJnƒCƒ“ƒfƒbƒNƒX‚Í0‚É‚·‚é
+	// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆé–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯0ã«ã™ã‚‹
 	settings.from_side_sample_start_index = 0;
 
-	// ƒGƒNƒXƒ|[ƒgæ‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚à0‚É‚·‚é
+	// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆå…ˆã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚‚0ã«ã™ã‚‹
 	settings.to_side_sample_start_index = 0;
 
-	// “à•”‚ÌÚ×À‘•ŠÖ”‚ğŒÄ‚Ño‚·
-	// ‚È‚¨Asettings‚Ì“à—e‚Íã‹L‚Ì’Ê‚è‚Éİ’è‚³‚ê‚Ä‚¢‚é
-	// pChannelBuffer ‚ª—LŒø‚©‚Ç‚¤‚©‚Ìƒ`ƒFƒbƒN‚ÍÚ×À‘•ŠÖ”“à‚Ås‚¤
-	// channel_index ‚Ìƒ`ƒFƒbƒN‚à“¯—l‚ÉÚ×À‘•ŠÖ”“à‚Ås‚¤
+	// å†…éƒ¨ã®è©³ç´°å®Ÿè£…é–¢æ•°ã‚’å‘¼ã³å‡ºã™
+	// ãªãŠã€settingsã®å†…å®¹ã¯ä¸Šè¨˜ã®é€šã‚Šã«è¨­å®šã•ã‚Œã¦ã„ã‚‹
+	// pChannelBuffer ãŒæœ‰åŠ¹ã‹ã©ã†ã‹ã®ãƒã‚§ãƒƒã‚¯ã¯è©³ç´°å®Ÿè£…é–¢æ•°å†…ã§è¡Œã†
+	// channel_index ã®ãƒã‚§ãƒƒã‚¯ã‚‚åŒæ§˜ã«è©³ç´°å®Ÿè£…é–¢æ•°å†…ã§è¡Œã†
 	return this->ExportChannelData( pChannelBuffer, &settings, channel_index );
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::ExportChannelData( IHSSBWritableMemoryBuffer* pChannelBuffer, ExportImportSettings* pSettings, uint8_t channel_index ) const {
-	// ‰Šú‰»‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
+	// åˆæœŸåŒ–ã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 
 	if ( pChannelBuffer == nullptr || pSettings == nullptr ) return E_POINTER;
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒCƒ“ƒfƒbƒNƒX‚Ìƒ`ƒFƒbƒN
+	// ãƒãƒ£ãƒ³ãƒãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ãƒã‚§ãƒƒã‚¯
 	if ( channel_index >= this->m_Channels ) return E_INVALIDARG;
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚ÌƒTƒCƒYƒ`ƒFƒbƒN
+	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯
 	if ( pChannelBuffer->GetSize( ) == 0 )	 return E_INVALIDARG;
 
-	//  double Œ^‚ÌƒTƒCƒY’PˆÊ‚Åƒ`ƒFƒbƒN
+	//  double å‹ã®ã‚µã‚¤ã‚ºå˜ä½ã§ãƒã‚§ãƒƒã‚¯
 	if ( !pChannelBuffer->IsSizeByTypeSizeUnit<double>( ) ) return E_INVALIDARG;
 
 
-	// “ü—ÍŒ³‚Æ‚È‚é–{ƒNƒ‰ƒX‘¤‚ÌƒTƒ“ƒvƒ‹”‚æ‚è‚àAƒGƒNƒXƒ|[ƒgŠJnƒCƒ“ƒfƒbƒNƒX‚ª‘å‚«‚¢ê‡‚ÍƒGƒ‰[
+	// å…¥åŠ›å…ƒã¨ãªã‚‹æœ¬ã‚¯ãƒ©ã‚¹å´ã®ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚ˆã‚Šã‚‚ã€ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆé–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒå¤§ãã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if ( this->m_NumberOfSamples <= pSettings->from_side_sample_start_index ) {
 		return E_INVALIDARG;
 	}
 
-	// ƒGƒNƒXƒ|[ƒg‰Â”\‚ÈƒTƒ“ƒvƒ‹”‚ğŒvZ
+	// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆå¯èƒ½ãªã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’è¨ˆç®—
 	size_t available_samples = this->m_NumberOfSamples - pSettings->from_side_sample_start_index;
 
-	// ¬Œ÷‚É‚¨‚¯‚éŠú‘Ò‚³‚ê‚éHRESULT‚ğİ’è
+	// æˆåŠŸæ™‚ã«ãŠã‘ã‚‹æœŸå¾…ã•ã‚Œã‚‹HRESULTã‚’è¨­å®š
 	HRESULT Expect_hr_for_Success = S_OK;
 
-	// ƒGƒNƒXƒ|[ƒg‚·‚éƒTƒ“ƒvƒ‹”‚ğŒˆ’è
+	// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’æ±ºå®š
 	size_t export_sample_count = pSettings->sample_length;
 	if ( available_samples < export_sample_count ) {
-		// —˜—p‰Â”\‚ÈƒTƒ“ƒvƒ‹”‚æ‚è‚à‘½‚¢ê‡‚Í—˜—p‰Â”\‚ÈƒTƒ“ƒvƒ‹”‚É§ŒÀ
+		// åˆ©ç”¨å¯èƒ½ãªã‚µãƒ³ãƒ—ãƒ«æ•°ã‚ˆã‚Šã‚‚å¤šã„å ´åˆã¯åˆ©ç”¨å¯èƒ½ãªã‚µãƒ³ãƒ—ãƒ«æ•°ã«åˆ¶é™
 		export_sample_count = available_samples;
 
-		// ‚±‚Ìê‡A–{ƒNƒ‰ƒX‘¤‚Ìƒf[ƒ^—Ê‚É‡‚í‚¹‚ÄƒGƒNƒXƒ|[ƒg‚·‚é‚±‚Æ‚É‚È‚èA
-		// w’è‚³‚ê‚½ƒTƒ“ƒvƒ‹”‚É–‚½‚È‚¢‚½‚ßA•”•ª“I¬Œ÷‚ğ¦‚·HRESULT‚ğİ’è
-		// –{ƒNƒ‰ƒX‚ÍINPUT‘¤‚Æ‚È‚é‚½‚ßAHSSB_S_PARTIAL_INPUT_SIDE_FACTOR‚ğİ’è‚·‚é
+		// ã“ã®å ´åˆã€æœ¬ã‚¯ãƒ©ã‚¹å´ã®ãƒ‡ãƒ¼ã‚¿é‡ã«åˆã‚ã›ã¦ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã™ã‚‹ã“ã¨ã«ãªã‚Šã€
+		// æŒ‡å®šã•ã‚ŒãŸã‚µãƒ³ãƒ—ãƒ«æ•°ã«æº€ãŸãªã„ãŸã‚ã€éƒ¨åˆ†çš„æˆåŠŸã‚’ç¤ºã™HRESULTã‚’è¨­å®š
+		// æœ¬ã‚¯ãƒ©ã‚¹ã¯INPUTå´ã¨ãªã‚‹ãŸã‚ã€HSSB_S_PARTIAL_INPUT_SIDE_FACTORã‚’è¨­å®šã™ã‚‹
 		Expect_hr_for_Success = HSSB_S_PARTIAL_INPUT_SIDE_FACTOR;
 	}
 
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚Ì—v‘f”‚ğæ“¾
+	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã®è¦ç´ æ•°ã‚’å–å¾—
 	size_t channel_buffer_elements = pChannelBuffer->GetSizeElements<double>( );
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚ª—v‘f”ˆÈã‚Ìê‡‚ÍƒGƒ‰[
+	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒè¦ç´ æ•°ä»¥ä¸Šã®å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( channel_buffer_elements <= pSettings->to_side_sample_start_index ) {
 		return E_INVALIDARG;
 	}
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚Ì—˜—p‰Â”\‚È—v‘f”‚ğŒvZ
+	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã®åˆ©ç”¨å¯èƒ½ãªè¦ç´ æ•°ã‚’è¨ˆç®—
 	size_t available_channel_buffer_samples = channel_buffer_elements - pSettings->to_side_sample_start_index;
 
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚É‘‚«‚ß‚éƒTƒ“ƒvƒ‹”‚ğŒˆ’è
+	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’æ±ºå®š
 	if ( export_sample_count > available_channel_buffer_samples ) {
-		// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚É‘‚«‚ß‚éƒTƒ“ƒvƒ‹”‚Ì•û‚ª­‚È‚¢ê‡‚ÍA‚»‚¿‚ç‚É‡‚í‚¹‚é
+		// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ã®æ–¹ãŒå°‘ãªã„å ´åˆã¯ã€ãã¡ã‚‰ã«åˆã‚ã›ã‚‹
 		export_sample_count = available_channel_buffer_samples;
 
-		// ‚±‚Ìê‡Aƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‘¤‚Ìƒf[ƒ^—Ê‚É‡‚í‚¹‚ÄƒGƒNƒXƒ|[ƒg‚·‚é‚±‚Æ‚É‚È‚èA
-		// w’è‚³‚ê‚½ƒTƒ“ƒvƒ‹”‚É–‚½‚È‚¢‚½‚ßA•”•ª“I¬Œ÷‚ğ¦‚·HRESULT‚ğİ’è
-		// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚ÍOUTPUT‘¤‚Æ‚È‚é‚½‚ßAHSSB_S_PARTIAL_OUTPUT_SIDE_FACTOR‚ğİ’è‚·‚é
+		// ã“ã®å ´åˆã€ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡å´ã®ãƒ‡ãƒ¼ã‚¿é‡ã«åˆã‚ã›ã¦ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã™ã‚‹ã“ã¨ã«ãªã‚Šã€
+		// æŒ‡å®šã•ã‚ŒãŸã‚µãƒ³ãƒ—ãƒ«æ•°ã«æº€ãŸãªã„ãŸã‚ã€éƒ¨åˆ†çš„æˆåŠŸã‚’ç¤ºã™HRESULTã‚’è¨­å®š
+		// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã¯OUTPUTå´ã¨ãªã‚‹ãŸã‚ã€HSSB_S_PARTIAL_OUTPUT_SIDE_FACTORã‚’è¨­å®šã™ã‚‹
 		Expect_hr_for_Success = HSSB_S_PARTIAL_OUTPUT_SIDE_FACTOR;
 	}
 
 
-	// ƒƒ‚ƒŠ‚É’¼ÚƒAƒNƒZƒX‚·‚é‚±‚Æ‚É‚È‚é‚½‚ß”O‚Ì‚½‚ßA‚»‚ê‚¼‚êI’[ƒAƒNƒZƒXˆÊ’u‚ÌÄƒ`ƒFƒbƒN‚ğs‚¤
+	// ãƒ¡ãƒ¢ãƒªã«ç›´æ¥ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ã«ãªã‚‹ãŸã‚å¿µã®ãŸã‚ã€ãã‚Œãã‚Œçµ‚ç«¯ã‚¢ã‚¯ã‚»ã‚¹ä½ç½®ã®å†ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†
 	if(( pSettings->from_side_sample_start_index + export_sample_count ) > this->m_NumberOfSamples ) {
-		// –{ƒNƒ‰ƒX‘¤‚ÌI’[‚ğ’´‚¦‚éê‡‚ÍA‘Oq‚ÌŒvZ‚ÉƒoƒO‚ª‚ ‚é‚Æl‚¦‚ç‚ê‚é‚½‚ßƒGƒ‰[
+		// æœ¬ã‚¯ãƒ©ã‚¹å´ã®çµ‚ç«¯ã‚’è¶…ãˆã‚‹å ´åˆã¯ã€å‰è¿°ã®è¨ˆç®—ã«ãƒã‚°ãŒã‚ã‚‹ã¨è€ƒãˆã‚‰ã‚Œã‚‹ãŸã‚ã‚¨ãƒ©ãƒ¼
 #ifdef _DEBUG
-		// ƒfƒoƒbƒOƒrƒ‹ƒh‚ÍÚ×‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒ‡ãƒãƒƒã‚°ãƒ“ãƒ«ãƒ‰æ™‚ã¯è©³ç´°ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR;
 #else
-		// ƒŠƒŠ[ƒXƒrƒ‹ƒh‚Íˆê”Ê“I‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒªãƒªãƒ¼ã‚¹ãƒ“ãƒ«ãƒ‰æ™‚ã¯ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return E_ABORT;
 #endif // _DEBUG
 	}
 
 	if ( ( pSettings->to_side_sample_start_index + export_sample_count ) > channel_buffer_elements ) {
-		// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‘¤‚ÌI’[‚ğ’´‚¦‚éê‡‚ÍA‘Oq‚ÌŒvZ‚ÉƒoƒO‚ª‚ ‚é‚Æl‚¦‚ç‚ê‚é‚½‚ßƒGƒ‰[
+		// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡å´ã®çµ‚ç«¯ã‚’è¶…ãˆã‚‹å ´åˆã¯ã€å‰è¿°ã®è¨ˆç®—ã«ãƒã‚°ãŒã‚ã‚‹ã¨è€ƒãˆã‚‰ã‚Œã‚‹ãŸã‚ã‚¨ãƒ©ãƒ¼
 #ifdef _DEBUG
-		// ƒfƒoƒbƒOƒrƒ‹ƒh‚ÍÚ×‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒ‡ãƒãƒƒã‚°ãƒ“ãƒ«ãƒ‰æ™‚ã¯è©³ç´°ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR;
 #else
-		// ƒŠƒŠ[ƒXƒrƒ‹ƒh‚Íˆê”Ê“I‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒªãƒªãƒ¼ã‚¹ãƒ“ãƒ«ãƒ‰æ™‚ã¯ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return E_ABORT;
 #endif // _DEBUG
 	
 	}
 
 	size_t self_side_index;
-	// Œ³‚Ìƒoƒbƒtƒ@‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚ğæ“¾(‚Ü‚½Aƒ`ƒƒƒ“ƒlƒ‹‚ÌƒIƒtƒZƒbƒg‚à‰Á–¡‚³‚ê‚é)
+	// å…ƒã®ãƒãƒƒãƒ•ã‚¡ã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—(ã¾ãŸã€ãƒãƒ£ãƒ³ãƒãƒ«ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚‚åŠ å‘³ã•ã‚Œã‚‹)
 	if ( this->GetIndex( &self_side_index, pSettings->from_side_sample_start_index, channel_index ) != S_OK ) {
-		// ƒoƒCƒgƒCƒ“ƒfƒbƒNƒX‚Ìæ“¾‚É¸”s‚µ‚½ê‡‚ÍA‘Oq‚ÌŒvZ‚ÉƒoƒO‚ª‚ ‚é‚Æl‚¦‚ç‚ê‚é‚½‚ßƒGƒ‰[
+		// ãƒã‚¤ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®å–å¾—ã«å¤±æ•—ã—ãŸå ´åˆã¯ã€å‰è¿°ã®è¨ˆç®—ã«ãƒã‚°ãŒã‚ã‚‹ã¨è€ƒãˆã‚‰ã‚Œã‚‹ãŸã‚ã‚¨ãƒ©ãƒ¼
 #ifdef _DEBUG
-		// ƒfƒoƒbƒOƒrƒ‹ƒh‚ÍÚ×‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒ‡ãƒãƒƒã‚°ãƒ“ãƒ«ãƒ‰æ™‚ã¯è©³ç´°ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR;
 #else
-		// ƒŠƒŠ[ƒXƒrƒ‹ƒh‚Íˆê”Ê“I‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒªãƒªãƒ¼ã‚¹ãƒ“ãƒ«ãƒ‰æ™‚ã¯ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return E_ABORT;
 #endif // _DEBUG
 
 	}
 
-	// Œ³‚Ìƒoƒbƒtƒ@‚Ææ‚Ìƒoƒbƒtƒ@‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾
+	// å…ƒã®ãƒãƒƒãƒ•ã‚¡ã¨å…ˆã®ãƒãƒƒãƒ•ã‚¡ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—
 	const double* pSrcBuffer = this->m_MemoryBuffer->GetConstBufferPointerType<double>( self_side_index );
 	double* pDestBuffer = pChannelBuffer->GetBufferPointerType<double>( pSettings->to_side_sample_start_index );
 
@@ -478,164 +478,164 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::ExportChannelData( IHSSBWritableMemoryBuf
 		return E_FAIL;
 	}
 
-	// Œ³‚Ìƒoƒbƒtƒ@‚©‚çƒ`ƒƒƒ“ƒlƒ‹ƒf[ƒ^‚ğƒRƒs[
+	// å…ƒã®ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ãƒãƒ£ãƒ³ãƒãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
 	const size_t number_of_channels = static_cast<size_t>( this->m_Channels );
 	for ( size_t i = 0; i < export_sample_count; ++i ) {
 
-		// –{—ˆApSrcBuffer‚ÌƒIƒtƒZƒbƒgŒvZ‚É‚Íchannel_index‚ğ‰ÁZ‚·‚é•K—v‚ª‚ ‚é‚ªA
-		//	‚·‚Å‚ÉApSrcBuffer‚Íw’è‚³‚ê‚½ƒ`ƒƒƒ“ƒlƒ‹‚Ìƒf[ƒ^‚ğ¦‚µ‚Ä‚¢‚é‚½‚ßAchannel_index‚Ì‰ÁZ‚Í•s—v
-		//		iself_side_index‚ÌŒvZ‚Échannel_index‚ğ‰ÁZ‚µ‚Ä‚¢‚é‚½‚ßj
+		// æœ¬æ¥ã€pSrcBufferã®ã‚ªãƒ•ã‚»ãƒƒãƒˆè¨ˆç®—ã«ã¯channel_indexã‚’åŠ ç®—ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ãŒã€
+		//	ã™ã§ã«ã€pSrcBufferã¯æŒ‡å®šã•ã‚ŒãŸãƒãƒ£ãƒ³ãƒãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã‚’ç¤ºã—ã¦ã„ã‚‹ãŸã‚ã€channel_indexã®åŠ ç®—ã¯ä¸è¦
+		//		ï¼ˆself_side_indexã®è¨ˆç®—æ™‚ã«channel_indexã‚’åŠ ç®—ã—ã¦ã„ã‚‹ãŸã‚ï¼‰
 		pDestBuffer[i] = pSrcBuffer[i * number_of_channels];
 	}
 
-	// ˆ—‚µ‚½ƒTƒ“ƒvƒ‹”‚ğİ’è
-	// ‚±‚ê‚É‚æ‚èAŒÄ‚Ño‚µŒ³‚ÅÀÛ‚Éˆ—‚µ‚½ƒTƒ“ƒvƒ‹”‚ğ’m‚é‚±‚Æ‚ª‚Å‚«‚é
+	// å‡¦ç†ã—ãŸã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’è¨­å®š
+	// ã“ã‚Œã«ã‚ˆã‚Šã€å‘¼ã³å‡ºã—å…ƒã§å®Ÿéš›ã«å‡¦ç†ã—ãŸã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’çŸ¥ã‚‹ã“ã¨ãŒã§ãã‚‹
 	pSettings->result_processed_sample_length = export_sample_count;
 
 	return Expect_hr_for_Success;
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::ImportChannelData( IHSSBReadOnlyMemoryBuffer* pChannelBuffer, uint8_t channel_index ) {
-	// ‰Šú‰»‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
+	// åˆæœŸåŒ–ã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 
-	// ƒCƒ“ƒ|[ƒgİ’è‚ğì¬
+	// ã‚¤ãƒ³ãƒãƒ¼ãƒˆè¨­å®šã‚’ä½œæˆ
 	ExportImportSettings settings;
 
-	// Šeƒƒ“ƒo[‚Ì’l‚ğİ’è
-	// ‚±‚ÌƒZƒbƒg“à—e‚É‚æ‚èA‘SƒTƒ“ƒvƒ‹‚ğƒCƒ“ƒ|[ƒg‚·‚éİ’è‚É‚È‚é
+	// å„ãƒ¡ãƒ³ãƒãƒ¼ã®å€¤ã‚’è¨­å®š
+	// ã“ã®ã‚»ãƒƒãƒˆå†…å®¹ã«ã‚ˆã‚Šã€å…¨ã‚µãƒ³ãƒ—ãƒ«ã‚’ã‚¤ãƒ³ãƒãƒ¼ãƒˆã™ã‚‹è¨­å®šã«ãªã‚‹
 
-	// ‘SƒTƒ“ƒvƒ‹‚ğƒCƒ“ƒ|[ƒg‚·‚éİ’è‚É‚·‚é
+	// å…¨ã‚µãƒ³ãƒ—ãƒ«ã‚’ã‚¤ãƒ³ãƒãƒ¼ãƒˆã™ã‚‹è¨­å®šã«ã™ã‚‹
 	settings.sample_length = this->m_NumberOfSamples;
 
-	// ƒCƒ“ƒ|[ƒgŒ³‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚Í0‚É‚·‚é
+	// ã‚¤ãƒ³ãƒãƒ¼ãƒˆå…ƒã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯0ã«ã™ã‚‹
 	settings.from_side_sample_start_index = 0;
 
-	// ƒCƒ“ƒ|[ƒgæ‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚à0‚É‚·‚é
+	// ã‚¤ãƒ³ãƒãƒ¼ãƒˆå…ˆã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚‚0ã«ã™ã‚‹
 	settings.to_side_sample_start_index = 0;
 
-	// “à•”‚ÌÚ×À‘•ŠÖ”‚ğŒÄ‚Ño‚·
-	// ‚È‚¨Asettings‚Ì“à—e‚Íã‹L‚Ì’Ê‚è‚Éİ’è‚³‚ê‚Ä‚¢‚é
-	// pChannelBuffer ‚ª—LŒø‚©‚Ç‚¤‚©‚Ìƒ`ƒFƒbƒN‚ÍÚ×À‘•ŠÖ”“à‚Ås‚¤
-	// channel_index ‚Ìƒ`ƒFƒbƒN‚à“¯—l‚ÉÚ×À‘•ŠÖ”“à‚Ås‚¤
+	// å†…éƒ¨ã®è©³ç´°å®Ÿè£…é–¢æ•°ã‚’å‘¼ã³å‡ºã™
+	// ãªãŠã€settingsã®å†…å®¹ã¯ä¸Šè¨˜ã®é€šã‚Šã«è¨­å®šã•ã‚Œã¦ã„ã‚‹
+	// pChannelBuffer ãŒæœ‰åŠ¹ã‹ã©ã†ã‹ã®ãƒã‚§ãƒƒã‚¯ã¯è©³ç´°å®Ÿè£…é–¢æ•°å†…ã§è¡Œã†
+	// channel_index ã®ãƒã‚§ãƒƒã‚¯ã‚‚åŒæ§˜ã«è©³ç´°å®Ÿè£…é–¢æ•°å†…ã§è¡Œã†
 	return this->ImportChannelData( pChannelBuffer, &settings, channel_index );
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::ImportChannelData( IHSSBReadOnlyMemoryBuffer* pChannelBuffer, ExportImportSettings* pSettings, uint8_t channel_index ) {
-	// ‰Šú‰»‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
+	// åˆæœŸåŒ–ã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 	
 	if ( pChannelBuffer == nullptr || pSettings == nullptr ) return E_POINTER;
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒCƒ“ƒfƒbƒNƒX‚Ìƒ`ƒFƒbƒN
+	// ãƒãƒ£ãƒ³ãƒãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ãƒã‚§ãƒƒã‚¯
 	if ( channel_index >= this->m_Channels ) return E_INVALIDARG;
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚ÌƒTƒCƒYƒ`ƒFƒbƒN
+	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯
 	if ( pChannelBuffer->GetSize( ) == 0 )	 return E_INVALIDARG;
 
 
-	//  double Œ^‚ÌƒTƒCƒY’PˆÊ‚Åƒ`ƒFƒbƒN
+	//  double å‹ã®ã‚µã‚¤ã‚ºå˜ä½ã§ãƒã‚§ãƒƒã‚¯
 	if ( !pChannelBuffer->IsSizeByTypeSizeUnit<double>( ) ) return E_INVALIDARG;
 
-	// “ü—ÍŒ³‚Æ‚È‚éƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‘¤‚ÌƒTƒ“ƒvƒ‹”‚æ‚è‚àAƒCƒ“ƒ|[ƒgŠJnƒCƒ“ƒfƒbƒNƒX‚ª‘å‚«‚¢ê‡‚ÍƒGƒ‰[
+	// å…¥åŠ›å…ƒã¨ãªã‚‹ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡å´ã®ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚ˆã‚Šã‚‚ã€ã‚¤ãƒ³ãƒãƒ¼ãƒˆé–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒå¤§ãã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if ( pChannelBuffer->GetSizeElements<double>( ) <= pSettings->from_side_sample_start_index ) {
 		return E_INVALIDARG;
 	}
 
-	// ƒCƒ“ƒ|[ƒg‰Â”\‚ÈƒTƒ“ƒvƒ‹”‚ğŒvZ
+	// ã‚¤ãƒ³ãƒãƒ¼ãƒˆå¯èƒ½ãªã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’è¨ˆç®—
 	size_t available_samples = pChannelBuffer->GetSizeElements<double>( ) - pSettings->from_side_sample_start_index;
 
-	// ¬Œ÷‚É‚¨‚¯‚éŠú‘Ò‚³‚ê‚éHRESULT‚ğİ’è
+	// æˆåŠŸæ™‚ã«ãŠã‘ã‚‹æœŸå¾…ã•ã‚Œã‚‹HRESULTã‚’è¨­å®š
 	HRESULT Expect_hr_for_Success = S_OK;
 
-	// ƒCƒ“ƒ|[ƒg‚·‚éƒTƒ“ƒvƒ‹”‚ğŒˆ’è
+	// ã‚¤ãƒ³ãƒãƒ¼ãƒˆã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’æ±ºå®š
 	size_t import_sample_count = pSettings->sample_length;
 
 	if ( available_samples < import_sample_count ) {
-		// —˜—p‰Â”\‚ÈƒTƒ“ƒvƒ‹”‚æ‚è‚à‘½‚¢ê‡‚Í—˜—p‰Â”\‚ÈƒTƒ“ƒvƒ‹”‚É§ŒÀ
+		// åˆ©ç”¨å¯èƒ½ãªã‚µãƒ³ãƒ—ãƒ«æ•°ã‚ˆã‚Šã‚‚å¤šã„å ´åˆã¯åˆ©ç”¨å¯èƒ½ãªã‚µãƒ³ãƒ—ãƒ«æ•°ã«åˆ¶é™
 		import_sample_count = available_samples;
 
-		// ‚±‚Ìê‡Aƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‘¤‚Ìƒf[ƒ^—Ê‚É‡‚í‚¹‚ÄƒCƒ“ƒ|[ƒg‚·‚é‚±‚Æ‚É‚È‚èA
-		// w’è‚³‚ê‚½ƒTƒ“ƒvƒ‹”‚É–‚½‚È‚¢‚½‚ßA•”•ª“I¬Œ÷‚ğ¦‚·HRESULT‚ğİ’è
-		// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚ÍINPUT‘¤‚Æ‚È‚é‚½‚ßAHSSB_S_PARTIAL_INPUT_SIDE_FACTOR‚ğİ’è‚·‚é
+		// ã“ã®å ´åˆã€ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡å´ã®ãƒ‡ãƒ¼ã‚¿é‡ã«åˆã‚ã›ã¦ã‚¤ãƒ³ãƒãƒ¼ãƒˆã™ã‚‹ã“ã¨ã«ãªã‚Šã€
+		// æŒ‡å®šã•ã‚ŒãŸã‚µãƒ³ãƒ—ãƒ«æ•°ã«æº€ãŸãªã„ãŸã‚ã€éƒ¨åˆ†çš„æˆåŠŸã‚’ç¤ºã™HRESULTã‚’è¨­å®š
+		// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã¯INPUTå´ã¨ãªã‚‹ãŸã‚ã€HSSB_S_PARTIAL_INPUT_SIDE_FACTORã‚’è¨­å®šã™ã‚‹
 		Expect_hr_for_Success = HSSB_S_PARTIAL_INPUT_SIDE_FACTOR;
 	}
 
-	// –{ƒNƒ‰ƒX‘¤‚ÌƒTƒ“ƒvƒ‹”‚æ‚è‚àAƒCƒ“ƒ|[ƒgæ‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚ª‘å‚«‚¢ê‡‚ÍƒGƒ‰[
+	// æœ¬ã‚¯ãƒ©ã‚¹å´ã®ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚ˆã‚Šã‚‚ã€ã‚¤ãƒ³ãƒãƒ¼ãƒˆå…ˆã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒå¤§ãã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if ( this->m_NumberOfSamples <= pSettings->to_side_sample_start_index ) {
 		return E_INVALIDARG;
 	}
 
 
-	// –{ƒNƒ‰ƒX‘¤‚Ì—˜—p‰Â”\‚ÈƒTƒ“ƒvƒ‹”‚ğŒvZ
+	// æœ¬ã‚¯ãƒ©ã‚¹å´ã®åˆ©ç”¨å¯èƒ½ãªã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’è¨ˆç®—
 	size_t available_self_samples = this->m_NumberOfSamples - pSettings->to_side_sample_start_index;
 
-	// –{ƒNƒ‰ƒX‘¤‚É‘‚«‚ß‚éƒTƒ“ƒvƒ‹”‚ğŒˆ’è
+	// æœ¬ã‚¯ãƒ©ã‚¹å´ã«æ›¸ãè¾¼ã‚ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’æ±ºå®š
 	if ( import_sample_count > available_self_samples ) {
 		
-		// –{ƒNƒ‰ƒX‘¤‚É‘‚«‚ß‚éƒTƒ“ƒvƒ‹”‚Ì•û‚ª­‚È‚¢ê‡‚ÍA‚»‚¿‚ç‚É‡‚í‚¹‚é
+		// æœ¬ã‚¯ãƒ©ã‚¹å´ã«æ›¸ãè¾¼ã‚ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°ã®æ–¹ãŒå°‘ãªã„å ´åˆã¯ã€ãã¡ã‚‰ã«åˆã‚ã›ã‚‹
 		import_sample_count = available_self_samples;
 
-		// ‚±‚Ìê‡A–{ƒNƒ‰ƒX‘¤‚Ìƒf[ƒ^—Ê‚É‡‚í‚¹‚ÄƒCƒ“ƒ|[ƒg‚·‚é‚±‚Æ‚É‚È‚èA
-		// w’è‚³‚ê‚½ƒTƒ“ƒvƒ‹”‚É–‚½‚È‚¢‚½‚ßA•”•ª“I¬Œ÷‚ğ¦‚·HRESULT‚ğİ’è
-		// –{ƒNƒ‰ƒX‚ÍOUTPUT‘¤‚Æ‚È‚é‚½‚ßAHSSB_S_PARTIAL_OUTPUT_SIDE_FACTOR‚ğİ’è‚·‚é
+		// ã“ã®å ´åˆã€æœ¬ã‚¯ãƒ©ã‚¹å´ã®ãƒ‡ãƒ¼ã‚¿é‡ã«åˆã‚ã›ã¦ã‚¤ãƒ³ãƒãƒ¼ãƒˆã™ã‚‹ã“ã¨ã«ãªã‚Šã€
+		// æŒ‡å®šã•ã‚ŒãŸã‚µãƒ³ãƒ—ãƒ«æ•°ã«æº€ãŸãªã„ãŸã‚ã€éƒ¨åˆ†çš„æˆåŠŸã‚’ç¤ºã™HRESULTã‚’è¨­å®š
+		// æœ¬ã‚¯ãƒ©ã‚¹ã¯OUTPUTå´ã¨ãªã‚‹ãŸã‚ã€HSSB_S_PARTIAL_OUTPUT_SIDE_FACTORã‚’è¨­å®šã™ã‚‹
 		Expect_hr_for_Success = HSSB_S_PARTIAL_OUTPUT_SIDE_FACTOR;
 	}
 
-	// ƒƒ‚ƒŠ‚É’¼ÚƒAƒNƒZƒX‚·‚é‚±‚Æ‚É‚È‚é‚½‚ß”O‚Ì‚½‚ßA‚»‚ê‚¼‚êI’[ƒAƒNƒZƒXˆÊ’u‚ÌÄƒ`ƒFƒbƒN‚ğs‚¤
+	// ãƒ¡ãƒ¢ãƒªã«ç›´æ¥ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã“ã¨ã«ãªã‚‹ãŸã‚å¿µã®ãŸã‚ã€ãã‚Œãã‚Œçµ‚ç«¯ã‚¢ã‚¯ã‚»ã‚¹ä½ç½®ã®å†ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†
 	if ( ( pSettings->from_side_sample_start_index + import_sample_count ) > pChannelBuffer->GetSizeElements<double>( ) ) {
-		// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‘¤‚ÌI’[‚ğ’´‚¦‚éê‡‚ÍA‘Oq‚ÌŒvZ‚ÉƒoƒO‚ª‚ ‚é‚Æl‚¦‚ç‚ê‚é‚½‚ßƒGƒ‰[
+		// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡å´ã®çµ‚ç«¯ã‚’è¶…ãˆã‚‹å ´åˆã¯ã€å‰è¿°ã®è¨ˆç®—ã«ãƒã‚°ãŒã‚ã‚‹ã¨è€ƒãˆã‚‰ã‚Œã‚‹ãŸã‚ã‚¨ãƒ©ãƒ¼
 #ifdef _DEBUG
-		// ƒfƒoƒbƒOƒrƒ‹ƒh‚ÍÚ×‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒ‡ãƒãƒƒã‚°ãƒ“ãƒ«ãƒ‰æ™‚ã¯è©³ç´°ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR;
 #else
-		// ƒŠƒŠ[ƒXƒrƒ‹ƒh‚Íˆê”Ê“I‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒªãƒªãƒ¼ã‚¹ãƒ“ãƒ«ãƒ‰æ™‚ã¯ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return E_ABORT;
 #endif // _DEBUG
 	}
 
 	if ( ( pSettings->to_side_sample_start_index + import_sample_count ) > this->m_NumberOfSamples ) {
-		// –{ƒNƒ‰ƒX‘¤‚ÌI’[‚ğ’´‚¦‚éê‡‚ÍA‘Oq‚ÌŒvZ‚ÉƒoƒO‚ª‚ ‚é‚Æl‚¦‚ç‚ê‚é‚½‚ßƒGƒ‰[
+		// æœ¬ã‚¯ãƒ©ã‚¹å´ã®çµ‚ç«¯ã‚’è¶…ãˆã‚‹å ´åˆã¯ã€å‰è¿°ã®è¨ˆç®—ã«ãƒã‚°ãŒã‚ã‚‹ã¨è€ƒãˆã‚‰ã‚Œã‚‹ãŸã‚ã‚¨ãƒ©ãƒ¼
 #ifdef _DEBUG
-		// ƒfƒoƒbƒOƒrƒ‹ƒh‚ÍÚ×‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒ‡ãƒãƒƒã‚°ãƒ“ãƒ«ãƒ‰æ™‚ã¯è©³ç´°ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR;
 #else
 
-		// ƒŠƒŠ[ƒXƒrƒ‹ƒh‚Íˆê”Ê“I‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒªãƒªãƒ¼ã‚¹ãƒ“ãƒ«ãƒ‰æ™‚ã¯ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return E_ABORT;
 #endif // _DEBUG
 
 	}
 
 	size_t self_side_index;
-	// –{ƒNƒ‰ƒX‘¤‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚ğæ“¾(‚Ü‚½Aƒ`ƒƒƒ“ƒlƒ‹‚ÌƒIƒtƒZƒbƒg‚à‰Á–¡‚³‚ê‚é)
+	// æœ¬ã‚¯ãƒ©ã‚¹å´ã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—(ã¾ãŸã€ãƒãƒ£ãƒ³ãƒãƒ«ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚‚åŠ å‘³ã•ã‚Œã‚‹)
 	if ( this->GetIndex( &self_side_index, pSettings->to_side_sample_start_index, channel_index ) != S_OK ) {
-		// ƒoƒCƒgƒCƒ“ƒfƒbƒNƒX‚Ìæ“¾‚É¸”s‚µ‚½ê‡‚ÍA‘Oq‚ÌŒvZ‚ÉƒoƒO‚ª‚ ‚é‚Æl‚¦‚ç‚ê‚é‚½‚ßƒGƒ‰[
+		// ãƒã‚¤ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®å–å¾—ã«å¤±æ•—ã—ãŸå ´åˆã¯ã€å‰è¿°ã®è¨ˆç®—ã«ãƒã‚°ãŒã‚ã‚‹ã¨è€ƒãˆã‚‰ã‚Œã‚‹ãŸã‚ã‚¨ãƒ©ãƒ¼
 #ifdef _DEBUG
-		// ƒfƒoƒbƒOƒrƒ‹ƒh‚ÍÚ×‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒ‡ãƒãƒƒã‚°ãƒ“ãƒ«ãƒ‰æ™‚ã¯è©³ç´°ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return HSSB_E_PROCESS_ERROR_BY_BUG_FACTOR;
 #else
-		// ƒŠƒŠ[ƒXƒrƒ‹ƒh‚Íˆê”Ê“I‚ÈƒGƒ‰[‚ğ•Ô‚·
+		// ãƒªãƒªãƒ¼ã‚¹ãƒ“ãƒ«ãƒ‰æ™‚ã¯ä¸€èˆ¬çš„ãªã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 		return E_ABORT;
 #endif // _DEBUG
 	}
 
-	// Œ³‚Ìƒoƒbƒtƒ@‚Ææ‚Ìƒoƒbƒtƒ@‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾
+	// å…ƒã®ãƒãƒƒãƒ•ã‚¡ã¨å…ˆã®ãƒãƒƒãƒ•ã‚¡ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—
 	const double* pSrcBuffer = pChannelBuffer->GetConstBufferPointerType<double>( pSettings->from_side_sample_start_index );
 	double* pDestBuffer = this->m_MemoryBuffer->GetBufferPointerType<double>( self_side_index );
 	if ( !pSrcBuffer || !pDestBuffer ) {
 		return E_FAIL;
 	}
 
-	// ƒ`ƒƒƒ“ƒlƒ‹ƒoƒbƒtƒ@‚©‚çŒ³‚Ìƒoƒbƒtƒ@‚Öƒf[ƒ^‚ğƒRƒs[
+	// ãƒãƒ£ãƒ³ãƒãƒ«ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰å…ƒã®ãƒãƒƒãƒ•ã‚¡ã¸ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
 	const size_t number_of_channels = static_cast<size_t>( this->m_Channels );
 	for ( size_t i = 0; i < import_sample_count; ++i ) {
-		// –{—ˆApDestBuffer‚ÌƒIƒtƒZƒbƒgŒvZ‚É‚Íchannel_index‚ğ‰ÁZ‚·‚é•K—v‚ª‚ ‚é‚ªA
-		//	‚·‚Å‚ÉApDestBuffer‚Íw’è‚³‚ê‚½ƒ`ƒƒƒ“ƒlƒ‹‚Ìƒf[ƒ^‚ğ¦‚µ‚Ä‚¢‚é‚½‚ßAchannel_index‚Ì‰ÁZ‚Í•s—v
-		//		iself_side_index‚ÌŒvZ‚Échannel_index‚ğ‰ÁZ‚µ‚Ä‚¢‚é‚½‚ßj
+		// æœ¬æ¥ã€pDestBufferã®ã‚ªãƒ•ã‚»ãƒƒãƒˆè¨ˆç®—ã«ã¯channel_indexã‚’åŠ ç®—ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ãŒã€
+		//	ã™ã§ã«ã€pDestBufferã¯æŒ‡å®šã•ã‚ŒãŸãƒãƒ£ãƒ³ãƒãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã‚’ç¤ºã—ã¦ã„ã‚‹ãŸã‚ã€channel_indexã®åŠ ç®—ã¯ä¸è¦
+		//		ï¼ˆself_side_indexã®è¨ˆç®—æ™‚ã«channel_indexã‚’åŠ ç®—ã—ã¦ã„ã‚‹ãŸã‚ï¼‰
 		pDestBuffer[i * number_of_channels] = pSrcBuffer[i];
 	}
-	// ˆ—‚µ‚½ƒTƒ“ƒvƒ‹”‚ğİ’è
+	// å‡¦ç†ã—ãŸã‚µãƒ³ãƒ—ãƒ«æ•°ã‚’è¨­å®š
 	pSettings->result_processed_sample_length = import_sample_count;
 	return Expect_hr_for_Success;
 }
@@ -644,4 +644,3 @@ size_t impl_IHSSBNormalizedPCMBuffer::GetBytesSize( void ) const {
 	if ( !this->m_MemoryBuffer.p ) return 0;
 	return this->m_MemoryBuffer->GetSize( );
 }
-

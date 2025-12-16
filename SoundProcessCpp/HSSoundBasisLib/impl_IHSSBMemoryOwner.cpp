@@ -4,7 +4,7 @@
 
 
 impl_IHSSBMemoryOwner::impl_IHSSBMemoryOwner( ) : m_ref(1)  {
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	this->m_BufferSize = 0;
 	this->m_pBuffer = nullptr;
 	this->m_OwnershipType = EHSSBMemoryOwnershipType::NoOwnership;
@@ -19,13 +19,13 @@ impl_IHSSBMemoryOwner::~impl_IHSSBMemoryOwner( ) {
 
 void impl_IHSSBMemoryOwner::FreeForNewAllocatedBuffer( void ) {
 
-	// Free‚©‚çŒÄ‚Ño‚³‚ê‚é‚±‚Æ‚ğ‘z’è‚µ‚Ä‚¢‚é‚½‚ßAƒ`ƒFƒbƒN‚ÍÅ¬ŒÀ‚É—¯‚ß‚é
+	// Freeã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹ã“ã¨ã‚’æƒ³å®šã—ã¦ã„ã‚‹ãŸã‚ã€ãƒã‚§ãƒƒã‚¯ã¯æœ€å°é™ã«ç•™ã‚ã‚‹
 	if ( m_OwnershipType != EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated ) {
-		// Š—LŒ ƒ^ƒCƒv‚ª new[] ‚ÅŠm•Û‚³‚ê‚½ƒƒ‚ƒŠ‚Å‚Í‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+		// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ãŒ new[] ã§ç¢ºä¿ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã§ã¯ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 		return;
 	}
 
-	// Œ^î•ñ‚ÉŠî‚Ã‚¢‚Ä“KØ‚ÈŒ^‚Å‰ğ•ú‚ğs‚¤
+	// å‹æƒ…å ±ã«åŸºã¥ã„ã¦é©åˆ‡ãªå‹ã§è§£æ”¾ã‚’è¡Œã†
 	switch ( m_OwnershipTypeInfo ) {
 		case EHSSBMemoryNewAllocatedTypeInfo::char_array:
 			this->FreeForNewAllocatedBufferInternal<char>( );
@@ -64,7 +64,7 @@ void impl_IHSSBMemoryOwner::FreeForNewAllocatedBuffer( void ) {
 			this->FreeForNewAllocatedBufferInternal<uint64_t>( );
 			break;
 		default:
-			// •s–¾‚ÈŒ^î•ñ‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+			// ä¸æ˜ãªå‹æƒ…å ±ã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 			break;
 	}
 
@@ -94,27 +94,27 @@ HRESULT impl_IHSSBMemoryOwner::CreateInstance( IHSSBMemoryOwner** ppInstance, vo
 
 	CComPtr<IHSSBMemoryOwner> spInstance;
 	
-	// ‚à‚¤ˆê‚Â‚Ì CreateInstance ‚ğŒÄ‚Ño‚µ‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
+	// ã‚‚ã†ä¸€ã¤ã® CreateInstance ã‚’å‘¼ã³å‡ºã—ã¦ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
 	HRESULT hr = impl_IHSSBMemoryOwner::CreateInstance( &spInstance );
 
-	//ƒCƒ“ƒXƒ^ƒ“ƒXì¬¸”s‚ÍƒGƒ‰[‚ğ•Ô‚·
+	//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆå¤±æ•—æ™‚ã¯ã‚¨ãƒ©ãƒ¼ã‚’è¿”ã™
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
 
-	// ƒoƒbƒtƒ@[‚ğƒAƒ^ƒbƒ` (ƒpƒ‰ƒ[ƒ^ƒ`ƒFƒbƒN‚Í Attach “à‚Ås‚í‚ê‚é)
+	// ãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’ã‚¢ã‚¿ãƒƒãƒ (ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯ã¯ Attach å†…ã§è¡Œã‚ã‚Œã‚‹)
 	hr = spInstance->Attach( pBuffer, size, owner, owner_type_info );
 
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
 
-	// ¬Œ÷‚µ‚½‚ço—Íƒ|ƒCƒ“ƒ^‚Éİ’è
+	// æˆåŠŸã—ãŸã‚‰å‡ºåŠ›ãƒã‚¤ãƒ³ã‚¿ã«è¨­å®š
 	return spInstance.QueryInterface( ppInstance );
 }
 
 bool impl_IHSSBMemoryOwner::InquiryProvided( REFIID TargetIID ) const {
-	// ’ñ‹Ÿ‚µ‚Ä‚¢‚éƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì IID ˆê——
+	// æä¾›ã—ã¦ã„ã‚‹ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã® IID ä¸€è¦§
 
 	IID provided_iids[] = {
 		IID_IHSSBMemoryOwner,
@@ -135,55 +135,55 @@ bool impl_IHSSBMemoryOwner::InquiryProvided( REFIID TargetIID ) const {
 
 HRESULT __stdcall impl_IHSSBMemoryOwner::QueryInterface( REFIID riid, void** ppvObject ) {
 
-	// ƒpƒ‰ƒ[ƒ^ƒ`ƒFƒbƒN
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯
 	if ( !ppvObject ) {
 		return E_POINTER;
 	}
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	*ppvObject = nullptr;
 
-	// InquiryProvided ‚ğg‚Á‚ÄƒCƒ“ƒ^[ƒtƒFƒCƒX‚ª’ñ‹Ÿ‚³‚ê‚Ä‚¢‚é‚©Šm”F
+	// InquiryProvided ã‚’ä½¿ã£ã¦ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ãŒæä¾›ã•ã‚Œã¦ã„ã‚‹ã‹ç¢ºèª
 	if ( InquiryProvided( riid ) == false ) {
 		return E_NOINTERFACE;
 	}
 
-	// ’ñ‹Ÿ‚³‚ê‚Ä‚¢‚éê‡‚ÍAIUnknown Œo—R‚Åƒ|ƒCƒ“ƒ^‚ğæ“¾‚µAAddRef ‚·‚é
+	// æä¾›ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€IUnknown çµŒç”±ã§ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã—ã€AddRef ã™ã‚‹
 	*ppvObject = static_cast<IUnknown*>( static_cast<IHSSBMemoryOwner*>( this ) );
 	
-	// AddRef ‚ğŒÄ‚Ño‚·
+	// AddRef ã‚’å‘¼ã³å‡ºã™
 	this->AddRef( );
 
-	// ¬Œ÷
+	// æˆåŠŸ
 	return S_OK;
 
 }
 
 ULONG __stdcall impl_IHSSBMemoryOwner::AddRef( void ) {
-	// QÆƒJƒEƒ“ƒg‚ğƒCƒ“ƒNƒŠƒƒ“ƒg‚µ‚ÄV‚µ‚¢’l‚ğ•Ô‚·
+	// å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã—ã¦æ–°ã—ã„å€¤ã‚’è¿”ã™
 	return static_cast<ULONG>( InterlockedIncrement( &m_ref ) );
 }
 
 ULONG __stdcall impl_IHSSBMemoryOwner::Release( void ) {
 
-	// QÆƒJƒEƒ“ƒg‚ğƒfƒNƒŠƒƒ“ƒg
+	// å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 	LONG newCount = InterlockedDecrement( &m_ref );
 	if ( newCount == 0 ) {
-		// QÆƒJƒEƒ“ƒg‚ª 0 ‚É‚È‚Á‚½ê‡‚Í©g‚ğíœ
+		// å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆãŒ 0 ã«ãªã£ãŸå ´åˆã¯è‡ªèº«ã‚’å‰Šé™¤
 		delete this;
 		return 0;
 	}
-	// V‚µ‚¢QÆƒJƒEƒ“ƒg‚ğ•Ô‚·
+	// æ–°ã—ã„å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’è¿”ã™
 	return static_cast<ULONG>( newCount );
 }
 
 bool impl_IHSSBMemoryOwner::InquiryProvidedExtraService( REFIID TargetIID ) const {
-	// ‚±‚ÌƒNƒ‰ƒX‚Í’Ç‰ÁƒT[ƒrƒX‚ğ’ñ‹Ÿ‚µ‚Ä‚¢‚È‚¢‚½‚ßAí‚É false ‚ğ•Ô‚·
+	// ã“ã®ã‚¯ãƒ©ã‚¹ã¯è¿½åŠ ã‚µãƒ¼ãƒ“ã‚¹ã‚’æä¾›ã—ã¦ã„ãªã„ãŸã‚ã€å¸¸ã« false ã‚’è¿”ã™
 	return false;
 }
 
 HRESULT __stdcall impl_IHSSBMemoryOwner::QueryExtraService( REFIID riid, void** ppvObject ) {
-	// ‚±‚ÌƒNƒ‰ƒX‚Í’Ç‰ÁƒT[ƒrƒX‚ğ’ñ‹Ÿ‚µ‚Ä‚¢‚È‚¢‚½‚ßAí‚É E_NOTIMPL ‚ğ•Ô‚·
+	// ã“ã®ã‚¯ãƒ©ã‚¹ã¯è¿½åŠ ã‚µãƒ¼ãƒ“ã‚¹ã‚’æä¾›ã—ã¦ã„ãªã„ãŸã‚ã€å¸¸ã« E_NOTIMPL ã‚’è¿”ã™
 	return E_NOTIMPL;
 }
 
@@ -193,73 +193,73 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 
 	if ( this->m_pBuffer != nullptr ) {
 		LeaveCriticalSection( &m_CriticalSection );
-		// ‚·‚Å‚Éƒoƒbƒtƒ@[‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚éê‡‚ÍƒGƒ‰[
+		// ã™ã§ã«ãƒãƒƒãƒ•ã‚¡ãƒ¼ãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 		return E_FAIL;
 	}
 
 	if ( !pBuffer ) {
 		LeaveCriticalSection( &m_CriticalSection );
-		// ƒoƒbƒtƒ@[ƒ|ƒCƒ“ƒ^‚ª nullptr ‚Ìê‡‚ÍƒGƒ‰[
+		// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãƒã‚¤ãƒ³ã‚¿ãŒ nullptr ã®å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 		return E_POINTER;
 	}
 
-	// owner ‚Ì—LŒø«‚ğƒ`ƒFƒbƒN
+	// owner ã®æœ‰åŠ¹æ€§ã‚’ãƒã‚§ãƒƒã‚¯
 	switch ( owner ) {
 		case EHSSBMemoryOwnershipType::NoOwnership:
 		case EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated:
 		case EHSSBMemoryOwnershipType::WithFreeOwnership_Malloced:
 		case EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced:
-			// —LŒø‚È’l
+			// æœ‰åŠ¹ãªå€¤
 			break;
 		default:
-			// –³Œø‚È’l
+			// ç„¡åŠ¹ãªå€¤
 			LeaveCriticalSection( &m_CriticalSection );
 			return E_INVALIDARG;
 	}
 
-	// ¬Œ÷‚É‚¨‚¯‚éŠú‘Ò‚³‚ê‚éHRESULT‚ğİ’è
+	// æˆåŠŸæ™‚ã«ãŠã‘ã‚‹æœŸå¾…ã•ã‚Œã‚‹HRESULTã‚’è¨­å®š
 	HRESULT Expect_hr_for_Success = S_OK;
 
-	// Š—LŒ ƒ^ƒCƒv‚É‰‚¶‚½ƒTƒCƒYƒ`ƒFƒbƒN‚Æ’²®
+	// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ã«å¿œã˜ãŸã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯ã¨èª¿æ•´
 	if ( owner == EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced ) {
 
-		// HeapAlloc ‚ÅŠm•Û‚³‚ê‚½ƒƒ‚ƒŠ‚Ìê‡AÀÛ‚ÌƒTƒCƒY‚Ìæ“¾‚ğs‚·‚é
+		// HeapAlloc ã§ç¢ºä¿ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã®å ´åˆã€å®Ÿéš›ã®ã‚µã‚¤ã‚ºã®å–å¾—ã‚’è©¦è¡Œã™ã‚‹
 		SIZE_T heap_size = HeapSize( GetProcessHeap( ), 0, pBuffer );
 
 		if ( ( size == 0 ) && ( heap_size == (SIZE_T) ( -1 ) ) ) {
-			// ƒTƒCƒY‚Ìæ“¾‚É¸”s‚µ‚½ê‡‚ÍƒGƒ‰[ (w’èƒTƒCƒY‚ª 0 ‚Ìê‡)
+			// ã‚µã‚¤ã‚ºã®å–å¾—ã«å¤±æ•—ã—ãŸå ´åˆã¯ã‚¨ãƒ©ãƒ¼ (æŒ‡å®šã‚µã‚¤ã‚ºãŒ 0 ã®å ´åˆ)
 			LeaveCriticalSection( &m_CriticalSection );
 			return E_INVALIDARG;
 		}
 
 		if ( heap_size == 0 ) {
 			LeaveCriticalSection( &m_CriticalSection );
-			// ÀÛ‚ÌƒTƒCƒY‚ª 0 ‚Ìê‡‚ÍƒGƒ‰[
+			// å®Ÿéš›ã®ã‚µã‚¤ã‚ºãŒ 0 ã®å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 			return E_INVALIDARG;
 		}
 
-		// ÀÛ‚ÌƒTƒCƒY‚Ìæ“¾‚É¬Œ÷‚µ‚½ê‡AƒTƒCƒY‚Ìƒ`ƒFƒbƒN‚ª‰Â”\‚È‚Ì‚ÅA
-		// æ“¾‚µ‚½ƒTƒCƒY‚ğg‚Á‚ÄƒTƒCƒY’²®‚Ì•K—v‚ª‚ ‚é‚©Šm”F‚·‚é
+		// å®Ÿéš›ã®ã‚µã‚¤ã‚ºã®å–å¾—ã«æˆåŠŸã—ãŸå ´åˆã€ã‚µã‚¤ã‚ºã®ãƒã‚§ãƒƒã‚¯ãŒå¯èƒ½ãªã®ã§ã€
+		// å–å¾—ã—ãŸã‚µã‚¤ã‚ºã‚’ä½¿ã£ã¦ã‚µã‚¤ã‚ºèª¿æ•´ã®å¿…è¦ãŒã‚ã‚‹ã‹ç¢ºèªã™ã‚‹
 		if ( heap_size != (SIZE_T) ( -1 ) ) {
 
-			// ƒTƒCƒY’²®‚Ì•K—v‚ª‚ ‚é‚©Šm”F
-			// size ‚ª 0 ‚Ü‚½‚Í ÀÛ‚ÌƒTƒCƒY‚æ‚è‘å‚«‚¢ê‡A’²®‚ğs‚¤
-			// size ‚ª ÀÛ‚ÌƒTƒCƒYˆÈ‰º‚Ìê‡‚Í’²®•s—v (ˆÓ}‚µ‚½ƒTƒCƒY‚Æ‚µ‚Äˆµ‚¤)
+			// ã‚µã‚¤ã‚ºèª¿æ•´ã®å¿…è¦ãŒã‚ã‚‹ã‹ç¢ºèª
+			// size ãŒ 0 ã¾ãŸã¯ å®Ÿéš›ã®ã‚µã‚¤ã‚ºã‚ˆã‚Šå¤§ãã„å ´åˆã€èª¿æ•´ã‚’è¡Œã†
+			// size ãŒ å®Ÿéš›ã®ã‚µã‚¤ã‚ºä»¥ä¸‹ã®å ´åˆã¯èª¿æ•´ä¸è¦ (æ„å›³ã—ãŸã‚µã‚¤ã‚ºã¨ã—ã¦æ‰±ã†)
 			if ( ( size == 0 ) || ( size > heap_size ) ) {
 
-				// ÀÛ‚ÌƒTƒCƒY‚Ìæ“¾‚É¬Œ÷‚µ‚½‚½‚ßAƒTƒCƒY‚ğİ’è‚µ‚Ä‘±s‚·‚é
+				// å®Ÿéš›ã®ã‚µã‚¤ã‚ºã®å–å¾—ã«æˆåŠŸã—ãŸãŸã‚ã€ã‚µã‚¤ã‚ºã‚’è¨­å®šã—ã¦ç¶šè¡Œã™ã‚‹
 				size = static_cast<size_t>( heap_size );
 
-				// ƒTƒCƒY’²®‚ª”­¶‚µ‚½‚½‚ßAŠú‘Ò‚³‚ê‚é¬Œ÷ƒR[ƒh‚ğ•ÏX‚·‚é
+				// ã‚µã‚¤ã‚ºèª¿æ•´ãŒç™ºç”Ÿã—ãŸãŸã‚ã€æœŸå¾…ã•ã‚Œã‚‹æˆåŠŸã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã™ã‚‹
 				Expect_hr_for_Success = HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED;
 			} else {
-				// size ‚ª ÀÛ‚ÌƒTƒCƒYˆÈ‰º‚Ìê‡‚Í’²®•s—v (ˆÓ}‚µ‚½ƒTƒCƒY‚Æ‚µ‚Äˆµ‚¤)
+				// size ãŒ å®Ÿéš›ã®ã‚µã‚¤ã‚ºä»¥ä¸‹ã®å ´åˆã¯èª¿æ•´ä¸è¦ (æ„å›³ã—ãŸã‚µã‚¤ã‚ºã¨ã—ã¦æ‰±ã†)
 			}
 
 		}
 
 	} else {
-		// HeapAlloc ˆÈŠO‚Ìê‡AƒTƒCƒY‚ª 0 ‚Í–³Œø
+		// HeapAlloc ä»¥å¤–ã®å ´åˆã€ã‚µã‚¤ã‚ºãŒ 0 ã¯ç„¡åŠ¹
 		if ( size == 0 ) {
 			LeaveCriticalSection( &m_CriticalSection );
 			return E_INVALIDARG;
@@ -267,18 +267,18 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 	}
 
 	if ( owner == EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated ) {
-		// Š—LŒ ƒ^ƒCƒv‚ª new[] ‚ÅŠm•Û‚³‚ê‚½ƒƒ‚ƒŠ‚Ìê‡AŒ^î•ñ‚ªw’è‚³‚ê‚Ä‚¢‚é‚±‚Æ‚ğŠm”F
+		// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ãŒ new[] ã§ç¢ºä¿ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã®å ´åˆã€å‹æƒ…å ±ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèª
 		if ( owner_type_info == EHSSBMemoryNewAllocatedTypeInfo::None ) {
 			LeaveCriticalSection( &m_CriticalSection );
-			// Œ^î•ñ‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍƒGƒ‰[
+			// å‹æƒ…å ±ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 			return E_INVALIDARG;
 		}
 	} else {
-		// Š—LŒ ƒ^ƒCƒv‚ª new[] ˆÈŠO‚Ìê‡AŒ^î•ñ‚Í None ‚Éİ’è‚·‚é
+		// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ãŒ new[] ä»¥å¤–ã®å ´åˆã€å‹æƒ…å ±ã¯ None ã«è¨­å®šã™ã‚‹
 		owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None;
 	}
 
-	// ƒAƒ^ƒbƒ`ˆ—
+	// ã‚¢ã‚¿ãƒƒãƒå‡¦ç†
 	this->m_pBuffer = reinterpret_cast<uint8_t*>( pBuffer );
 	this->m_BufferSize = size;
 	this->m_OwnershipType = owner;
@@ -287,7 +287,7 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 
 	LeaveCriticalSection( &m_CriticalSection );
 
-	// ¬Œ÷‚ÌŠú‘Ò‚³‚ê‚é HRESULT ‚ğ•Ô‚·
+	// æˆåŠŸæ™‚ã®æœŸå¾…ã•ã‚Œã‚‹ HRESULT ã‚’è¿”ã™
 	return Expect_hr_for_Success;
 }
 
@@ -296,39 +296,39 @@ HRESULT impl_IHSSBMemoryOwner::Detach( void** ppOutBuffer, size_t* pOutSize, EHS
 	EnterCriticalSection( &m_CriticalSection );
 
 	if ( this->m_BufferSize == 0 || this->m_pBuffer == nullptr ) {
-		// ƒoƒbƒtƒ@[‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍƒGƒ‰[
+		// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ãªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 		LeaveCriticalSection( &m_CriticalSection );
 		return E_FAIL;
 	}
 
 	if(!ppOutBuffer ) {
 		LeaveCriticalSection( &m_CriticalSection );
-		// o—Íƒ|ƒCƒ“ƒ^‚ª nullptr ‚Ìê‡‚ÍƒGƒ‰[
+		// å‡ºåŠ›ãƒã‚¤ãƒ³ã‚¿ãŒ nullptr ã®å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 		return E_POINTER;
 	}
 
-	// o—Íƒ|ƒCƒ“ƒ^‚É’l‚ğİ’è
+	// å‡ºåŠ›ãƒã‚¤ãƒ³ã‚¿ã«å€¤ã‚’è¨­å®š
 	*ppOutBuffer = reinterpret_cast<void*>( this->m_pBuffer );
 
-	// ƒTƒCƒYAŠ—LŒ ƒ^ƒCƒvAŠ—LŒ ƒ^ƒCƒvî•ñ‚à•K—v‚É‰‚¶‚Äİ’è
-	// ŠeíAƒ|ƒCƒ“ƒ^‚ª —LŒø‚È €–Ú‚É‚Ì‚İİ’è
+	// ã‚µã‚¤ã‚ºã€æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ã€æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—æƒ…å ±ã‚‚å¿…è¦ã«å¿œã˜ã¦è¨­å®š
+	// å„ç¨®ã€ãƒã‚¤ãƒ³ã‚¿ãŒ æœ‰åŠ¹ãª é …ç›®ã«ã®ã¿è¨­å®š
 
-	// ƒTƒCƒY
+	// ã‚µã‚¤ã‚º
 	if ( pOutSize ) {
 		*pOutSize = this->m_BufferSize;
 	}
 
-	// Š—LŒ ƒ^ƒCƒv
+	// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—
 	if ( pOutOwner ) {
 		*pOutOwner = this->m_OwnershipType;
 	}
 
-	// Š—LŒ ƒ^ƒCƒvî•ñ
+	// æ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—æƒ…å ±
 	if ( pOutOwnerTypeInfo ) {
 		*pOutOwnerTypeInfo = this->m_OwnershipTypeInfo;
 	}
 
-	// “à•”ó‘Ô‚ğƒNƒŠƒA
+	// å†…éƒ¨çŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢
 	this->m_pBuffer = nullptr;
 	this->m_BufferSize = 0;
 	this->m_OwnershipType = EHSSBMemoryOwnershipType::NoOwnership;
@@ -344,34 +344,34 @@ HRESULT impl_IHSSBMemoryOwner::Free( void ) {
 	EnterCriticalSection( &m_CriticalSection );
 
 	if ( this->m_BufferSize == 0 || this->m_pBuffer == nullptr ) {
-		// ƒoƒbƒtƒ@[‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢‚Å¬Œ÷‚ğ•Ô‚·
+		// ãƒãƒƒãƒ•ã‚¡ãƒ¼ãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„ã§æˆåŠŸã‚’è¿”ã™
 		LeaveCriticalSection( &m_CriticalSection );
 		return S_OK;
 	}
 
-	// Š—LŒ ‚ª‚ ‚éê‡‚Íƒƒ‚ƒŠ‚ğ‰ğ•ú
+	// æ‰€æœ‰æ¨©ãŒã‚ã‚‹å ´åˆã¯ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾
 	switch ( m_OwnershipType ) {
 		case EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated:
-			// new[] ‚ÅŠm•Û‚³‚ê‚½ƒƒ‚ƒŠ‚Ìê‡Aê—p‚Ì‰ğ•úŠÖ”‚ğŒÄ‚Ño‚·
+			// new[] ã§ç¢ºä¿ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã®å ´åˆã€å°‚ç”¨ã®è§£æ”¾é–¢æ•°ã‚’å‘¼ã³å‡ºã™
 			this->FreeForNewAllocatedBuffer( );
 			break;
 		case EHSSBMemoryOwnershipType::WithFreeOwnership_Malloced:
-			// malloc ‚ÅŠm•Û‚³‚ê‚½ƒƒ‚ƒŠ‚Ìê‡A free ‚ğŒÄ‚Ño‚·
+			// malloc ã§ç¢ºä¿ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã®å ´åˆã€ free ã‚’å‘¼ã³å‡ºã™
 			free( m_pBuffer );
 			break;
 		case EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced:
-			// HeapAlloc ‚ÅŠm•Û‚³‚ê‚½ƒƒ‚ƒŠ‚Ìê‡A HeapFree ‚ğŒÄ‚Ño‚·
+			// HeapAlloc ã§ç¢ºä¿ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã®å ´åˆã€ HeapFree ã‚’å‘¼ã³å‡ºã™
 			HeapFree( GetProcessHeap( ), 0, m_pBuffer );
 			break;
 		case EHSSBMemoryOwnershipType::NoOwnership:
-			// Š—LŒ ‚È‚µ‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+			// æ‰€æœ‰æ¨©ãªã—ã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 			break;
 		default:
-			// •s–¾‚ÈŠ—LŒ ƒ^ƒCƒv‚Ìê‡‚à‰½‚à‚µ‚È‚¢ (Š—LŒ ‚È‚µ‚Æ“¯—l‚Éˆµ‚¤)
+			// ä¸æ˜ãªæ‰€æœ‰æ¨©ã‚¿ã‚¤ãƒ—ã®å ´åˆã‚‚ä½•ã‚‚ã—ãªã„ (æ‰€æœ‰æ¨©ãªã—ã¨åŒæ§˜ã«æ‰±ã†)
 			break;
 	}
 
-	// “à•”ó‘Ô‚ğƒNƒŠƒA
+	// å†…éƒ¨çŠ¶æ…‹ã‚’ã‚¯ãƒªã‚¢
 	this->m_pBuffer = nullptr;
 	this->m_BufferSize = 0;
 	this->m_OwnershipType = EHSSBMemoryOwnershipType::NoOwnership;

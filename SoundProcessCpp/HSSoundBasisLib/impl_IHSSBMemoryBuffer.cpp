@@ -122,7 +122,7 @@ void* impl_IHSSBMemoryBuffer::GetBufferPointer( size_t offset ) const {
 HRESULT impl_IHSSBMemoryBuffer::Allocate( size_t size ) {
 	if ( size == 0 ) return E_INVALIDARG;
 
-	// �����o�b�t�@������Ή�����Ă��犄����
+	// 既存バッファがあれば解放してから割当て
 	if ( this->m_pBuffer ) {
 		HeapFree( GetProcessHeap(), 0, this->m_pBuffer );
 		this->m_pBuffer = nullptr;
@@ -142,7 +142,7 @@ HRESULT impl_IHSSBMemoryBuffer::Allocate( size_t size ) {
 HRESULT impl_IHSSBMemoryBuffer::Free( void ) {
 	if ( this->m_pBuffer ) {
 		if ( !HeapFree( GetProcessHeap(), 0, this->m_pBuffer ) ) {
-			// HeapFree �����s�����ꍇ�ł��|�C���^�͖����Ƃ���
+			// HeapFree が失敗した場合でもポインタは無効とする
 			this->m_pBuffer = nullptr;
 			this->m_BufferSize = 0;
 			return HRESULT_FROM_WIN32( GetLastError() );
@@ -156,14 +156,14 @@ HRESULT impl_IHSSBMemoryBuffer::Free( void ) {
 HRESULT impl_IHSSBMemoryBuffer::ReAllocate( size_t new_size ) {
 	if ( new_size == 0 ) return E_INVALIDARG;
 
-	// �������ĂȂ� Allocate �Ɠ���
+	// 未割当てなら Allocate と同じ
 	if ( this->m_pBuffer == nullptr ) {
 		return this->Allocate( new_size );
 	}
 
 	void* p = HeapReAlloc( GetProcessHeap(), HEAP_ZERO_MEMORY, this->m_pBuffer, new_size );
 	if ( p == nullptr ) {
-		// �Ċ����ĂɎ��s�����ꍇ�A�����o�b�t�@�͂��̂܂܎c��iHeapReAlloc �̎d�l�j
+		// 再割当てに失敗した場合、既存バッファはそのまま残る（HeapReAlloc の仕様）
 		return E_OUTOFMEMORY;
 	}
 
