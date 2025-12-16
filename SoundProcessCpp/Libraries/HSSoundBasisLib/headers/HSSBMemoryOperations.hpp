@@ -11,6 +11,8 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryProvider ) IHSSBMemoryProvider : public IHSSBB
 
 #define IIDSTR_IHSSBMemoryOwner "D3DCCE84-A5DD-46FA-812F-8E183080C269"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBMemoryOwner;
+
+// interface: IHSSBMemoryOwner
 MIDL_INTERFACE( IIDSTR_IHSSBMemoryOwner ) IHSSBMemoryOwner : public IHSSBMemoryProvider {
 
 	// メモリバッファーをアタッチ

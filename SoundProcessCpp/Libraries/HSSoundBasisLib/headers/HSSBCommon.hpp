@@ -44,7 +44,11 @@ enum struct EHSSB_AddressOrigin {
 	End
 };
 
-
+/* Enum: EHSSB_RoundMode 列挙型
+        Down -  切り捨て
+        Up -  切り上げ
+        Nearest -  四捨五入   
+ */
 enum struct EHSSB_RoundMode {
 
 	// 切り捨て
@@ -59,7 +63,19 @@ enum struct EHSSB_RoundMode {
 };
 
 
-// メモリ所有権タイプ
+//  メモリ所有権タイプ
+/*  Enum: EHSSBMemoryOwnershipType 列挙型
+      NoOwnership - 所有権なし
+      WithDeleteArrayOwnership_NewAllocated - 所有権あり、該当のメモリはnew[]で確保されたものである
+
+            (→ delete[]で解放されるべきもの)
+      WithFreeOwnership_Malloced - 所有権あり、該当のメモリはmallocで確保されたものである
+
+            (→ freeで解放されるべきもの)
+      WithHeapFreeOwnership_HeapAlloced - 所有権あり、該当のメモリはHeapAlloc(GetProcessHeap(), ...)で確保されたものである
+
+            (→ HeapFree(GetProcessHeap(), 0, ...)で解放されるべきもの)
+*/
 enum struct EHSSBMemoryOwnershipType {
 	// 所有権なし
 	NoOwnership = 0,
@@ -78,7 +94,22 @@ enum struct EHSSBMemoryOwnershipType {
 };
 
 
-// new で確保されたメモリの型情報
+//  new で確保されたメモリの型情報
+/*  Enum: EHSSBMemoryNewAllocatedTypeInfo 列挙型
+        None - 未指定
+        char_array - char 配列
+        wchar_t_array - wchar_t 配列
+        float_array - float 配列
+        double_array - double 配列
+        int8_t_array - int8_t 配列
+        int16_t_array - int16_t 配列
+        int32_t_array - int32_t 配列
+        int64_t_array - int64_t 配列
+        uint8_t_array - uint8_t 配列
+        uint16_t_array - uint16_t 配列
+        uint32_t_array - uint32_t 配列
+        uint64_t_array - uint64_t 配列
+*/
 enum struct EHSSBMemoryNewAllocatedTypeInfo {
 
 	// 未指定
@@ -123,6 +154,8 @@ enum struct EHSSBMemoryNewAllocatedTypeInfo {
 
 
 //未初期化時を表すカスタムHRESULTエラーコード
+// Variable: HSSB_E_NOT_INITIALIZED
+// あああ
 HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_E_NOT_INITIALIZED;
 
 //部分的成功を表すカスタムHRESULTコード
@@ -143,6 +176,8 @@ HSSOUNDBASISLIB_VAREXPORT const HRESULT HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED;
 // 本ライブラリ上における基本インターフェース
 #define IIDSTR_IHSSBBase  "DE8D1C85-0807-455A-BA0E-2641F02E2DE2"
 HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBBase;
+
+// interface: IHSSBBase
 MIDL_INTERFACE( IIDSTR_IHSSBBase ) IHSSBBase : public IUnknown {
 
 
