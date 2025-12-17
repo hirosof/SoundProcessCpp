@@ -31,7 +31,10 @@ MIDL_INTERFACE( IIDSTR_IHSSBMemoryOwner ) IHSSBMemoryOwner : public IHSSBMemoryP
 	// 所有しているメモリを解放
 	virtual HRESULT Free( void ) = 0;
 
-	// バッファーポインタとサイズを取得
+    // バッファーがアタッチされているか確認
+    virtual bool IsAttached( void ) const = 0;
+
+	// バッファーポインタを取得
 	virtual void* GetBufferPointer( void ) const = 0;
 
 	// バッファーサイズを取得
@@ -278,56 +281,56 @@ HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBNormalizedPCMBuffer;
 MIDL_INTERFACE( IIDSTR_IHSSBNormalizedPCMBuffer ) IHSSBNormalizedPCMBuffer : public IHSSBMemoryBufferBase {
 
 
-	virtual  HRESULT Initialize( size_t number_of_samples, uint8_t number_of_channels = 1 ) = 0;
-	virtual  HRESULT Initialize( uint32_t sampling_frequency, uint32_t number_of_seconds, uint8_t number_of_channels = 1 ) = 0;
-	virtual  HRESULT Initialize( uint32_t sampling_frequency, double number_of_seconds, uint8_t number_of_channels = 1 , EHSSB_RoundMode  round_mode = EHSSB_RoundMode::Down ) = 0;
+    virtual  HRESULT Initialize( size_t number_of_samples, uint8_t number_of_channels = 1 ) = 0;
+    virtual  HRESULT Initialize( uint32_t sampling_frequency, uint32_t number_of_seconds, uint8_t number_of_channels = 1 ) = 0;
+    virtual  HRESULT Initialize( uint32_t sampling_frequency, double number_of_seconds, uint8_t number_of_channels = 1 , EHSSB_RoundMode  round_mode = EHSSB_RoundMode::Down ) = 0;
 
 
-	virtual size_t GetBytesSize( void ) const = 0;
+    virtual size_t GetBytesSize( void ) const = 0;
 
-	virtual uint8_t GetNumberOfChannels( void ) const = 0;
-	virtual size_t GetNumberOfSamples( void ) const = 0;
+    virtual uint8_t GetNumberOfChannels( void ) const = 0;
+    virtual size_t GetNumberOfSamples( void ) const = 0;
 
-	virtual HRESULT GetBytesIndex( size_t* pOutBytesIndex, size_t sample_index, uint8_t channel_index ) const = 0;
-	virtual HRESULT GetIndex( size_t* pOutIndex, size_t sample_index, uint8_t channel_index ) const = 0;
+    virtual HRESULT GetBytesIndex( size_t* pOutBytesIndex, size_t sample_index, uint8_t channel_index ) const = 0;
+    virtual HRESULT GetIndex( size_t* pOutIndex, size_t sample_index, uint8_t channel_index ) const = 0;
 
-	virtual HRESULT GetValue( double* pOutValue, size_t sample_index, uint8_t channel_index ) const = 0;
-	virtual HRESULT SetValue( double value, size_t sample_index, uint8_t channel_index ) = 0;
+    virtual HRESULT GetValue( double* pOutValue, size_t sample_index, uint8_t channel_index ) const = 0;
+    virtual HRESULT SetValue( double value, size_t sample_index, uint8_t channel_index ) = 0;
 
-	virtual HRESULT CreateEmptyChannelBuffer( IHSSBWritableMemoryBuffer** ppBuffer ) const = 0;
-	virtual HRESULT CreateChannelBuffer( IHSSBWritableMemoryBuffer** ppBuffer , uint8_t channel_index ) const = 0;
-
-	
-	// エクスポート/インポート時の設定構造体
-	struct ExportImportSettings {
-		size_t sample_length;
-		size_t from_side_sample_start_index;
-		size_t to_side_sample_start_index;
-		size_t result_processed_sample_length;
-
-		ExportImportSettings( )
-			: sample_length( 0 )
-			, from_side_sample_start_index( 0 )
-			, to_side_sample_start_index( 0 ) 
-			, result_processed_sample_length( 0 ){
-		}
-
-		explicit ExportImportSettings( size_t length, size_t from_index, size_t to_index )
-			: sample_length( length )
-			, from_side_sample_start_index( from_index )
-			, to_side_sample_start_index( to_index )
-			, result_processed_sample_length(0){
-		
-		}
-
-	};
+    virtual HRESULT CreateEmptyChannelBuffer( IHSSBWritableMemoryBuffer** ppBuffer ) const = 0;
+    virtual HRESULT CreateChannelBuffer( IHSSBWritableMemoryBuffer** ppBuffer , uint8_t channel_index ) const = 0;
 
 
-	virtual HRESULT ExportChannelData( IHSSBWritableMemoryBuffer* pChannelBuffer, uint8_t channel_index ) const = 0;
-	virtual HRESULT ExportChannelData( IHSSBWritableMemoryBuffer* pChannelBuffer, ExportImportSettings *pSettings , uint8_t channel_index ) const = 0;
+    // エクスポート/インポート時の設定構造体
+    struct ExportImportSettings {
+        size_t sample_length;
+        size_t from_side_sample_start_index;
+        size_t to_side_sample_start_index;
+        size_t result_processed_sample_length;
 
-	virtual HRESULT ImportChannelData( IHSSBReadOnlyMemoryBuffer* pChannelBuffer, uint8_t channel_index ) = 0;
-	virtual HRESULT ImportChannelData( IHSSBReadOnlyMemoryBuffer* pChannelBuffer,ExportImportSettings* pSettings, uint8_t channel_index ) = 0;
+        ExportImportSettings( )
+            : sample_length( 0 )
+            , from_side_sample_start_index( 0 )
+            , to_side_sample_start_index( 0 )
+            , result_processed_sample_length( 0 ) {
+        }
+
+        explicit ExportImportSettings( size_t length, size_t from_index, size_t to_index )
+            : sample_length( length )
+            , from_side_sample_start_index( from_index )
+            , to_side_sample_start_index( to_index )
+            , result_processed_sample_length( 0 ) {
+
+        }
+
+    };
+
+
+    virtual HRESULT ExportChannelData( IHSSBWritableMemoryBuffer* pChannelBuffer, uint8_t channel_index ) const = 0;
+    virtual HRESULT ExportChannelData( IHSSBWritableMemoryBuffer* pChannelBuffer, ExportImportSettings* pSettings, uint8_t channel_index ) const = 0;
+
+    virtual HRESULT ImportChannelData( IHSSBReadOnlyMemoryBuffer* pChannelBuffer, uint8_t channel_index ) = 0;
+    virtual HRESULT ImportChannelData( IHSSBReadOnlyMemoryBuffer* pChannelBuffer,ExportImportSettings* pSettings, uint8_t channel_index ) = 0;
 
 
 

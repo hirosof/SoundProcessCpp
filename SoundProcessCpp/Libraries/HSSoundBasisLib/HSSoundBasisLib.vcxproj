@@ -167,11 +167,14 @@
       <SubType>
       </SubType>
     </None>
+    <None Include="specifications\HSSBLogger_LogFileFormatSpec.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\HSSBCalculator.hpp" />
     <ClInclude Include="headers\HSSBCommon.hpp" />
     <ClInclude Include="headers\HSSBMathFunctions.hpp" />
     <ClInclude Include="headers\HSSBMemoryOperations.hpp" />
+    <ClInclude Include="headers\HSSBUtility.hpp" />
     <ClInclude Include="HSSoundBasisLib.hpp" />
     <ClInclude Include="implementations\impl_IHSSBMemoryBuffer.hpp" />
     <ClInclude Include="implementations\impl_IHSSBMemoryOwner.hpp" />
@@ -180,7 +183,9 @@
     <ClInclude Include="implementations\impl_IHSSBWritableMemoryBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="functions\HSSBCalculator.cpp" />
     <ClCompile Include="functions\HSSBMathFunctions.cpp" />
+    <ClCompile Include="functions\HSSBUtility.cpp" />
     <ClCompile Include="HSSBDllMain.cpp" />
     <ClCompile Include="implementations\impl_IHSSBMemoryBuffer.cpp" />
     <ClCompile Include="implementations\impl_IHSSBMemoryOwner.cpp" />

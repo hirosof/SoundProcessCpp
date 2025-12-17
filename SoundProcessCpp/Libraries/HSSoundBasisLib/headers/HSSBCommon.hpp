@@ -1,5 +1,9 @@
 #pragma once
 
+
+// Windows API ヘッダーの競合を避けるため、min/maxマクロを無効化
+#define NOMINMAX
+
 #include <Windows.h>
 #include <cstdint>
 #include <cstdio>
@@ -188,5 +192,18 @@ MIDL_INTERFACE( IIDSTR_IHSSBBase ) IHSSBBase : public IUnknown {
 	template <typename T> HRESULT QueryExtraService( T** ppvObject ) {
 		return this->QueryExtraService( __uuidof( T ), reinterpret_cast<void**>( ppvObject ) );
 	}
+
+};
+
+// Win32 ハンドル所有者インターフェイス
+#define IIDSTR_IHSSBWin32HandleOwner "AE53921F-2479-4329-9584-D88EA70E43BB"
+HSSOUNDBASISLIB_VAREXPORT const IID IID_IHSSBWin32HandleOwner;
+MIDL_INTERFACE( IIDSTR_IHSSBWin32HandleOwner ) IHSSBWin32HandleOwner : public IHSSBBase {
+
+    virtual HANDLE GetHandle( void ) const = 0;
+    virtual HRESULT AttachHandle( HANDLE hHandle ) = 0;
+    virtual HRESULT ReAttachHandle( HANDLE hHandle  , HANDLE *pReleaseHandle ) = 0;
+    virtual HRESULT DetachHandle( HANDLE* pOutHandle ) = 0;
+    virtual HRESULT CloseHandle( void ) = 0;
 
 };

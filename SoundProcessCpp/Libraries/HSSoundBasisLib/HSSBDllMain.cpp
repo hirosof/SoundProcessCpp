@@ -41,6 +41,7 @@ const IID IID_IHSSBNormalizedPCMBuffer = __uuidof( IHSSBNormalizedPCMBuffer );
 
 const IID IID_IHSSBMemoryOwner = __uuidof( IHSSBMemoryOwner );
 
+const IID IID_IHSSBWin32HandleOwner = __uuidof( IHSSBWin32HandleOwner );
 
 // カスタム HRESULT 作成マクロ
 #define HSSB_MAKE_CUSTOM_HRESULT(sev , code) MAKE_HRESULT( sev, FACILITY_ITF, 0x2000 +(code))

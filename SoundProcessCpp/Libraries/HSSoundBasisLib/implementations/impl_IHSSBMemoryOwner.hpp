@@ -2,6 +2,7 @@
 
 #define HSSOUNDBASISLIB_EXPORT_DLL_INTERNAL
 #include "../HSSoundBasisLib.hpp"
+#include <mutex>
 
 class impl_IHSSBMemoryOwner : public IHSSBMemoryOwner {
 
@@ -23,8 +24,8 @@ private:
 	// バッファーサイズ（バイト単位）
 	size_t m_BufferSize;
 
-	// クリティカルセクション（スレッドセーフ対応用）
-	CRITICAL_SECTION m_CriticalSection;
+    // ミューテックス（スレッドセーフ対応用、C++標準ライブラリ版）
+    std::mutex m_mutex;
 
 	// コンストラクタは private にして、CreateInstance 経由でしかインスタンス生成できないようにする
 	impl_IHSSBMemoryOwner( );
@@ -93,7 +94,11 @@ public:
 	// 所有しているメモリを解放
 	virtual HRESULT Free( void ) override;
 
-	// バッファーポインタとサイズを取得
+    // バッファーがアタッチされているか確認
+    virtual bool IsAttached( void ) const override;
+
+
+	// バッファーポインタを取得
 	virtual void* GetBufferPointer( void ) const override;
 
 	// バッファーサイズを取得

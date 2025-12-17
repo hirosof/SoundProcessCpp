@@ -9,12 +9,12 @@ impl_IHSSBMemoryOwner::impl_IHSSBMemoryOwner( ) : m_ref(1)  {
 	this->m_pBuffer = nullptr;
 	this->m_OwnershipType = EHSSBMemoryOwnershipType::NoOwnership;
 	this->m_OwnershipTypeInfo = EHSSBMemoryNewAllocatedTypeInfo::None;
-	InitializeCriticalSection( &m_CriticalSection );
+
 }
 
 impl_IHSSBMemoryOwner::~impl_IHSSBMemoryOwner( ) {
 	this->Free( );
-	DeleteCriticalSection( &m_CriticalSection );
+
 }
 
 void impl_IHSSBMemoryOwner::FreeForNewAllocatedBuffer( void ) {
@@ -103,14 +103,18 @@ HRESULT impl_IHSSBMemoryOwner::CreateInstance( IHSSBMemoryOwner** ppInstance, vo
 	}
 
 	// バッファーをアタッチ (パラメータチェックは Attach 内で行われる)
-	hr = spInstance->Attach( pBuffer, size, owner, owner_type_info );
-
-	if ( FAILED( hr ) ) {
-		return hr;
+	HRESULT hr_attach = spInstance->Attach( pBuffer, size, owner, owner_type_info );
+	if ( FAILED( hr_attach ) ) {
+		return hr_attach;
 	}
 
-	// 成功したら出力ポインタに設定
-	return spInstance.QueryInterface( ppInstance );
+    // 成功したら出力ポインタに設定
+    hr = spInstance.QueryInterface( ppInstance );
+    if ( FAILED( hr ) ) {
+        return hr;
+    }
+
+    return hr_attach;
 }
 
 bool impl_IHSSBMemoryOwner::InquiryProvided( REFIID TargetIID ) const {
@@ -133,7 +137,7 @@ bool impl_IHSSBMemoryOwner::InquiryProvided( REFIID TargetIID ) const {
     return false;
 }
 
-HRESULT __stdcall impl_IHSSBMemoryOwner::QueryInterface( REFIID riid, void** ppvObject ) {
+HRESULT __stdcall impl_IHSSBMemoryOwner::QueryInterface( REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject ) {
 
 	// パラメータチェック
 	if ( !ppvObject ) {
@@ -189,16 +193,14 @@ HRESULT __stdcall impl_IHSSBMemoryOwner::QueryExtraService( REFIID riid, void** 
 
 HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOwnershipType owner, EHSSBMemoryNewAllocatedTypeInfo owner_type_info ) {
 
-	EnterCriticalSection( &m_CriticalSection );
+    std::lock_guard<std::mutex> lock( m_mutex );
 
-	if ( this->m_pBuffer != nullptr ) {
-		LeaveCriticalSection( &m_CriticalSection );
+	if ( this->IsAttached()) {
 		// すでにバッファーがアタッチされている場合はエラー
 		return E_FAIL;
 	}
 
 	if ( !pBuffer ) {
-		LeaveCriticalSection( &m_CriticalSection );
 		// バッファーポインタが nullptr の場合はエラー
 		return E_POINTER;
 	}
@@ -213,7 +215,6 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 			break;
 		default:
 			// 無効な値
-			LeaveCriticalSection( &m_CriticalSection );
 			return E_INVALIDARG;
 	}
 
@@ -226,42 +227,36 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 		// HeapAlloc で確保されたメモリの場合、実際のサイズの取得を試行する
 		SIZE_T heap_size = HeapSize( GetProcessHeap( ), 0, pBuffer );
 
-		if ( ( size == 0 ) && ( heap_size == (SIZE_T) ( -1 ) ) ) {
-			// サイズの取得に失敗した場合はエラー (指定サイズが 0 の場合)
-			LeaveCriticalSection( &m_CriticalSection );
-			return E_INVALIDARG;
-		}
+        if ( heap_size == (SIZE_T) ( -1 ) ) {
+            // 実際のサイズの取得に失敗した場合はエラー
+            return E_INVALIDARG;
+        }
 
 		if ( heap_size == 0 ) {
-			LeaveCriticalSection( &m_CriticalSection );
 			// 実際のサイズが 0 の場合はエラー
 			return E_INVALIDARG;
 		}
 
 		// 実際のサイズの取得に成功した場合、サイズのチェックが可能なので、
 		// 取得したサイズを使ってサイズ調整の必要があるか確認する
-		if ( heap_size != (SIZE_T) ( -1 ) ) {
 
-			// サイズ調整の必要があるか確認
-			// size が 0 または 実際のサイズより大きい場合、調整を行う
+		// size が 0 または 実際のサイズより大きい場合、調整を行う
+		// size が 実際のサイズ以下の場合は調整不要 (意図したサイズとして扱う)
+		if ( ( size == 0 ) || ( size > heap_size ) ) {
+
+			// 実際のサイズを管理サイズに設定して続行する
+			size = static_cast<size_t>( heap_size );
+
+			// サイズ調整が発生したため、期待される成功コードを変更する
+			Expect_hr_for_Success = HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED;
+		} else {
 			// size が 実際のサイズ以下の場合は調整不要 (意図したサイズとして扱う)
-			if ( ( size == 0 ) || ( size > heap_size ) ) {
-
-				// 実際のサイズの取得に成功したため、サイズを設定して続行する
-				size = static_cast<size_t>( heap_size );
-
-				// サイズ調整が発生したため、期待される成功コードを変更する
-				Expect_hr_for_Success = HSSB_S_OK_BUT_MANAGED_SIZE_ADJUSTED;
-			} else {
-				// size が 実際のサイズ以下の場合は調整不要 (意図したサイズとして扱う)
-			}
-
 		}
 
-	} else {
+
+    } else {
 		// HeapAlloc 以外の場合、サイズが 0 は無効
 		if ( size == 0 ) {
-			LeaveCriticalSection( &m_CriticalSection );
 			return E_INVALIDARG;
 		}
 	}
@@ -269,7 +264,6 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 	if ( owner == EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated ) {
 		// 所有権タイプが new[] で確保されたメモリの場合、型情報が指定されていることを確認
 		if ( owner_type_info == EHSSBMemoryNewAllocatedTypeInfo::None ) {
-			LeaveCriticalSection( &m_CriticalSection );
 			// 型情報が指定されていない場合はエラー
 			return E_INVALIDARG;
 		}
@@ -284,28 +278,24 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 	this->m_OwnershipType = owner;
 	this->m_OwnershipTypeInfo = owner_type_info;
 
-
-	LeaveCriticalSection( &m_CriticalSection );
-
 	// 成功時の期待される HRESULT を返す
 	return Expect_hr_for_Success;
 }
 
 HRESULT impl_IHSSBMemoryOwner::Detach( void** ppOutBuffer, size_t* pOutSize, EHSSBMemoryOwnershipType* pOutOwner, EHSSBMemoryNewAllocatedTypeInfo* pOutOwnerTypeInfo ) {
 
-	EnterCriticalSection( &m_CriticalSection );
+    std::lock_guard<std::mutex> lock( m_mutex );
 
-	if ( this->m_BufferSize == 0 || this->m_pBuffer == nullptr ) {
-		// バッファーがアタッチされていない場合はエラー
-		LeaveCriticalSection( &m_CriticalSection );
-		return E_FAIL;
-	}
 
-	if(!ppOutBuffer ) {
-		LeaveCriticalSection( &m_CriticalSection );
-		// 出力ポインタが nullptr の場合はエラー
-		return E_POINTER;
-	}
+    if ( !this->IsAttached( ) ) {
+        // バッファーがアタッチされていない場合はエラー
+        return E_FAIL;
+    }
+
+    if ( !ppOutBuffer ) {
+        // 出力ポインタが nullptr の場合はエラー
+        return E_POINTER;
+    }
 
 	// 出力ポインタに値を設定
 	*ppOutBuffer = reinterpret_cast<void*>( this->m_pBuffer );
@@ -333,19 +323,16 @@ HRESULT impl_IHSSBMemoryOwner::Detach( void** ppOutBuffer, size_t* pOutSize, EHS
 	this->m_BufferSize = 0;
 	this->m_OwnershipType = EHSSBMemoryOwnershipType::NoOwnership;
 	this->m_OwnershipTypeInfo = EHSSBMemoryNewAllocatedTypeInfo::None;
-
-	LeaveCriticalSection( &m_CriticalSection );
-
 	return S_OK;
 }
 
 HRESULT impl_IHSSBMemoryOwner::Free( void ) {
 
-	EnterCriticalSection( &m_CriticalSection );
+    std::lock_guard<std::mutex> lock( m_mutex );
 
-	if ( this->m_BufferSize == 0 || this->m_pBuffer == nullptr ) {
+
+	if (!this->IsAttached() ) {
 		// バッファーがアタッチされていない場合は何もしないで成功を返す
-		LeaveCriticalSection( &m_CriticalSection );
 		return S_OK;
 	}
 
@@ -361,7 +348,10 @@ HRESULT impl_IHSSBMemoryOwner::Free( void ) {
 			break;
 		case EHSSBMemoryOwnershipType::WithHeapFreeOwnership_HeapAlloced:
 			// HeapAlloc で確保されたメモリの場合、 HeapFree を呼び出す
-			HeapFree( GetProcessHeap( ), 0, m_pBuffer );
+			if(!HeapFree( GetProcessHeap( ), 0, m_pBuffer )) {
+                // HeapFree に失敗した場合はエラーを返す
+                return HRESULT_FROM_WIN32(GetLastError());
+            }
 			break;
 		case EHSSBMemoryOwnershipType::NoOwnership:
 			// 所有権なしの場合は何もしない
@@ -376,24 +366,38 @@ HRESULT impl_IHSSBMemoryOwner::Free( void ) {
 	this->m_BufferSize = 0;
 	this->m_OwnershipType = EHSSBMemoryOwnershipType::NoOwnership;
 	this->m_OwnershipTypeInfo = EHSSBMemoryNewAllocatedTypeInfo::None;
-
-	LeaveCriticalSection( &m_CriticalSection );
-
 	return S_OK;
 }
 
+bool impl_IHSSBMemoryOwner::IsAttached( void ) const {
+    return  ( this->m_BufferSize != 0 ) && ( this->m_pBuffer != nullptr );
+}
+
 void* impl_IHSSBMemoryOwner::GetBufferPointer( void ) const {
+    if ( !this->IsAttached( ) ) {
+        return nullptr;
+    }
 	return this->m_pBuffer;
 }
 
 size_t impl_IHSSBMemoryOwner::GetSize( void ) const {
-	return this->m_BufferSize;
+    if ( !this->IsAttached( ) ) {
+        return 0;
+    }
+    return this->m_BufferSize;
 }
 
 EHSSBMemoryOwnershipType impl_IHSSBMemoryOwner::GetOwnershipType( void ) const {
+    if ( !this->IsAttached( ) ) {
+        return EHSSBMemoryOwnershipType::NoOwnership;
+    }
+
 	return this->m_OwnershipType;
 }
 
 EHSSBMemoryNewAllocatedTypeInfo impl_IHSSBMemoryOwner::GetOwnershipTypeInfo( void ) const {
-	return this->m_OwnershipTypeInfo;
+    if ( !this->IsAttached( ) ) {
+        return EHSSBMemoryNewAllocatedTypeInfo::None;
+    }
+    return this->m_OwnershipTypeInfo;
 }

@@ -5,3 +5,5 @@
 #include "headers/HSSBCommon.hpp"
 #include "headers/HSSBMemoryOperations.hpp"
 #include "headers/HSSBMathFunctions.hpp"
+#include "headers/HSSBCalculator.hpp"
+#include "headers/HSSBUtility.hpp"

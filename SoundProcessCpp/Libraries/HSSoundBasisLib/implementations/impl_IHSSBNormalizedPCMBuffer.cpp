@@ -1,7 +1,8 @@
 #include "impl_IHSSBNormalizedPCMBuffer.hpp"
 #include <new> // std::nothrow
+#include <limits>
 
-impl_IHSSBNormalizedPCMBuffer::impl_IHSSBNormalizedPCMBuffer( ) : m_ref(1),m_Channels(1), m_NumberOfSamples (1){
+impl_IHSSBNormalizedPCMBuffer::impl_IHSSBNormalizedPCMBuffer( ) : m_ref(1),m_Channels(0), m_NumberOfSamples (0){
 
 }
 
@@ -22,25 +23,27 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::CreateInstance( IHSSBNormalizedPCMBuffer*
 }
 
 HRESULT __stdcall impl_IHSSBNormalizedPCMBuffer::QueryInterface( REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject ) {
-	if ( !ppvObject ) return E_POINTER;
-	*ppvObject = nullptr;
+    if ( !ppvObject ) return E_POINTER;
+    *ppvObject = nullptr;
 
-	if ( IsEqualIID( riid, IID_IHSSBNormalizedPCMBuffer ) ) {
-		*ppvObject = static_cast<IHSSBNormalizedPCMBuffer*>( this );
-	} else if ( IsEqualIID( riid, IID_IHSSBMemoryBufferBase ) ) {
-		*ppvObject = static_cast<IHSSBMemoryBufferBase*>( this );
-	} else if ( IsEqualIID( riid, IID_IHSSBMemoryProvider ) ) {
-		*ppvObject = static_cast<IHSSBMemoryProvider*>( this );
-	} else if ( IsEqualIID( riid, IID_IHSSBBase ) ) {
-		*ppvObject = static_cast<IHSSBBase*>( this );
-	} else if ( IsEqualIID( riid, IID_IUnknown ) ) {
-		*ppvObject = static_cast<IUnknown*>( this );
-	} else {
-		return E_NOINTERFACE;
-	}
+    // 要求された IID に応じて、適切なインターフェイス型で this を返す
+    if ( IsEqualIID( riid, IID_IUnknown ) ) {
+        *ppvObject = static_cast<IUnknown*>( this );
+    } else if ( IsEqualIID( riid, IID_IHSSBNormalizedPCMBuffer ) ) {
+        *ppvObject = static_cast<IHSSBNormalizedPCMBuffer*>( this );
+    } else if ( IsEqualIID( riid, IID_IHSSBMemoryBufferBase ) ) {
+        *ppvObject = static_cast<IHSSBMemoryBufferBase*>( this );
+    } else if ( IsEqualIID( riid, IID_IHSSBMemoryProvider ) ) {
+        *ppvObject = static_cast<IHSSBMemoryProvider*>( this );
+    } else if ( IsEqualIID( riid, IID_IHSSBBase ) ) {
+        *ppvObject = static_cast<IHSSBBase*>( this );
+    } else {
+        return E_NOINTERFACE;
+    }
 
-	this->AddRef();
-	return S_OK;
+    this->AddRef( );
+    return S_OK;
+
 }
 
 ULONG __stdcall impl_IHSSBNormalizedPCMBuffer::AddRef( void ) {
@@ -58,24 +61,43 @@ ULONG __stdcall impl_IHSSBNormalizedPCMBuffer::Release( void ) {
 
 bool impl_IHSSBNormalizedPCMBuffer::InquiryProvided( REFIID TargetIID ) const {
 
-	IID provided_iids[] = {
-		IID_IHSSBNormalizedPCMBuffer,
-		IID_IHSSBWritableMemoryBuffer,
-		IID_IHSSBReadOnlyMemoryBuffer,
-		IID_IHSSBMemoryBufferBase,
-		IID_IHSSBMemoryProvider,
-		IID_IHSSBBase,
-	};
+    // 本関数はconst関数であり、直接QueryInterfaceを呼び出せないため、インスタンスを新規作成して確認する方法を取る
+    // また、QueryInterfaceで提供しているインタフェースと整合性を持たせるため、
+    // IIDを直接比較するのではなく、QueryInterfaceで確認する方法を取る
+    // (これにより、将来的に提供インタフェースが変更された場合でもQueryInterfaceのみの修正で対応可能となる)
 
-	for ( const IID& current : provided_iids ) {
-		if ( IsEqualIID( current, TargetIID ) ) {
-			return true;
-		}
-	}
-	return false;
+    static std::recursive_mutex mutex;
+    std::lock_guard<std::recursive_mutex> lock( mutex );
+
+    static std::once_flag init_flag;
+    static CComPtr<IHSSBNormalizedPCMBuffer> pInstance;
+    static HRESULT cached_result = E_FAIL;
+
+    std::call_once( init_flag, [&] ( ) {
+        cached_result = impl_IHSSBNormalizedPCMBuffer::CreateInstance( &pInstance );
+    } );
+
+    if ( FAILED( cached_result ) ) {
+        return false;
+    }
+
+    // QueryInterfaceで確認
+    void* pObject = nullptr;
+    HRESULT hr = pInstance->QueryInterface( TargetIID, &pObject );
+    if ( SUCCEEDED( hr ) && pObject != nullptr ) {
+        // 解放
+        reinterpret_cast<IUnknown*>( pObject )->Release( );
+        // 提供されている
+        return true;
+    }
+
+    // 提供されていない、もしくは失敗
+    return false;
 }
 
 bool impl_IHSSBNormalizedPCMBuffer::InquiryProvidedExtraService( REFIID TargetIID ) const {
+
+    std::lock_guard<std::recursive_mutex> lock( this->m_Mutex );
 
 	// IHSSBMemoryBufferの提供は管理外でのメモリサイズが変更される可能性があるため未サポート扱いとする
 	if ( IsEqualIID( TargetIID, IID_IHSSBMemoryBuffer ) ) {
@@ -91,6 +113,11 @@ bool impl_IHSSBNormalizedPCMBuffer::InquiryProvidedExtraService( REFIID TargetII
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::QueryExtraService( REFIID riid, void** ppvObject ) {
 
+    std::lock_guard<std::recursive_mutex> lock( this->m_Mutex );
+
+    if ( !ppvObject ) return E_POINTER;
+    *ppvObject = nullptr;
+
 	// IHSSBMemoryBufferの提供は管理外でのメモリサイズが変更される可能性があるため未サポート扱いとする
 	if ( IsEqualIID( riid, IID_IHSSBMemoryBuffer ) ) {
 		return  HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
@@ -100,12 +127,21 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::QueryExtraService( REFIID riid, void** pp
 		return this->m_MemoryBuffer->QueryInterface( riid, ppvObject );
 	}
 
-	if ( ppvObject ) *ppvObject = nullptr;
-	return E_NOTIMPL;
+	return HSSB_E_NOT_INITIALIZED;
 }
 
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( size_t number_of_samples, uint8_t number_of_channels ) {
+
+    std::lock_guard<std::recursive_mutex> lock( this->m_Mutex );
+
+    if ( number_of_channels == 0 ) {
+        return E_INVALIDARG;
+    }
+
+    if ( number_of_samples == 0 ) {
+        return E_INVALIDARG;
+    }
 
 	// すでに初期化済みなら再初期化は許可しない
 	if ( this->m_MemoryBuffer.p ) {
@@ -116,8 +152,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( size_t number_of_samples, uin
 	HRESULT hr;
 
 	// バイト数を計算
-	//		備考：number_of_samplesやnumber_of_channelsの値は0チェックを含めて、この関数の内部でチェックしている
-	hr = HSSBMath_CalculateBytesBySamples_StrictType<double>( &total_size, 
+	hr = HSSBCalculate_BytesBySamples_StrictType<double>( &total_size,
 		static_cast<uint64_t>( number_of_samples ),
 		number_of_channels );
 
@@ -162,7 +197,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( uint32_t sampling_frequency, 
 	if ( size_of_size_t == 4 ) {
 
 		uint32_t calculated_samples;
-		hr = HSSBMath32_CalculateSamplesBySeconds_Strict( &calculated_samples, sampling_frequency, number_of_seconds, round_mode );
+		hr = HSSBCalculate32_SamplesBySeconds_Strict( &calculated_samples, sampling_frequency, number_of_seconds, round_mode );
 		if ( FAILED( hr ) ) {
 			return hr;
 		}
@@ -176,7 +211,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::Initialize( uint32_t sampling_frequency, 
 
 	} else if ( size_of_size_t == 8 ) {
 		uint64_t calculated_samples;
-		hr = HSSBMath64_CalculateSamplesBySeconds_Strict( &calculated_samples, sampling_frequency, number_of_seconds, round_mode );
+		hr = HSSBCalculate64_SamplesBySeconds_Strict( &calculated_samples, sampling_frequency, number_of_seconds, round_mode );
 		if ( FAILED( hr ) ) {
 			return hr;
 		}
@@ -208,14 +243,21 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::GetBytesIndex( size_t* pOutBytesIndex, si
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 	if ( !pOutBytesIndex ) return E_POINTER;
 
+    std::lock_guard <std::recursive_mutex> lock( this->m_Mutex );
+
 	size_t element_index;
 
 	// サンプルインデックスとチャンネルインデックスから要素インデックスを取得
 	HRESULT hr = this->GetIndex( &element_index, sample_index, channel_index );
-
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
+
+    // 要素インデックスが大きすぎてバイトインデックスに変換できない場合はエラーを返す
+    constexpr size_t max_elements = std::numeric_limits<size_t>::max( ) / sizeof( double );
+    if ( element_index > max_elements ) {
+        return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
+    }
 
 	// バイトインデックスを計算して返す
 	*pOutBytesIndex = element_index * sizeof( double );
@@ -224,26 +266,35 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::GetBytesIndex( size_t* pOutBytesIndex, si
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::GetIndex( size_t* pOutIndex, size_t sample_index, uint8_t channel_index ) const {
+    std::lock_guard <std::recursive_mutex> lock( this->m_Mutex );
 
-	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
+    if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
+    if ( !pOutIndex ) return E_POINTER;
+    if ( sample_index >= this->m_NumberOfSamples ) return E_INVALIDARG;
+    if ( channel_index >= this->m_Channels ) return E_INVALIDARG;
 
-	if ( !pOutIndex ) return E_POINTER;
 
-	if ( sample_index >= this->m_NumberOfSamples ) return E_INVALIDARG;
-	if ( channel_index >= this->m_Channels ) return E_INVALIDARG;
+    // オーバーフローチェック
+    constexpr size_t size_t_max = std::numeric_limits<size_t>::max( );
+    size_t max_index = size_t_max - channel_index;
+    if ( sample_index > ( max_index / this->m_Channels ) ) {
+        return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
+    }
 
-	size_t index = sample_index * this->m_Channels + channel_index;
+    // インデックスを計算
+    size_t index = sample_index * this->m_Channels + channel_index;
 
-	*pOutIndex = index;
+    *pOutIndex = index;
+
 	return S_OK;
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::GetValue( double* pOutValue, size_t sample_index, uint8_t channel_index ) const {
+    std::lock_guard <std::recursive_mutex> lock( this->m_Mutex );
 
 	size_t index;
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 	if ( !pOutValue ) return E_POINTER;
-
 	HRESULT hr = this->GetIndex( &index, sample_index, channel_index );
 	if ( FAILED( hr ) ) {
 		return hr;
@@ -261,7 +312,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::GetValue( double* pOutValue, size_t sampl
 }
 
 HRESULT impl_IHSSBNormalizedPCMBuffer::SetValue( double value, size_t sample_index, uint8_t channel_index ) {
-
+    std::lock_guard <std::recursive_mutex> lock( this->m_Mutex );
 	size_t index;
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 
@@ -269,7 +320,6 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::SetValue( double value, size_t sample_ind
 	if ( FAILED( hr ) ) {
 		return hr;
 	}
-
 
 	double* pBuffer = this->m_MemoryBuffer->GetBufferPointerType<double>( index );
 	if ( !pBuffer ) {
@@ -296,7 +346,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::CreateEmptyChannelBuffer( IHSSBWritableMe
 
 	// チャンネルあたりのバイト数を計算
 	size_t channel_bytes;
-	hr = HSSBMath_CalculateBytesBySamples_StrictType<double>( &channel_bytes,
+	hr = HSSBCalculate_BytesBySamples_StrictType<double>( &channel_bytes,
 		static_cast<uint64_t>( this->m_NumberOfSamples ),
 		1 );
 
@@ -373,6 +423,9 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::ExportChannelData( IHSSBWritableMemoryBuf
 	if ( !this->m_MemoryBuffer.p ) return HSSB_E_NOT_INITIALIZED;
 
 	if ( pChannelBuffer == nullptr || pSettings == nullptr ) return E_POINTER;
+
+
+    std::lock_guard <std::recursive_mutex> lock( this->m_Mutex );
 
 	// チャンネルインデックスのチェック
 	if ( channel_index >= this->m_Channels ) return E_INVALIDARG;
@@ -527,6 +580,8 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::ImportChannelData( IHSSBReadOnlyMemoryBuf
 	
 	if ( pChannelBuffer == nullptr || pSettings == nullptr ) return E_POINTER;
 
+    std::lock_guard <std::recursive_mutex> lock( this->m_Mutex );
+
 	// チャンネルインデックスのチェック
 	if ( channel_index >= this->m_Channels ) return E_INVALIDARG;
 
@@ -641,6 +696,7 @@ HRESULT impl_IHSSBNormalizedPCMBuffer::ImportChannelData( IHSSBReadOnlyMemoryBuf
 }
 
 size_t impl_IHSSBNormalizedPCMBuffer::GetBytesSize( void ) const {
+    std::lock_guard <std::recursive_mutex> lock( this->m_Mutex );
 	if ( !this->m_MemoryBuffer.p ) return 0;
 	return this->m_MemoryBuffer->GetSize( );
 }

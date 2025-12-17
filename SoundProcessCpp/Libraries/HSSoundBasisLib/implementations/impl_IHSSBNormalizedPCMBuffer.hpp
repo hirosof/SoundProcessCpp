@@ -2,14 +2,19 @@
 #define HSSOUNDBASISLIB_EXPORT_DLL_INTERNAL
 #include "../HSSoundBasisLib.hpp"
 #include <atlbase.h>
+#include <mutex>
+#include <atomic>
 
 class impl_IHSSBNormalizedPCMBuffer : public IHSSBNormalizedPCMBuffer {
 private:
 
-	volatile LONG m_ref;
+	mutable volatile LONG m_ref;
+
 	CComPtr<IHSSBMemoryBuffer> m_MemoryBuffer;
-	uint8_t m_Channels;
-	size_t m_NumberOfSamples;
+	
+    std::atomic<uint8_t> m_Channels;
+    std::atomic<size_t> m_NumberOfSamples;
+    mutable std::recursive_mutex m_Mutex;
 
 	impl_IHSSBNormalizedPCMBuffer( );
 	~impl_IHSSBNormalizedPCMBuffer( );

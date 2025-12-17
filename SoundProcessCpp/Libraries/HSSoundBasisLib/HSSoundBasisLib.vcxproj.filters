@@ -13,11 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ドキュメント">
+      <UniqueIdentifier>{2c5aecff-8e6a-4e11-8275-718e53c5f032}</UniqueIdentifier>
+      <Extensions>md</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="for_Copilot.md" />
-    <None Include="Copilot_History_Memo.md" />
-    <None Include="Readme.md" />
+    <None Include="Copilot_History_Memo.md">
+      <Filter>ドキュメント</Filter>
+    </None>
+    <None Include="for_Copilot.md">
+      <Filter>ドキュメント</Filter>
+    </None>
+    <None Include="Readme.md">
+      <Filter>ドキュメント</Filter>
+    </None>
+    <None Include="specifications\HSSBLogger_LogFileFormatSpec.md">
+      <Filter>ドキュメント</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HSSoundBasisLib.hpp">
@@ -47,6 +60,12 @@
     <ClInclude Include="implementations\impl_IHSSBWritableMemoryBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="headers\HSSBCalculator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\HSSBUtility.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="functions\HSSBMathFunctions.cpp">
@@ -68,6 +87,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="implementations\impl_IHSSBWritableMemoryBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="functions\HSSBCalculator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="functions\HSSBUtility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
