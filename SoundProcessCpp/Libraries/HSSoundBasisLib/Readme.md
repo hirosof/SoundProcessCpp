@@ -58,33 +58,110 @@ HSSoundBasisLibは、音声処理のための基本的な機能を提供するC+
 
 ### メモリ管理システム
 
-* IHSSBMemoryOwnerインタフェース
-    - メモリ所有者を表すインタフェース
-    - new[],malloc,HeapAllocで確保したメモリの管理権を本インタフェースに移譲可能
-      - 管理権が移譲された場合は、インスタンスは破棄時にメモリを解放されます
-    - 内部でメモリサイズを管理していますので、関数等に渡す際にサイズ情報を別途パラメータで指定する必要がありません
+---
 
-* IHSSBReadOnlyMemoryBufferインタフェース
-    - 読み取り専用のメモリバッファを表すインタフェース
-    - IHSSBMemoryOwnerインタフェースと同機能のメモリ所有者機能を備えています
-      - IHSSBMemoryOwnerインタフェースを利用する方法へ変更予定です
-      - これは、IHSSBMemoryOwnerインタフェース実装前に本インタフェースが実装されたためです
-    - メモリバッファの内容を変更することはできません
+以下、クラス図による関係イメージ図になります。なお、実装クラスの実態はライブラリ内で隠蔽されており、<br>
+そのインスタンスは専用のファクトリ関数を通じて取得/作成する形になります。
 
-* IHSSBWritableMemoryBufferインタフェース
-    - 書き込み可能なメモリバッファを表すインタフェース
-    - 現在は、メモリ所有者機能を備えていません
-      - IHSSBMemoryOwnerインタフェースを利用する方法へ変更予定です
+下図においてライブラリ内で実態が実装されているものは 『(インタフェース名) + の実装クラス』と表記しています<br>
+そのため、それらは実際のクラス名とは異なり説明用の記載となります。
+
+また、メンバ関数の記載は省略しています。
+
+```mermaid
+classDiagram
+  direction BT
+  class IHSSBMemoryProvider
+  <<interface>> IHSSBMemoryProvider
+
+  class IHSSBMemoryOwner
+  <<interface>> IHSSBMemoryOwner
+
+  class IHSSBMemoryBufferBase
+  <<interface>> IHSSBMemoryBufferBase
+
+  class IHSSBReadOnlyMemoryBuffer
+  <<interface>> IHSSBReadOnlyMemoryBuffer
+
+  class IHSSBWritableMemoryBuffer
+  <<interface>> IHSSBWritableMemoryBuffer
+
+  class IHSSBMemoryBuffer
+  <<interface>> IHSSBMemoryBuffer
+
+  class IHSSBNormalizedPCMBuffer
+  <<interface>> IHSSBNormalizedPCMBuffer
+
+  class IHSSBMemoryOwnerの実装クラス
+  class IHSSBReadOnlyMemoryBufferの実装クラス
+  class IHSSBWritableMemoryBufferの実装クラス
+  class IHSSBMemoryBufferの実装クラス
+  class IHSSBNormalizedPCMBufferの実装クラス
+
+
+  IHSSBMemoryOwner <|.. IHSSBMemoryProvider
+  IHSSBMemoryOwnerの実装クラス <|.. IHSSBMemoryOwner
+
+  IHSSBMemoryBufferBase <|.. IHSSBMemoryProvider
+
+  IHSSBReadOnlyMemoryBuffer <|.. IHSSBMemoryBufferBase
+  IHSSBReadOnlyMemoryBufferの実装クラス <|.. IHSSBReadOnlyMemoryBuffer
+
+  IHSSBWritableMemoryBuffer <|.. IHSSBReadOnlyMemoryBuffer
+  IHSSBWritableMemoryBufferの実装クラス <|.. IHSSBWritableMemoryBuffer
+
+  IHSSBMemoryBuffer <|.. IHSSBWritableMemoryBuffer
+  IHSSBMemoryBufferの実装クラス <|.. IHSSBMemoryBuffer
+
+
+  IHSSBNormalizedPCMBuffer <|.. IHSSBMemoryBufferBase
+  IHSSBNormalizedPCMBufferの実装クラス <|.. IHSSBNormalizedPCMBuffer
+
+```
+
+以下、提供されるインタフェースの説明です
   
-* IHSSBMemoryBufferインタフェース
-    - 読み取り/書き込み可能なメモリバッファを表すインタフェース
-    - 現在は、メモリ所有者機能を備えておらず、所有者は本インタフェースです
+#### IHSSBMemoryOwnerインタフェース
 
-* IHSSBNormalizedPCMBufferインタフェース
-    - 正規化されたPCM音声データを表すインタフェース
-    - 64bit浮動小数点数形式で音声データを保持します
-    - チャンネル数、サンプル数の情報を保持します
-  
+* IHSSBMemoryOwnerインタフェースは、メモリ所有者を表すインタフェースです
+* new[],malloc,HeapAllocで確保したメモリの管理権を本インタフェースに移譲可能です
+  - 管理権が移譲された場合は、インスタンスは破棄時にメモリを解放されます
+* 内部でメモリサイズを管理していますので、関数等に渡す際にサイズ情報を別途パラメータで指定する必要がありません
+
+
+#### IHSSBReadOnlyMemoryBufferインタフェース
+
+* IHSSBReadOnlyMemoryBufferインタフェースは、読み取り専用のメモリバッファを表すインタフェースです
+* IHSSBMemoryOwnerインタフェースと同機能のメモリ所有者機能を備えています
+  - IHSSBMemoryOwnerインタフェースを利用する方法へ変更予定です
+    - これは、IHSSBMemoryOwnerインタフェース実装前に本インタフェースが実装されたためです
+* メモリバッファの内容を変更することはできません
+
+#### IHSSBWritableMemoryBufferインタフェース
+
+* IHSSBWritableMemoryBufferインタフェースは、書き込み可能なメモリバッファを表すインタフェースです
+* 現在は、メモリ所有者機能を備えていません
+  - IHSSBMemoryOwnerインタフェースを利用する方法へ変更予定です
+
+
+#### IHSSBMemoryBufferインタフェース
+
+* IHSSBMemoryBufferインタフェースは、読み取り/書き込み可能なメモリバッファを表すインタフェースです
+* 現在は、メモリ所有者機能を備えておらず、所有者は本インタフェースです
+* メモリバッファの内容を読み書き可能です
+* メモリバッファのサイズを変更可能です
+* メモリバッファの内容を他のメモリバッファへコピー可能です
+* メモリバッファの内容を他のメモリバッファからコピー可能です
+
+#### IHSSBNormalizedPCMBufferインタフェース
+
+* IHSSBNormalizedPCMBufferインタフェースは、正規化されたPCM音声データを表すインタフェースです
+* 64bit浮動小数点数形式で音声データを保持します
+* チャンネル数、サンプル数の情報を保持します
+
+
+
+
 ### WAVEファイル入出力 (未実装)
 
 WAVEファイルの読み書きを行うためのインタフェースを提供予定です。
@@ -99,13 +176,12 @@ WAVEファイルの読み書きを行うためのインタフェースを提供�
 
 * 対応フォーマットは以下を予定
 
-  |フォーマットID(WAVEFORMATEX::wFormatTag)|量子化ビット数|チャンネル数|サンプリングレート|
-  |---|---|---|---|
-  |PCM (WAVE_FORMAT_PCM)|8bit/16bit/24bit/32bit|モノラル、ステレオ|任意|
-  |IEEE Float (WAVE_FORMAT_IEEE_FLOAT)|32bit/64bit|モノラル、ステレオ|任意|
-  |A-law (WAVE_FORMAT_MULAW)|8bit|モノラル、ステレオ|任意|
-  |μ-law (WAVE_FORMAT_ALAW)|8bit|モノラル、ステレオ|任意|
-
+  |フォーマットID(WAVEFORMATEX::wFormatTag)|フォーマット名|量子化ビット数|チャンネル数|サンプリングレート|
+  |---|---|---|---|---|
+  |WAVE_FORMAT_PCM|PCM|8bit/16bit/24bit/32bit|モノラル、ステレオ|任意|
+  |WAVE_FORMAT_IEEE_FLOAT|IEEE Float|32bit/64bit|モノラル、ステレオ|任意|
+  |WAVE_FORMAT_MULAW|μ-law|8bit|モノラル、ステレオ|任意|
+  |WAVE_FORMAT_ALAW|A-law|8bit|モノラル、ステレオ|任意|
 
 ### フォーマット変換関連 (未実装)
 
