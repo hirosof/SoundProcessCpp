@@ -1,4 +1,4 @@
-# HSSoundBasisLibライブラリ
+# HSSoundBasisLib ライブラリ
 
 ※ 以下の内容は、一部AI向け(Microsoft365 Copilot / GitHub Copilot) 向けの説明が含まれています。
 
@@ -38,7 +38,7 @@ HSSoundBasisLibは、音声処理のための基本的な機能を提供するC+
 
 ## ライセンス
 
-[LICENSE](../../LICENSE) ファイルを参照してください。
+[LICENSE](../../../LICENSE) ファイルを参照してください。
 
 
 ## 実装コンセプト
@@ -98,13 +98,13 @@ WAVEファイルの読み書きを行うためのインタフェースを提供�
   - IHSSBWaveFileDataChunkReader : WAVEファイルのデータチャンク読み込みを行うインタフェース
 
 * 対応フォーマットは以下を予定
-  - フォーマット名(WAVEFORMATEX::wFormatTag) : 量子化ビット数
-    - PCM(WAVE_FORMAT_PCM)：8bit/16bit/24bit/32bit
-    - IEEE Float (WAVE_FORMAT_IEEE_FLOAT) : 32bit/64bit
-    - A-law (WAVE_FORMAT_MULAW) : 8bit
-    - μ-law (WAVE_FORMAT_ALAW) : 8bit
-  - チャンネル数 : モノラル、ステレオ
-  - サンプリングレート : 任意
+
+  |フォーマットID(WAVEFORMATEX::wFormatTag)|量子化ビット数|チャンネル数|サンプリングレート|
+  |---|---|---|---|
+  |PCM (WAVE_FORMAT_PCM)|8bit/16bit/24bit/32bit|モノラル、ステレオ|任意|
+  |IEEE Float (WAVE_FORMAT_IEEE_FLOAT)|32bit/64bit|モノラル、ステレオ|任意|
+  |A-law (WAVE_FORMAT_MULAW)|8bit|モノラル、ステレオ|任意|
+  |μ-law (WAVE_FORMAT_ALAW)|8bit|モノラル、ステレオ|任意|
 
 
 ### フォーマット変換関連 (未実装)
@@ -128,7 +128,8 @@ WAVEファイルの読み書きを行うためのインタフェースを提供�
   - そのため、独自のロガーインタフェースを提供予定です
 
 * また、できるだけログのファイルサイズを抑えられるように、独自形式のログファイルフォーマットを採用予定です
-  - ログファイルフォーマットの仕様は検討中です
+  - ログファイルフォーマットの仕様は以下にまとめてあります (※ 検討中な部分もあり、現時点では確定していません)
+    - [HSSBLogger_LogFileFormatSpec.md](./specifications/HSSBLogger_LogFileFormatSpec.md)
 
 * 以下、予定している機能です
   - ログレベル設定機能
