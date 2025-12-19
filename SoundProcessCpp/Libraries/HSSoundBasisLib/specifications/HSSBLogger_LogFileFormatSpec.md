@@ -1,5 +1,4 @@
-#  HSSBLogger ログファイルフォーマット仕様書
-
+#  HSSoundBasisLibに搭載されるHSSBLoggerで利用されるログファイルフォーマット仕様書
 
 ## 1. 概要
 
@@ -31,13 +30,15 @@ flowchart TB
     ModuleList["モジュールリストセクション<br>モジュールIDと名前"]
     ApplicationDefinedData["アプリケーション定義データセクション<br>任意のデータ"]
     LogEntries["ログエントリセクション<br>ログデータの配列<br>可変長"]
+    FunctionList["関数リストセクション<br>関数IDと名前"]
     Footer["フッターセクション<br>ファイルの終端<br>正常終了時のみ"]
 
     Header --> LogLevelList
     LogLevelList --> ModuleList
     ModuleList --> ApplicationDefinedData
     ApplicationDefinedData --> LogEntries
-    LogEntries --> Footer
+    LogEntries --> FunctionList
+    FunctionList --> Footer
 ```
 
 * フッターセクションについて
@@ -63,36 +64,63 @@ char配列は正確な文字コードが判断がつかないため(環境によ
 
 
 ```cpp
-struct HSSBLoggerFileHeader {
+struct HSSBLoggerFileHeader {    
+    // 以下ファイル生成と同時に設定されるフィールド
     UUID        FormatID;                   // フォーマット識別子
-    uint32_t    FormatVersion;              // フォーマットバージョン
+    UUID        FormatVersionID;            // フォーマットバージョン識別子
+    UUID        ImplementerID;              // 実装者識別子
     UUID        ApplicationID;              // アプリケーション識別子
     uint16_t    ApplicationMajorVersion;    // アプリケーションメジャーバージョン
     uint16_t    ApplicationMinorVersion;    // アプリケーションマイナーバージョン
     DWORD       ProcessID;                  // プロセスID
-    uint64_t    FullFileSize;               // 本構造体を含めた完全なファイルサイズ
-    uint32_t    LogEntryFinalCount;         // ログエントリ最終カウント
-    uint32_t    LogEntrySHA256[8];          // ログエントリセクションSHA-256ハッシュ値 (無効の場合は0で初期化)
+    FILETIME    CreationTimestamp;          // ファイル作成タイムスタンプ (UTC)
+
+    // 以下ファイル書き込み完了時に設定されるフィールド
+    HSSBLoggerFileHeaderFinalizedWriteFields Finalized;
+};
+
+
+// 以上で利用している構造体の定義は以下の通りです
+
+// ファイル書き込み完了時に設定されるフィールド構造体
+struct HSSBLoggerFileHeaderFinalizedWriteFields{
+    uint64_t    FullFileSize;                 // 最終確定済み完全ファイルサイズ         
+    uint32_t    CountOfLogEntries;            // 最終確定済みログエントリ数
+    FILETIME    Timestamp;                    // ファイル書き込み完了タイムスタンプ (UTC)
+    uint64_t    FunctionListSectionOffset;    // 関数リストセクションのファイル内オフセット
+    uint8_t     OverAllSHA256[32];            // HSSBLoggerFileHeaderより後の全データのSHA-256ハッシュ値
 };
 ```
 
+---
 
 
-#### FormatID
+#### HSSBLoggerFileHeader::FormatID
 
 * 初期値： 固定値
 * 説明： HSSBLoggerのログファイルフォーマットを識別するためのUUID
   - HSSBLoggerでは、特定のUUIDを使用します
+  - 詳細は「3.1 フォーマット識別子 (FormatID)」を参照してください
 
 
-#### FormatVersion
+#### HSSBLoggerFileHeader::FormatVersion
 
-* 初期値： 1
-* 説明： ログファイルフォーマットのバージョンを示す整数値
-  - 現在のバージョンは1です
-  - 将来的にフォーマットが変更された場合に、この値をインクリメントします
+* 初期値： 固定値
+* 説明： HSSBLoggerのログファイルフォーマットのバージョンを識別するためのUUID
+  - HSSBLoggerでは、特定のUUIDを使用します
+  - フォーマットのバージョンアップが行われた場合に、この値が変更されます
+  - 将来の互換性を確保するために使用されます
 
-#### ApplicationID
+- 
+#### HSSBLoggerFileHeader::ImplementerID
+
+* 初期値： 任意
+* 説明： ログファイルを生成したHSSBLoggerの実装者を識別するためのUUID
+  - HSSBLoggerの異なる実装ごとに一意のUUIDを割り当てることを推奨します
+  - これにより、同じフォーマットでログファイルを生成した異なる実装を識別できます
+
+
+#### HSSBLoggerFileHeader::ApplicationID
 
 * 初期値： 任意
 * 説明： ログファイルを生成したアプリケーションを識別するためのUUID
@@ -101,27 +129,35 @@ struct HSSBLoggerFileHeader {
     どのアプリケーションが生成したかを識別できます
 
 
-#### ApplicationMajorVersion
+#### HSSBLoggerFileHeader::ApplicationMajorVersion
 
 * 初期値： 任意
 * 説明： ログファイルを生成したアプリケーションのメジャーバージョンを示す整数値
   - アプリケーションのバージョン管理に使用されます
   - メジャーバージョンが変更された場合に、この値をインクリメントします
 
-#### ApplicationMinorVersion
+#### HSSBLoggerFileHeader::ApplicationMinorVersion
 
 * 初期値： 任意
 * 説明： ログファイルを生成したアプリケーションのマイナーバージョンを示す整数値
   - アプリケーションのバージョン管理に使用されます
   - マイナーバージョンが変更された場合に、この値をインクリメントします
 
-#### ProcessID
+#### HSSBLoggerFileHeader::ProcessID
 
 * 初期値： 任意
 * 説明： ログファイルを生成したプロセスのIDを示すDWORD値
   - WindowsのGetCurrentProcessId関数で取得される値を使用します
 
-#### FullFileSize
+#### HSSBLoggerFileHeader::CreationTimestamp
+
+* 初期値： 現在のUTC時刻
+* 説明： ログファイルの作成タイムスタンプを示します
+  - FILETIME構造体で表され、UTC時刻で保存されます
+  - ログファイルが生成された正確な時刻を記録します
+
+
+#### HSSBLoggerFileHeaderFinalizedWriteFields::FullFileSize
 
 * 初期値： 0
 * 説明： 本構造体を含めた完全なファイルサイズを示します
@@ -129,21 +165,37 @@ struct HSSBLoggerFileHeader {
   - ファイルの読み取り時に、FullFileSizeとフッターセクションのBeforeFileSizeの合計が<br>
     実際のファイルサイズと一致するかを検証することで、ファイルが完全であることを確認できます
 
-
-#### LogEntryFinalCount
+#### HSSBLoggerFileHeaderFinalizedWriteFields::CountOfLogEntries
 
 * 初期値： 0
 * 説明： ログエントリセクション内で最後に書き込まれたログエントリのカウント番号を示します
   - ログエントリが存在しない場合は0となります
   - ファイル作成時は0で初期化され、ファイル書き込み完了時に設定されます
 
-#### LogEntrySHA256
+#### HSSBLoggerFileHeaderFinalizedWriteFields::Timestamp
+
+* 初期値： 0 
+* 説明： ファイル書き込み完了タイムスタンプを示します
+  - FILETIME構造体で表され、UTC時刻で保存されます
+  - ログファイルの書き込みが完了した正確な時刻を記録します
+
+#### HSSBLoggerFileHeaderFinalizedWriteFields::FunctionListSectionOffset
 
 * 初期値： 0
-* 説明： ログエントリセクション全体のSHA-256ハッシュ値を格納します
+* 説明： 関数リストセクションのファイル内オフセットを示します
+  - ファイル作成時は0で初期化され、ファイル書き込み完了時に設定されます
+  - ファイルの読み取り時に、このオフセットを使用して関数リストセクションにアクセスできます
+
+#### HSSBLoggerFileHeaderFinalizedWriteFields::OverAllSHA256
+
+
+* 初期値： 0
+* 説明： HSSBLoggerFileHeaderより後の全データのSHA-256ハッシュ値を格納します
   - ファイル作成時は0で初期化され、ファイル書き込み完了時に計算されたハッシュ値が設定されます
-  - このフィールドを使用することで、ログエントリセクションの整合性を検証できます
-  - ログエントリセクションの内容が変更されていないことを確認するために使用されます
+  - このフィールドを使用することで、ファイル全体の整合性を検証できます
+  - ファイルの読み取り時に、計算されたSHA-256ハッシュ値とこのフィールドの値を比較することで、<br>
+    ファイルが改ざんされていないことを確認できます
+
 
 
 ### 2.3 ログレベルリストセクション
@@ -172,8 +224,8 @@ struct HSSBLoggerLogLevelListEntry {
     // アプリケーション定義値 (未使用時は0)
     uint64_t    ApplicationDefinedValue;
     
-    // ログレベル名 (長さはHSSBLoggerLogLevelListHeader::LevelNameLengthによって決定されます、UTF-16LEエンコード)
-    wchar_t     LevelName[HSSBLoggerLogLevelListHeader::LevelNameLength / sizeof(wchar_t)];
+    // ログレベル名 (バイトサイズはHSSBLoggerLogLevelListHeader::LevelNameLength固定です、UTF-16LEエンコード)
+    wchar_t     LevelName[];
 
 };
 ```
@@ -291,13 +343,20 @@ struct HSSBLoggerLogLevelListSection {
 
     ```cpp
     struct HSSBLoggerModuleListHeader{
-        uint32_t    ModuleCount;         // モジュール数
-        uint32_t    ModuleNameLength;    // NUL文字を含むモジュール名の長さ (バイト単位、固定長)
+
+        // モジュール数
+        uint32_t    ModuleCount;
+        
+        // NUL文字を含むモジュール名の長さ (バイト単位)
+        uint32_t    ModuleNameLength; 
     };
 
     struct HSSBLoggerModuleListEntry {
-        uint16_t    ModuleID;            // モジュールID
-        wchar_t     ModuleName[];        // モジュール名 (可変長、UTF-16LEエンコード)
+      // モジュールID
+      uint16_t    ModuleID;            // モジュールID
+
+      // モジュール名 (バイトサイズはHSSBLoggerModuleListHeader::ModuleNameLength固定です、UTF-16LEエンコード)
+      wchar_t     ModuleName[];
     };
     ```
 
@@ -346,8 +405,12 @@ struct HSSBLoggerLogLevelListSection {
 
 ```cpp
 struct HSSBLoggerAppDefinedDataHeader {
-    uint32_t    DataLength;             // データ長 (バイト単位)
-    uint8_t     Data[DataLength];       // アプリケーション定義データ (バイナリデータ)
+    // アプリケーション定義データ長 (バイト単位)
+    uint32_t    DataLength;
+
+    // アプリケーション定義データ (可変長配列)
+    // 長さはDataLengthによって決定されます
+    uint8_t     Data[]; 
 };
 ```
 
@@ -375,42 +438,96 @@ struct HSSBLoggerAppDefinedDataHeader {
 1つのログファイルあたり、このエントリーは0個以上存在します。
 
 ```cpp
-struct HSSBLoggerLogEntry {
-    SYSTEMTIME  Timestamp;                       // タイムスタンプ (UTC)
-    uint32_t    EntryID;                         // エントリID (連番)
-    uint32_t    ThreadID;                        // スレッドID
-    uint8_t     LogLevelID;                      // ログレベルID
-    uint16_t    ModuleID;                        // モジュールID
-    uint32_t    MessageLength;                   // メッセージ長 (バイト単位)
-    uint32_t    DumpLength;                      // ダンプデータ長 (バイト単位、0の場合はダンプデータ無し)
-    uint8_t     DumpTypeID;                      // ダンプデータタイプID (0の場合はダンプデータ無し、それ以外はアプリケーション定義)
-    uint8_t     DumpEncodeMode;                  // ダンプデータエンコードモード (現在は未使用、0固定)
-    uint32_t    DumpOriginalLength;              // ダンプデータ元サイズ (エンコードされている場合の元のサイズ、未エンコードの場合はDumpLengthと同じ)
-    uint32_t    DumpOriginalCRC32;               // ダンプデータのCRC32値 (エンコードされている場合は元データのCRC32)
-    wchar_t     Message[MessageLength];          // ログメッセージ (長さはMessageLength、UTF-16LEエンコード)
-    uint8_t     DumpData[DumpLength];            // ダンプデータ (長さはDumpLength、バイナリデータ)
+
+// ログエントリ構造体
+struct HSSBLoggerLogEntryHeader {
+    uint32_t    Signature;                                      // ログエントリシグネチャ
+    FILETIME    Timestamp;                                      // タイムスタンプ (UTC)
+    uint32_t    EntryID;                                        // エントリID (連番)
+    uint32_t    ThreadID;                                       // スレッドID
+    uint8_t     LogLevelID;                                     // ログレベルID
+    uint16_t    ModuleID;                                       // モジュールID
+    uint32_t    FunctionID;                                     // 関数ID
+    uint32_t    MessageLength;                                  // メッセージ長 (バイト単位)
+    HSSBLoggerLogEntryAttachedDataHeader AttachedDumpHeader;    // ダンプデータヘッダ
+    HSSBLoggerLogEntryAttachedDataHeader AttachedCustomHeader;  // カスタムデータヘッダ
+     
+    //上の固定メンバーの後に続く可変長データ
+
+    //wchar_t     Message[];                                    // ログメッセージ  (バイト単位の長さはMessageLength、UTF-16LEエンコード、NUL文字終端)          
+    //uint8_t     AttachedDumpData[];                           // ダンプデータ    (長さはDump.Length、バイナリデータ)
+    //uint8_t     AttachedCustomData[];                         // カスタムデータ  (長さはCustom.Length、バイナリデータ)
+};
+
+// 上で利用している構造体の定義は以下の通りです
+
+// ログエントリ付随データヘッダ構造体
+struct HSSBLoggerLogEntryAttachedDataHeader{
+  uint32_t    Length;               // 子データ長 (バイト単位、0の場合は子データ無し)
+  uint8_t     TypeID;               // 子データタイプID (0の場合は子データ無し、それ以外はアプリケーション定義)
+  uint32_t    CRC32;                // 子データのCRC32値
+  uint8_t     EncodeMode;           // 子データエンコードモード (生データは0に固定、それ以外は未定義)
+  uint32_t    OriginalLength;       // 子データ元サイズ (エンコードされている場合の元のサイズ、未エンコードの場合はLengthと同じ)
+  uint32_t    OriginalCRC32;        // 子データの元データにおけるCRC32値
 };
 ```
 
-#### Timestamp
+HSSBLoggerLogEntryHeaderの後に続く可変長データは以下の順序で格納されます。
+
+```mermaid
+flowchart TB
+    Message["Message (ログメッセージ)"]
+    AttachedDumpData["AttachedDumpData (ダンプデータ)"]
+    AttachedCustomData["AttachedCustomData (カスタムデータ)"]
+
+    Message --> AttachedDumpData
+    AttachedDumpData --> AttachedCustomData
+```
+
+また、AttachedDumpDataが存在しない場合は以下のようになります
+
+```mermaid
+flowchart TB
+    Message["Message (ログメッセージ)"]
+    AttachedCustomData["AttachedCustomData (カスタムデータ)"]
+
+    Message --> AttachedCustomData
+```
+
+
+#### HSSBLoggerLogEntry::Signature
+
+* 初期値： 固定値
+* 説明： ログエントリのシグネチャを示します
+  - 固定値を使用します
+  - ログエントリの開始を識別するために使用されます
+
+#### HSSBLoggerLogEntry::Timestamp
 
 * 初期値： 現在のUTC時刻
 * 説明： ログエントリのタイムスタンプを示します
-  - SYSTEMTIME構造体で表され、UTC時刻で保存されます
-  
-#### EntryID
+  - FILETIME構造体で表され、UTC時刻で保存されます
+  - ログエントリが生成された正確な時刻を記録します
+
+#### HSSBLoggerLogEntry::EntryID
 
 * 初期値： 連番
 * 説明： ログエントリの一意のIDを示します
+    - 最初のエントリのIDは0から始まります
     - ログエントリが追加されるごとにインクリメントされます
 
-#### ThreadID
+#### HSSBLoggerLogEntry::ThreadID
 
 * 初期値： 現在のスレッドID
 * 説明： ログエントリを生成したスレッドのIDを示します
   - WindowsのGetCurrentThreadId関数で取得される値を使用します
+  - マルチスレッド環境でのログエントリの追跡に役立ちます
+  - ログエントリがどのスレッドから生成されたかを識別するために使用されます
+  - 例えば以下の時に役立ちます
+    - デバッグ時に特定のスレッドの動作を追跡する場合
+    - 特定のスレッドの記録を抽出したい場合
 
-#### LogLevelID
+#### HSSBLoggerLogEntry::LogLevelID
 
 * 初期値： ログレベルリストのID
 * 説明： ログエントリのログレベルを識別するためのIDを示します
@@ -418,72 +535,184 @@ struct HSSBLoggerLogEntry {
   - ログエントリの重要度を示すために使用されます
   - 例えば、DEBUG、INFO、WARNING、ERRORなどのログレベルを識別するために使用されます
 
-#### ModuleID
+#### HSSBLoggerLogEntry::ModuleID
 
 * 初期値： モジュールリストのID
 * 説明： ログエントリのモジュールを識別するためのIDを示します
   - モジュールリストセクションで定義されたModuleIDと対応します
   - ログエントリがどのモジュールから生成されたかを識別するために使用されます
 
-#### MessageLength
+#### HSSBLoggerLogEntry::MessageLength
 
 * 初期値： 任意
 * 説明： ログメッセージの長さをバイト単位で示します
   - ログメッセージはUTF-16LEエンコードで保存され、NUL文字で終端されます
+  - もし、ログメッセージが空の場合、この値は0になります
+  - ログメッセージの内容を正確に把握するために使用されます
+  - 例えば、ログメッセージの抽出や表示時に役立ちます
 
-#### DumpLength
-
-* 初期値： 任意
-* 説明： ダンプデータの長さをバイト単位で示します
-  - 0の場合はダンプデータが存在しないことを示します
-
-#### DumpTypeID
+#### HSSBLoggerLogEntry::AttachedDumpHeader
 
 * 初期値： 任意
-* 説明： ダンプデータのタイプを識別するためのIDを示します
-  - 0の場合はダンプデータが存在しないことを示します
-  - それ以外の値はアプリケーション定義で使用されます
+* 説明： ログエントリに付随するダンプデータのヘッダ情報を示します
+  - ダンプデータが存在しない場合、Lengthフィールドは0になります
+  - ダンプデータの内容を正確に把握するために使用されます
+  - 例えば、ログエントリに関連する追加情報やコンテキストを提供するために使用されます
 
-#### DumpEncodeMode
-
-
-* 初期値： 0
-* 説明： ダンプデータのエンコードモードを示します
-  - 現在は未使用で0に固定されています
-
-#### DumpOriginalLength
+#### HSSBLoggerLogEntry::AttachedCustomHeader
 
 * 初期値： 任意
-* 説明： ダンプデータの元のサイズを示します
-  - エンコードされている場合の元のサイズを示します
-  - 未エンコードの場合はDumpLengthと同じ値になります
+* 説明： ログエントリに付随するカスタムデータのヘッダ情報を示します
+  - カスタムデータが存在しない場合、Lengthフィールドは0になります
+  - カスタムデータの内容を正確に把握するために使用されます
+  - 例えば、アプリケーション固有の追加情報を提供するために使用されます
 
-#### DumpOriginalCRC32
-
-* 初期値： 任意
-* 説明： ダンプデータのCRC32値を示します
-  - エンコードされている場合は元データのCRC32値を示します
-  - データの整合性を確認するために使用されます
-  - CRC32アルゴリズムを使用して計算されます
-
-#### Message
+#### HSSBLoggerLogEntry::Message
 
 * 初期値： 任意
 * 説明： ログメッセージをUTF-16LEエンコードで格納する可変長配列です
   - 長さはMessageLengthで指定されます
   - NUL文字で終端されます
-  
+  - ログメッセージの内容を正確に把握するために使用されます
+  - 例えば、ログメッセージの抽出や表示時に役立ちます
+  - もし、ログメッセージがない場合(= MessageLengthが0の場合)、この配列は存在しません
 
-#### DumpData
+#### HSSBLoggerLogEntry::AttachedDumpData
 
 * 初期値： 任意
 * 説明： ダンプデータを格納する可変長配列です
-  - 長さはDumpLengthで指定されます
+  - 長さはAttachedDumpHeader.Lengthで指定されます
   - バイナリデータ形式で保存されます
+  - ログエントリに関連する追加情報やコンテキストを提供するために使用されます
+  - 例えば、ログエントリに関連するメモリダンプや状態情報を保存する場合に役立ちます
+  - もし、ダンプデータがない場合(= AttachedDumpHeader.Lengthが0の場合)、この配列は存在しません
+
+#### HSSBLoggerLogEntry::AttachedCustomData
+
+* 初期値： 任意
+* 説明： カスタムデータを格納する可変長配列です
+  - 長さはAttachedCustomHeader.Lengthで指定されます
+  - バイナリデータ形式で保存されます
+  - アプリケーション固有の追加情報を提供するために使用されます
+  - 例えば、アプリケーションの状態情報や設定データを保存する場合に役立ちます
+  - もし、カスタムデータがない場合(= AttachedCustomHeader.Lengthが0の場合)、この配列は存在しません
+
+
+#### HSSBLoggerLogEntryAttachedDataHeader::Length
+
+* 初期値： 任意
+* 説明： ログエントリ付随データの長さをバイト単位で示します
+  - 0の場合、付随データが存在しないことを示します
+
+#### HSSBLoggerLogEntryAttachedDataHeader::TypeID
+
+* 初期値： 任意
+* 説明： ログエントリ付随データのタイプを識別するためのIDを示します
+  - 0の場合、付随データが存在しないことを示します
+  - それ以外の値はアプリケーション定義で使用されます
+
+#### HSSBLoggerLogEntryAttachedDataHeader::CRC32
+
+* 初期値： 任意
+* 説明： ログエントリ付随データのCRC32値を示します
+  - データの整合性を確認するために使用されます
+  - CRC32アルゴリズムを使用して計算されます
+
+#### HSSBLoggerLogEntryAttachedDataHeader::EncodeMode
+
+* 初期値： 0
+* 説明： ログエントリ付随データのエンコードモードを示します
+  - 0は生データを示し、エンコードされていないことを意味します
+  - それ以外の値はロガーのアプリケーション定義で使用されます
+
+#### HSSBLoggerLogEntryAttachedDataHeader::OriginalLength
+
+* 初期値： 任意
+* 説明： ログエントリ付随データの元のサイズを示します
+  - エンコードされている場合の元のサイズを示します
+  - 未エンコードの場合はLengthと同じ値になります
+
+#### HSSBLoggerLogEntryAttachedDataHeader::OriginalCRC32
+
+* 初期値： 任意
+* 説明： ログエントリ付随データのCRC32値を示します
+  - エンコードされている場合は元データのCRC32値を示します
+  - データの整合性を確認するために使用されます
+  - CRC32アルゴリズムを使用して計算されます
 
 
 
-### 2.7 フッターセクション
+### 2.7 関数リストセクション
+
+関数リストセクションには以下の構造体が使用されます (C++の構造体風に表現) <br>
+このセクションはログエントリの後に存在しているため、ロガーの実装では、<br>
+あらかじめ、関数名をキャッシュしておくもしくは別のファイルにまとめて管理するなどの対応をお願いします。この対応は手間になりますが、<br>
+その代わり、存在しない関数名を関数リストに書き込む必要がなくなり、ファイルサイズの削減に寄与します。<br>
+
+なお、1クラス当たり1モジュールで割り当てた場合において、クラスAとクラスBがあり、それぞれに同じ名前の関数、
+例えばCommonNameFunctionが存在する場合、関数リストセクションには『"CommonNameFunction"』を1つだけ書き込む対応で問題ありません。
+この場合、モジュールIDと合わせて、どちらの関数からのものかを識別可能だからです。
+
+
+```cpp
+struct HSSBLoggerFunctionListHeader{
+
+    // シグネチャ 
+    uint32_t    Signature;
+    
+    // 関数数
+    uint32_t    FunctionCount;         // 関数数
+
+    // NUL文字を含む関数名の長さ (バイト単位)
+    uint32_t    FunctionNameLength;
+};
+
+struct HSSBLoggerFunctionListEntry {
+
+    // 関数ID
+    uint32_t    FunctionID;
+    
+    // 関数名 (バイトサイズはHSSBLoggerFunctionListHeader::FunctionNameLength固定です、UTF-16LEエンコード)
+    wchar_t     FunctionName[];   
+};
+```
+
+
+
+
+#### HSSBLoggerFunctionListHeader::Signature
+
+* 初期値： 固定値
+* 説明： 関数リストセクションのシグネチャを示します
+  - 固定値を使用します
+  - 関数リストセクションの開始を識別するために使用されます
+  - これにより、ログエントリとの区別が容易になります
+
+#### HSSBLoggerFunctionListHeader::FunctionCount
+
+* 初期値： 任意
+* 説明： 関数の総数を示します
+  - 0の場合は、関数リストが存在しないことを示します (HSSBLoggerFunctionListEntryが存在しない)
+
+
+#### HSSBLoggerFunctionListHeader::FunctionNameLength
+
+* 初期値： 任意
+* 説明： 各関数名の長さをバイト単位で示します
+  - NUL文字を含む固定長で保存されます
+
+#### HSSBLoggerFunctionListEntry::FunctionID
+* 初期値： 任意
+* 説明： 各関数を識別するための一意のIDを示します
+  - 0～4294967295の範囲で一意のIDを割り当てることができます
+
+
+#### HSSBLoggerFunctionListEntry::FunctionName
+* 初期値： 任意
+* 説明： 関数の名前をUTF-16LEエンコードで格納する可変長配列です
+  - NUL文字で終端されます
+
+### 2.8 フッターセクション
 
 ---
 
