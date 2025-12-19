@@ -2,17 +2,17 @@
 
 
 // Windows API ヘッダーの競合を避けるため、min/maxマクロを無効化
+// ただし、すでに定義されている場合があるので、#ifndefでのガードを追加
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 
 #include <Windows.h>
 #include <cstdint>
 #include <cstdio>
 #include <string>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include <cmath>
-
 
 #ifdef HSSOUNDBASISLIB_EXPORTS
 

@@ -10,7 +10,10 @@
   <Folder Name="/2_Libraries/">
     <Project Path="Libraries/HSSoundBasisLib/HSSoundBasisLib.vcxproj" Id="6b802df8-8307-4e3b-8e19-3f0695149885" />
   </Folder>
-  <Folder Name="/3_Samples/">
+  <Folder Name="/3_Experimental/">
+    <Project Path="Experimental/HSSBEXPGeneralRun/HSSBEXPGeneralRun.vcxproj" Id="37b7c20d-c0a9-4040-b4d2-b2b150dbf5c1" />
+  </Folder>
+  <Folder Name="/4_Samples/">
     <Project Path="Samples/MemoryProvidersSample/MemoryProvidersSample.vcxproj" Id="982ba9e7-2822-4cf5-9c20-a2fabf636f46" />
   </Folder>
 </Solution>

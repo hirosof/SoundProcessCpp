@@ -22,19 +22,21 @@ HSSBLoggerのログファイルフォーマットは、効率的なデータ保�
 ## 2. ファイル構造
 
 
-HSSBLoggerのログファイルは、以下のセクションで構成されています。
+HSSBLoggerのログファイルは、先頭から以下のセクションで構成されています。
 
 ```mermaid
 flowchart TB
     Header["ヘッダセクション<br>ファイルの先頭<br>フォーマット識別子など"]
     LogLevelList["ログレベルリストセクション<br>ログレベルIDと名前"]
     ModuleList["モジュールリストセクション<br>モジュールIDと名前"]
+    ApplicationDefinedData["アプリケーション定義データセクション<br>任意のデータ"]
     LogEntries["ログエントリセクション<br>ログデータの配列<br>可変長"]
     Footer["フッターセクション<br>ファイルの終端<br>正常終了時のみ"]
 
     Header --> LogLevelList
     LogLevelList --> ModuleList
-    ModuleList --> LogEntries
+    ModuleList --> ApplicationDefinedData
+    ApplicationDefinedData --> LogEntries
     LogEntries --> Footer
 ```
 
@@ -153,13 +155,26 @@ struct HSSBLoggerFileHeader {
 ```cpp
 struct HSSBLoggerLogLevelListHeader{
     uint32_t    LevelCount;                 // ログレベル数
-    uint32_t    LevelNameLength;            // NUL文字を含むログレベル名の長さ (バイト単位、固定長)
+    uint32_t    LevelNameLength;            // NUL文字を含むログレベル名の長さ (バイト単位)
 };
 
 struct HSSBLoggerLogLevelListEntry {
-    uint8_t     LevelID;                    // ログレベルID
-    uint32_t    ApplicationDefinedValue;    // アプリケーション定義値 (未使用時は0)
-    wchar_t     LevelName[];                // ログレベル名 (可変長、UTF-16LEエンコード)
+
+    // ログレベルID
+    uint8_t     LevelID;
+
+    // ビューワー向け色情報
+    COLORREF    BackgroundColorForViewer;
+    
+    // ビューワー向け色情報
+    COLORREF    ForegroundColorForViewer;
+
+    // アプリケーション定義値 (未使用時は0)
+    uint64_t    ApplicationDefinedValue;
+    
+    // ログレベル名 (長さはHSSBLoggerLogLevelListHeader::LevelNameLengthによって決定されます、UTF-16LEエンコード)
+    wchar_t     LevelName[HSSBLoggerLogLevelListHeader::LevelNameLength / sizeof(wchar_t)];
+
 };
 ```
 
@@ -167,7 +182,7 @@ struct HSSBLoggerLogLevelListEntry {
 
 ```cpp
 struct HSSBLoggerLogLevelListSection {
-    HSSBLoggerLogLevelListHeader Header; // ログレベルリストヘッダ
+    HSSBLoggerLogLevelListHeader Header;    // ログレベルリストヘッダ
     HSSBLoggerLogLevelListEntry  Entries[]; // ログレベルリストエントリ (可変長配列)
 };
 ```
@@ -224,13 +239,24 @@ struct HSSBLoggerLogLevelListSection {
     | FATAL           | 15     |
 
 
+#### BackgroundColorForViewer
 
+* 初期値： 任意
+* 説明： ログビューワーで使用する背景色をCOLORREF形式で格納します
+  - ログレベルに応じた視覚的な区別を提供するために使用されます
+  - 例: RGB(255, 0, 0)は赤色を示します
+
+#### ForegroundColorForViewer
+
+* 初期値： 任意
+* 説明： ログビューワーで使用する前景色をCOLORREF形式で格納します
+  - ログレベルに応じた視覚的な区別を提供するために使用されます
+  - 例: RGB(0, 0, 0)は黒色を示します
 
 #### ApplicationDefinedValue
 
 * 初期値： 任意
-* 説明： アプリケーションが独自に定義するための値を格納します
-  - 例えば、HTML化の際に使用できる色コードに対応する値を格納することができます
+* 説明： アプリケーションで独自に定義している値を格納できます
 
 #### LevelName
 
@@ -312,8 +338,36 @@ struct HSSBLoggerLogLevelListSection {
   - NUL文字で終端されます
   - ファイル作成時に設定されます
 
+### 2.5 アプリケーション定義データセクション
+---
 
-### 2.5 ログエントリセクション
+ログエントリセクションには以下の構造体が使用されます (C++の構造体風に表現) <br>
+このセクションを利用することで、ログエントリに依存しないアプリケーション固有のデータをログファイルに保存できます。<br>
+
+```cpp
+struct HSSBLoggerAppDefinedDataHeader {
+    uint32_t    DataLength;             // データ長 (バイト単位)
+    uint8_t     Data[DataLength];       // アプリケーション定義データ (バイナリデータ)
+};
+```
+
+
+#### DataLength
+
+* 初期値： 任意
+* 説明： アプリケーション定義データの長さをバイト単位で示します
+  - ファイル作成時に設定されます
+  - 0の場合、Dataフィールドは存在しません
+
+#### Data
+
+* 初期値： 任意
+* 説明： アプリケーション定義データを格納する可変長配列です
+  - 長さはDataLengthで指定されます
+  - アプリケーション定義の形式で保存されます
+  - ファイル作成時に設定されます
+
+### 2.6 ログエントリセクション
 
 ---
 
@@ -322,19 +376,19 @@ struct HSSBLoggerLogLevelListSection {
 
 ```cpp
 struct HSSBLoggerLogEntry {
-    SYSTEMTIME  Timestamp;          // タイムスタンプ (UTC)
-    uint32_t    EntryID;            // エントリID (連番)
-    uint32_t    ThreadID;           // スレッドID
-    uint8_t     LogLevelID;         // ログレベルID
-    uint16_t    ModuleID;           // モジュールID
-    uint32_t    MessageLength;      // メッセージ長 (バイト単位)
-    uint32_t    DumpLength;         // ダンプデータ長 (バイト単位、0の場合はダンプデータ無し)
-    uint8_t     DumpTypeID;         // ダンプデータタイプID (0の場合はダンプデータ無し、それ以外はアプリケーション定義)
-    uint8_t     DumpEncodeMode;     // ダンプデータエンコードモード (現在は未使用、0固定)
-    uint32_t    DumpOriginalLength; // ダンプデータ元サイズ (エンコードされている場合の元のサイズ、未エンコードの場合はDumpLengthと同じ)
-    uint32_t    DumpOriginalCRC32;  // ダンプデータのCRC32値 (エンコードされている場合は元データのCRC32)
-    wchar_t     Message[];          // ログメッセージ (可変長、UTF-16LEエンコード)
-    uint8_t     DumpData[];         // ダンプデータ (可変長、バイナリデータ)
+    SYSTEMTIME  Timestamp;                       // タイムスタンプ (UTC)
+    uint32_t    EntryID;                         // エントリID (連番)
+    uint32_t    ThreadID;                        // スレッドID
+    uint8_t     LogLevelID;                      // ログレベルID
+    uint16_t    ModuleID;                        // モジュールID
+    uint32_t    MessageLength;                   // メッセージ長 (バイト単位)
+    uint32_t    DumpLength;                      // ダンプデータ長 (バイト単位、0の場合はダンプデータ無し)
+    uint8_t     DumpTypeID;                      // ダンプデータタイプID (0の場合はダンプデータ無し、それ以外はアプリケーション定義)
+    uint8_t     DumpEncodeMode;                  // ダンプデータエンコードモード (現在は未使用、0固定)
+    uint32_t    DumpOriginalLength;              // ダンプデータ元サイズ (エンコードされている場合の元のサイズ、未エンコードの場合はDumpLengthと同じ)
+    uint32_t    DumpOriginalCRC32;               // ダンプデータのCRC32値 (エンコードされている場合は元データのCRC32)
+    wchar_t     Message[MessageLength];          // ログメッセージ (長さはMessageLength、UTF-16LEエンコード)
+    uint8_t     DumpData[DumpLength];            // ダンプデータ (長さはDumpLength、バイナリデータ)
 };
 ```
 
@@ -416,6 +470,7 @@ struct HSSBLoggerLogEntry {
 
 * 初期値： 任意
 * 説明： ログメッセージをUTF-16LEエンコードで格納する可変長配列です
+  - 長さはMessageLengthで指定されます
   - NUL文字で終端されます
   
 
@@ -423,11 +478,12 @@ struct HSSBLoggerLogEntry {
 
 * 初期値： 任意
 * 説明： ダンプデータを格納する可変長配列です
+  - 長さはDumpLengthで指定されます
   - バイナリデータ形式で保存されます
 
 
 
-### 2.6 フッターセクション
+### 2.7 フッターセクション
 
 ---
 

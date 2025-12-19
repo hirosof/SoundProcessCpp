@@ -5,6 +5,8 @@
 //		HSSBCommon.hpp
 #include "../headers/HSSBMathFunctions.hpp" 
 
+#include <numbers> // For std::numbers::pi
+
 HSSOUNDBASISLIB_FUNCEXPORT double  HSSBMath_UnnormalizedSinc( double v ) {
 	if ( v == 0.0 ) {
 		return 1.0;
@@ -14,7 +16,7 @@ HSSOUNDBASISLIB_FUNCEXPORT double  HSSBMath_UnnormalizedSinc( double v ) {
 }
 
 HSSOUNDBASISLIB_FUNCEXPORT double  HSSBMath_NormalizedSinc( double v ) {
-	return HSSBMath_UnnormalizedSinc( v * M_PI );
+	return HSSBMath_UnnormalizedSinc( v * std::numbers::pi );
 }
 
 
