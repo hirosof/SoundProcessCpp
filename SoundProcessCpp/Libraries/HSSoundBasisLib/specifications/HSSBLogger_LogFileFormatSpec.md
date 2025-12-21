@@ -179,19 +179,19 @@ uint32_t exampleValue = 0x12345678;
 
 * 本フォーマットではWindows環境を想定しているため、`wchar_t`型は2バイトのUTF-16LEエンコードとして扱います
   - NULL終端される文字列は、2バイトの0x0000で終端されます
-  - そのため、wchar_t型の配列のサイズは必ず偶数バイトとなります 
+  - そのため、`wchar_t`型の配列のサイズは必ず偶数バイトとなります 
 
 * 本フォーマットのファイルをLinux環境などで扱う場合、`wchar_t`型のサイズが異なる可能性があるため、注意してください
   - 例えば、uint16_t型やchar16_t型として扱うなど工夫をお願いいたします
   
-* なお、char_16t型ではなくwchar_t型を採用している理由は、Windows APIとの互換性を考慮してのことです
+* なお、char16_t型ではなく`wchar_t`型を採用している理由は、Windows APIとの互換性を考慮してのことです
 
 
-* char型ではなくwchar_t型を採用している理由は、互換性と日本語対応を容易にするためです
+* char型ではなく`wchar_t`型を採用している理由は、互換性と日本語対応を容易にするためです
   - Visual Studioの環境では、設定によってchar型の文字コードが変化します
     - 例えば、Shift-JISやUTF-8などが考えられます
     - そのため、char型を使用すると、環境によって文字列の解釈が変わる可能性があります
-  - 一方、UTF-16LEエンコードのwchar_t型を使用することで、
+  - 一方、UTF-16LEエンコードの`wchar_t`型を使用することで、
     - 文字列の解釈が一貫し、日本語などのマルチバイト文字も正しく扱うことができます (文字化けを防止できます)
 
 ### SHA-256ハッシュ値について
@@ -374,7 +374,12 @@ struct HSSBLoggerDateTime {
 不要な場合は0をセットしてください。<br>
 
 > [!NOTE]
-> TimeInMilliseconds*1000 + Microsecondsで、1日を基準とした経過マイクロ秒数を得ることができます。
+> TimeInMilliseconds*1000 + Microsecondsで、1日を基準とした経過マイクロ秒数を得ることができます。<br>
+> ただし、1日のマイクロ秒数は86,400,000,000となり、32ビット整数に収まらない可能性があるため、<br>
+> 必要に応じて64ビット整数型で計算してください。<br>
+>
+> あるいは、((TimeInMilliseconds % 1000) * 1000) + Microsecondsで、1秒を基準とした経過マイクロ秒数を得ることもできます。<br>
+> こちらの場合、1秒あたり1,000,000となり、32ビット整数型で収まります。
 
 ### 共通セクションヘッダー構造体
 
@@ -607,6 +612,13 @@ struct HSSBLoggerFileHeaderSHA256Collection {
   > [!IMPORTANT]
   > これは、ヘッダーの後にその他のセクションが続くためです。<br>
 
+  > [!WARNING]
+  > 必須となっているセクションについては、0のままにしないでください。<br>
+  > なお、任意セクションについては、存在しない場合は0のままで構いません。<br>
+
+
+  > [!NOTE]
+  > これにより、必須セクションのオフセットが0である場合、ファイルが不正であることを検出できます。<br>
 
 #### SectionOffsets.OffsetOfLogLevelListSection ( HSSBLoggerFileHeaderOffsetCollection::OffsetOfLogLevelListSection )
 
@@ -1007,7 +1019,7 @@ struct HSSBLoggerFunctionListSectionHeader{
 
 struct HSSBLoggerFunctionListEntry {
     // 関数ID
-    uint16_t    FunctionID;
+    uint32_t    FunctionID;
 
     // アプリケーション定義値 (未使用時は0)
     uint64_t    ApplicationDefinedValue;
@@ -1059,9 +1071,9 @@ struct HSSBLoggerFunctionListEntry {
 
 #### FunctionListEntrys.FunctionID ( HSSBLoggerFunctionListEntry::FunctionID )
 
-* `FunctionID`は、関数名の識別子を示す符号なし16ビット整数です。<br>
+* `FunctionID`は、関数名の識別子を示す符号なし32ビット整数です。<br>
 * 関数名ごとに一意の値を割り当ててください
-  - 値は0～65,535の範囲で一意のIDを割り当てることができます
+  - 値は0～4,294,967,295の範囲で一意のIDを割り当てることができます
 
 #### FunctionListEntrys.ApplicationDefinedValue ( HSSBLoggerFunctionListEntry::ApplicationDefinedValue )
 
@@ -1427,6 +1439,9 @@ using HSSBLoggerAddAppDefinedDataSectionHeader = HSSBLoggerAppDefinedDataSection
 > [!WARNING]
 > 追加アプリケーション定義データセクションは、アプリケーション定義データセクションとは別に扱われます。<br>
 > そのため、セクション識別子も別なものが割り当てられておりますので注意してください。
+
+取り扱い方はアプリケーション定義データセクションと同様であるため、詳細はそちらを参照してください。
+
 
 
 ### フッターセクション
