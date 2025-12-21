@@ -44,54 +44,71 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCalculate64_SamplesBySeconds_Strict( uint
     double integer_part;
     fractional_part = modf( real_samples, &integer_part );
 
+    uint64_t before_adjust_value = static_cast<uint64_t>( integer_part );
+    bool is_available_increment = ( before_adjust_value < std::numeric_limits<uint64_t>::max( ) );
+
+
     // 小数部分が非常に小さい場合、小数部分は0とみなし、丸め処理は不要と判断する
     if ( fractional_part < tolerance ) {
-        *pSamples = static_cast<uint64_t>( integer_part );
+        *pSamples = before_adjust_value;
         return S_OK;
     } else if ( ( 1 - fractional_part ) < tolerance ) {
         // 小数部分が1に非常に近い場合、整数部分を1増やして丸め処理は不要と判断する
-        *pSamples = static_cast<uint64_t>( integer_part + 1.0 );
+        if ( !is_available_increment ) {
+            // オーバーフローする場合はエラーを返す
+            return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
+        }
+        *pSamples = before_adjust_value + 1;
         return S_OK;
     }
 
+
+    // 成功時における期待されるHRESULTを設定
+    HRESULT Expect_hr_for_Success = S_OK;
+
     // 丸め処理
-    // なお、切り捨てた値は integer_part に既に格納されているため、
-    // integer_partの値を流用する。
+    // なお、切り捨てた値は before_adjust_value に既に格納されているため、
+    // before_adjust_valueの値を流用する。
     // (round関数などは不要と判断)
-    double adjusted_value;
+    uint64_t adjusted_value = before_adjust_value;
     switch ( round_mode ) {
         case EHSSB_RoundMode::Up:
             // 切り上げ
-            adjusted_value = integer_part + 1.0;
+            if ( !is_available_increment ) {
+                // オーバーフローする場合はエラーを返す
+                return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
+            }
+            adjusted_value++;
             break;
         case EHSSB_RoundMode::Down:
-            // 切り捨て
-            adjusted_value = integer_part;
+            // 切り捨て (すでに before_adjust_value に切り捨てた値が入っているため、特に処理は不要)
             break;
         case EHSSB_RoundMode::Nearest:
             // 四捨五入
             // 小数部分はfractional_partに格納されているため、それを参照して判定する
-            if ( fractional_part < 0.5 ) {
-                adjusted_value = integer_part;
-            } else {
-                adjusted_value = integer_part + 1.0;
+            if (!( fractional_part < 0.5) ) {
+                // 0.5以上の場合、切り上げ
+                if ( !is_available_increment ) {
+                    // オーバーフローする場合はエラーを返す
+                    return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
+                }
+                adjusted_value++;
             }
+
             break;
         default:
             // 不明なモードの場合、切り捨てと同じ扱いとする
-            adjusted_value = integer_part;
+            // なお、すでに before_adjust_value に切り捨てた値が入っているため、特に処理は不要
+            // 
+            // ただし、HRESULTで成功値ではあるが、既定値と解釈されたことを示すコードを返す
+            Expect_hr_for_Success = HSSB_S_OK_BUT_DEFAULT_INTERPRETED_PARAMETER;
             break;
     }
 
-    // 調整結果がオーバーフローする場合もエラーを返す
-    if ( adjusted_value > std::numeric_limits<uint64_t>::max( ) ) {
-        return HRESULT_FROM_WIN32( ERROR_ARITHMETIC_OVERFLOW );
-    }
-
     // 調整後の値を返す
-    *pSamples = static_cast<uint64_t>( adjusted_value );
+    *pSamples = adjusted_value;
 
-    return S_OK;
+    return Expect_hr_for_Success;
 }
 
 HSSOUNDBASISLIB_FUNCEXPORT uint64_t HSSBCalculate64_SamplesBySeconds( uint32_t sampling_frequency, double number_of_seconds, EHSSB_RoundMode round_mode ) {
@@ -132,7 +149,7 @@ HSSOUNDBASISLIB_FUNCEXPORT HRESULT HSSBCalculate32_SamplesBySeconds_Strict( uint
 
     // 計算結果を返す
     *pSamples = static_cast<uint32_t>( samples_64bit );
-    return S_OK;
+    return hr;
 }
 
 HSSOUNDBASISLIB_FUNCEXPORT uint32_t HSSBCalculate32_SamplesBySeconds( uint32_t sampling_frequency, double number_of_seconds, EHSSB_RoundMode round_mode ) {

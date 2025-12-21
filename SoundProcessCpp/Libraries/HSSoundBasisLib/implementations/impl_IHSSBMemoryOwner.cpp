@@ -262,11 +262,30 @@ HRESULT impl_IHSSBMemoryOwner::Attach( void* pBuffer, size_t size, EHSSBMemoryOw
 	}
 
 	if ( owner == EHSSBMemoryOwnershipType::WithDeleteArrayOwnership_NewAllocated ) {
-		// 所有権タイプが new[] で確保されたメモリの場合、型情報が指定されていることを確認
-		if ( owner_type_info == EHSSBMemoryNewAllocatedTypeInfo::None ) {
-			// 型情報が指定されていない場合はエラー
-			return E_INVALIDARG;
-		}
+		// 所有権タイプが new[] で確保されたメモリの場合、有効な型情報が指定されていることを確認
+        switch ( owner_type_info ) {
+            case EHSSBMemoryNewAllocatedTypeInfo::char_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::wchar_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::float_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::double_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::int8_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::int16_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::int32_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::int64_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::uint8_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::uint16_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::uint32_t_array:
+            case EHSSBMemoryNewAllocatedTypeInfo::uint64_t_array:
+                // 有効な型情報
+                // このcaseは有効性を確認するためだけのもので、特に処理は不要
+                break;
+            case EHSSBMemoryNewAllocatedTypeInfo::None:
+                // None は無効
+                return E_INVALIDARG;
+            default:
+                // 無効な型情報
+                return E_INVALIDARG;
+        }
 	} else {
 		// 所有権タイプが new[] 以外の場合、型情報は None に設定する
 		owner_type_info = EHSSBMemoryNewAllocatedTypeInfo::None;
@@ -377,7 +396,8 @@ void* impl_IHSSBMemoryOwner::GetBufferPointer( void ) const {
     if ( !this->IsAttached( ) ) {
         return nullptr;
     }
-	return this->m_pBuffer;
+
+    return this->m_pBuffer;
 }
 
 size_t impl_IHSSBMemoryOwner::GetSize( void ) const {
