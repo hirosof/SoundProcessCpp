@@ -111,7 +111,9 @@
    9. [フッターセクション](#フッターセクション)
       1. [BeforeFileSize](#beforefilesize)
       2. [EndOfFileMarkerID](#endoffilemarkerid)
-7. [Appendix](#appendix)
+7. [ロガー実装者へ向けた補足資料](#ロガー実装者へ向けた補足資料)
+   1. [ログファイルの削除・移動・圧縮等の整理処理について](#ログファイルの削除移動圧縮等の整理処理について)
+8. [Appendix](#appendix)
    1. [グレゴリオ暦と修正ユリウス日の変換について](#グレゴリオ暦と修正ユリウス日の変換について)
    2. [SYSTEMTIME構造体との変換関数実装例](#systemtime構造体との変換関数実装例)
 
@@ -285,12 +287,12 @@ UUIDはWindows SDK上では、GUIDと同じであり、<br>Visual Studioの付�
 
   // EOFマーカー識別子 (EndOfFileMarkerID)
   // {1B3FD874-CBCC-4385-95D8-615A8D170AC8}
-  static const GUID EndOfFileMarkerID = { 0x1b3fd874, 0xcbcc, 0x4385, { 0x95, 0xd8, 0x61, 0x5a, 0x8d, 0x17, 0xa, 0xc8 } };
+  static const UUID EndOfFileMarkerID = { 0x1b3fd874, 0xcbcc, 0x4385, { 0x95, 0xd8, 0x61, 0x5a, 0x8d, 0x17, 0xa, 0xc8 } };
 
   // ロガー実装識別子 (LoggerID)
   // HSSBLogger用に以下の値を予約させていただきます
   // {A8978E8E-51AA-452C-9A5E-22AF9D543F54}
-  static const GUID LoggerID = { 0xa8978e8e, 0x51aa, 0x452c, { 0x9a, 0x5e, 0x22, 0xaf, 0x9d, 0x54, 0x3f, 0x54 } };
+  static const UUID LoggerID = { 0xa8978e8e, 0x51aa, 0x452c, { 0x9a, 0x5e, 0x22, 0xaf, 0x9d, 0x54, 0x3f, 0x54 } };
   ```
 
 * 各セクションIDの値について
@@ -706,7 +708,7 @@ struct HSSBLoggerFileHeaderSHA256Collection {
 
 #### SectionSHA256Values.LogRecordCollectionSectionSHA256 ( HSSBLoggerFileHeaderSHA256Collection::LogRecordCollectionSectionSHA256 )
 
-* 計算方法はファイルの先頭側から順にハッシュするわけではなく少々複雑なため別記します (LogRecordCollectionSectionの説明に記載します)
+* 計算方法はファイルの先頭側から順にハッシュするわけではなく少々複雑なため、後述の『ログレコードコレクションセクション』の説明に記載します。<br>
   - ドキュメント内の整合性不備を避けるため、ここでは詳細を省略します
 
 #### SectionSHA256Values.AddAppDefinedDataSectionSHA256 ( HSSBLoggerFileHeaderSHA256Collection::AddAppDefinedDataSectionSHA256 )
@@ -718,7 +720,7 @@ struct HSSBLoggerFileHeaderSHA256Collection {
 
 * `FooterSectionSHA256`は、フッターセクションのSHA-256ハッシュ値を示す32バイトの配列です。<br>
 * 書き込み時にヘッダーを含めて計算してセットしてください
-* 
+
 #### SectionSHA256Values.FunctionListSectionSHA256 ( HSSBLoggerFileHeaderSHA256Collection::FunctionListSectionSHA256 )
 
 * `FunctionListSectionSHA256`は、関数名リストセクションのSHA-256ハッシュ値を示す32バイトの配列です。<br>
@@ -1188,7 +1190,7 @@ struct HSSBLoggerLogRecordAttachedDataHeader {
 
 
 > [!WARNING]
-> HSSBLoggerLogRecordに続く可変長データは、Messaege、AttachedDumpData、AttachedCustomDataの順に格納してください。<br>
+> HSSBLoggerLogRecordに続く可変長データは、Message、AttachedDumpData、AttachedCustomDataの順に格納してください。<br>
 > また、各データの長さはそれぞれMessageLength、AttachedDumpHeader.Length、AttachedCustomHeader.Lengthで指定された長さに従って格納してください。
 
 > [!NOTE]
@@ -1483,6 +1485,32 @@ struct HSSBLoggerFileFooter {
 
 * このUUIDは、ファイルの終端を示すために使用されます
   - ファイルの整合性を確認する際に役立ちます
+
+
+## ロガー実装者へ向けた補足資料
+
+### ログファイルの削除・移動・圧縮等の整理処理について
+
+該当するロガーは、ログの作成・出力・最終化（Finalize）を担うこととして、
+ログファイルの削除・移動・圧縮等の整理処理は、
+ロガー内部に実装せず、外部の仕組みに任せることを推奨します。
+（例えば、整理用の外部ツールを用意するなど）
+
+> [!NOTE]
+> 本ログファイルは、同時に複数のプロセスから書き込みが行われることを想定していません。<br>
+> そのため、ログファイルの整理処理をロガー内部に実装した場合、解決しなければいけない事項が多く発生します。<br>
+> 例えば、どのログファイルが最新のものなのか正常に判断できない可能性があります。<br>
+>
+> そのため、ログファイルの整理処理はロガー外部の仕組みに任せることを推奨します。
+> 例1：ユーザーに削除してもらう
+> 例2：ログファイルを整理する外部ツールを用意し、ユーザーに起動してもらう
+
+
+> [!IMPORTANT]
+> ただし、安全策として、ロガーは本ログファイルの作成時、ほかのプロセスによって書き込みや削除が行われないように、<br>
+> ファイルロックを行うことを推奨します。これにより、ログファイルの整合性が保たれます。<br>
+> 
+> この方法は簡単であり、CreateFile関数のdwShareModeパラメーターに FILE_SHARE_DELETE と FILE_SHARE_WRITE を指定しないことで実現できます。
 
 ## Appendix 
 
