@@ -347,7 +347,7 @@ struct HSSBLoggerDateTime {
     uint32_t TimeInMilliseconds; 
 
     // ミリ秒未満のマイクロ秒部分 (0～999)
-    uint32_t Microseconds;
+    uint16_t Microseconds;
 };
 ```
 
@@ -362,6 +362,11 @@ struct HSSBLoggerDateTime {
 10,580,754 (30827年12月31日)以下であることを推奨します。<br>
 (現在2025年であるため、十分に先の未来までカバーできると考えられます)
 
+> [!IMPORTANT]
+> 何らかの理由などで、SYSTEMTIME構造体の表現範囲を超える日付が設定された場合の<br>
+> ビューワー側の動作については本フォーマットでは規定しません。<br>
+> ビューワー側では、そのような日付が設定されていた場合の取り扱いを別途定義することを推奨します。
+
 #### TimeInMilliseconds
 
 `TimeInMilliseconds`は、1日を基準とした経過ミリ秒数を示す符号なし32ビット整数です。<br>
@@ -370,7 +375,7 @@ struct HSSBLoggerDateTime {
 
 #### Microseconds
 
-`Microseconds`は、ミリ秒未満のマイクロ秒部分を示す符号なし32ビット整数です。<br>
+`Microseconds`は、ミリ秒未満のマイクロ秒部分を示す符号なし16ビット整数です。<br>
 この値は0から999までの範囲を取り、1ミリ秒未満の時間を表現します。<br>
 アプリケーションの都合上必要な場合にセットしてください。<br>
 不要な場合は0をセットしてください。<br>
