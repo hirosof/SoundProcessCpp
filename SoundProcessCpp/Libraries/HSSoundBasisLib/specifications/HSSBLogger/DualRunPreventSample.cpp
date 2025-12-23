@@ -41,10 +41,10 @@ int main( ) {
 	if ( IsUserAnAdmin( ) ) {
 		ws_title.append( L"[管理者] " );
 	}
-	ws_title.append( L"二重起動検出方法サンプル" );
+	ws_title.append( L"二重起動防止サンプル" );
 	SetConsoleTitleW( ws_title.c_str( ) );
 
-	wprintf( L"[二重起動検出方法サンプル]\n\n" );
+	wprintf( L"[二重起動防止サンプル]\n\n" );
 	wprintf( L"二重起動チェックを行うためにミューテックスを取得します。\n" );
 
 
@@ -52,7 +52,7 @@ int main( ) {
 	std::wstring mutexName;  //作成するミューテックス名
 	bool mutexGlobalMode = false;
 	if ( MessageBoxW( GetConsoleWindow( ), L"作成するミューテックスをグローバルにしますか？",
-		L"二重起動検出方法サンプル", MB_YESNO | MB_ICONQUESTION ) == IDYES ) {
+		L"二重起動防止サンプル", MB_YESNO | MB_ICONQUESTION ) == IDYES ) {
 		mutexName.append( L"Global\\" );
 		mutexGlobalMode = true;
 		wprintf( L"作成するミューテックスはグローバルです。\n" );
@@ -63,7 +63,7 @@ int main( ) {
 
 	BOOL	mutexTakeOwner = FALSE;
 	if ( MessageBoxW( GetConsoleWindow( ), L"作成するミューテックスの所有権を要求しますか？",
-		L"二重起動検出方法サンプル", MB_YESNO | MB_ICONQUESTION) == IDYES ) {
+		L"二重起動防止サンプル", MB_YESNO | MB_ICONQUESTION) == IDYES ) {
 		mutexTakeOwner = TRUE;
 		wprintf( L"作成するミューテックスの所有権を要求します。\n" );
 	} else {
@@ -93,7 +93,7 @@ int main( ) {
 		wprintf( L"Win32エラーコード：0x%08X (%u)\n", dwMutexCreatedError, dwMutexCreatedError );
 
 		//コンソールアプリケーションの場合、すぐに終了してしまうので、メッセージボックスを表示する。
-		MessageBoxW( GetConsoleWindow( ), L"OKを押すとプログラムを終了します。", L"二重起動検出方法サンプル", MB_OK );
+		MessageBoxW( GetConsoleWindow( ), L"OKを押すとプログラムを終了します。", L"二重起動防止サンプル", MB_OK );
 		return 0;
 	}
 
@@ -113,7 +113,7 @@ int main( ) {
 		wprintf( L"二重起動を検出しました。プログラムを終了します。\n" );
 
 		//コンソールアプリケーションの場合、すぐに終了してしまうので、メッセージボックスを表示する。
-		MessageBoxW( GetConsoleWindow( ), L"OKを押すとプログラムを終了します。", L"二重起動検出方法サンプル", MB_OK );
+		MessageBoxW( GetConsoleWindow( ), L"OKを押すとプログラムを終了します。", L"二重起動防止サンプル", MB_OK );
 		return 0;
 	}
 
@@ -137,7 +137,7 @@ int main( ) {
 		wsMessage.append( L"これは、ミューテックス作成時にセキュリティ記述子を指定していないのが要因となります。" );
 	}
 
-	MessageBoxW( GetConsoleWindow( ), wsMessage.c_str( ), L"二重起動検出方法サンプル", MB_OK );
+	MessageBoxW( GetConsoleWindow( ), wsMessage.c_str( ), L"二重起動防止サンプル", MB_OK );
 
 	return 0;
 }
