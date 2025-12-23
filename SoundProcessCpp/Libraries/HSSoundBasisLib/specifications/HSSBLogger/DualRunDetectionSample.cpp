@@ -3,6 +3,7 @@
 #include <locale>
 #include <TlHelp32.h>
 #include <shlwapi.h>
+#include <cstdint>
 
 #pragma	comment( lib, "shlwapi.lib" )
 
